@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Admin | Preguntas</title><link rel="stylesheet" th:href="@{/css/styles.css}"></head>
+<body>
+<header class="topbar"><a class="brand" th:href="@{/admin}">← Admin</a><strong>Banco de preguntas</strong></header>
+<main class="container">
+<section class="admin-form detail-card">
+<h1>Nueva pregunta</h1>
+<form th:action="@{/admin/preguntas}" th:object="${pregunta}" method="post" class="form-grid">
+<textarea th:field="*{enunciado}" placeholder="Enunciado" required></textarea>
+<input th:field="*{opcionA}" placeholder="Opción A" required><input th:field="*{opcionB}" placeholder="Opción B" required><input th:field="*{opcionC}" placeholder="Opción C" required><input th:field="*{opcionD}" placeholder="Opción D" required>
+<select th:field="*{respuestaCorrecta}"><option th:each="o:${opciones}" th:value="${o}" th:text="${o}"></option></select>
+<select th:field="*{categoria}"><option th:each="c:${categorias}" th:value="${c}" th:text="${c}"></option></select>
+<select th:field="*{dificultad}"><option th:each="d:${dificultades}" th:value="${d}" th:text="${d}"></option></select>
+<button class="btn primary">Guardar pregunta</button>
+</form>
+</section>
+<section class="detail-card"><h1>Preguntas registradas</h1><div class="table-wrap"><table><thead><tr><th>ID</th><th>Enunciado</th><th>Categoría</th><th>Correcta</th></tr></thead><tbody><tr th:each="p:${preguntas}"><td th:text="${p.id}"></td><td th:text="${p.enunciado}"></td><td th:text="${p.categoria}"></td><td th:text="${p.respuestaCorrecta}"></td></tr></tbody></table></div></section>
+</main></body></html>

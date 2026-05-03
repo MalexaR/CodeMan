@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Admin | Patrones</title><link rel="stylesheet" th:href="@{/css/styles.css}"></head>
+<body>
+<header class="topbar"><a class="brand" th:href="@{/admin}">← Admin</a><strong>Fichas teóricas</strong></header>
+<main class="container">
+<section class="admin-form detail-card">
+<h1>Nuevo patrón</h1>
+<form th:action="@{/admin/patrones}" th:object="${patron}" method="post" class="form-grid">
+<input th:field="*{nombre}" placeholder="Nombre" required>
+<select th:field="*{categoria}"><option th:each="c:${categorias}" th:value="${c}" th:text="${c}"></option></select>
+<textarea th:field="*{descripcion}" placeholder="Descripción" required></textarea>
+<textarea th:field="*{proposito}" placeholder="Propósito" required></textarea>
+<textarea th:field="*{problema}" placeholder="Problema" required></textarea>
+<textarea th:field="*{cuandoUsar}" placeholder="Cuándo usar" required></textarea>
+<textarea th:field="*{estructura}" placeholder="Estructura" required></textarea>
+<textarea th:field="*{uml}" placeholder="UML textual" required></textarea>
+<textarea th:field="*{codigoEjemplo}" placeholder="Código de ejemplo" required></textarea>
+<button class="btn primary">Guardar patrón</button>
+</form>
+</section>
+<section class="detail-card"><h1>Patrones registrados</h1><div class="table-wrap"><table><thead><tr><th>ID</th><th>Nombre</th><th>Categoría</th></tr></thead><tbody><tr th:each="p:${patrones}"><td th:text="${p.id}"></td><td th:text="${p.nombre}"></td><td th:text="${p.categoria}"></td></tr></tbody></table></div></section>
+</main></body></html>

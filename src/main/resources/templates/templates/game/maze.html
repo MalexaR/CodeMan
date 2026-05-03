@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CodeMan | Laberinto</title><link rel="stylesheet" th:href="@{/css/styles.css}"></head>
+<body class="game-body">
+<header class="topbar"><a class="brand" th:href="@{/jugar}">← Volver</a><strong class="neon-title">CodeMan — Laberinto</strong><span th:text="${usuario.name}"></span></header>
+<main class="game-container" th:data-categoria="${categoria}">
+    <section class="hud">
+        <div>❤️ Vidas: <strong id="vidas">3</strong></div>
+        <div>⭐ Puntos: <strong id="puntos">0</strong></div>
+        <div>⏱️ Tiempo: <strong id="tiempo">0</strong>s</div>
+        <div>👻 Errores: <strong id="errores">0</strong></div>
+    </section>
+    <canvas id="mazeCanvas" width="588" height="588" aria-label="Laberinto CodeMan"></canvas>
+    <p class="game-help">Usa flechas o WASD. Presiona P para pausar. Responde las preguntas antes de que termine el tiempo.</p>
+</main>
+
+<div id="questionModal" class="modal hidden">
+    <div class="modal-card">
+        <div class="modal-head"><h2>Pregunta de código</h2><span id="questionTimer">20</span></div>
+        <p id="questionText"></p>
+        <div id="answers" class="answers"></div>
+    </div>
+</div>
+
+<div id="endModal" class="modal hidden">
+    <div class="modal-card center">
+        <h2 id="endTitle">Fin del juego</h2>
+        <p id="endMessage"></p>
+        <a class="btn primary" th:href="@{/jugar}">Elegir otra categoría</a>
+        <a class="btn outline" th:href="@{/progreso}">Ver progreso</a>
+    </div>
+</div>
+<script th:src="@{/js/maze-game.js}"></script>
+</body></html>

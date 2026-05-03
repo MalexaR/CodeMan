@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMan | Iniciar sesión</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body class="auth-body">
+<section class="auth-shell">
+    <div class="brand-panel">
+        <div class="pacman-logo"><span></span></div>
+        <h1>CodeMan</h1>
+        <p>Aprende patrones de diseño recorriendo un laberinto de código, preguntas y desafíos tipo Pac-Man.</p>
+        <div class="code-card">
+            <code>while(aprendes) { score += 100; }</code>
+        </div>
+    </div>
+    <div class="auth-card">
+        <h2>Iniciar sesión</h2>
+        <p class="muted">Ingresa con tu correo institucional.</p>
+
+        <div class="alert success" th:if="${success}" th:text="${success}"></div>
+        <div class="alert error" th:if="${param.error}">Credenciales inválidas.</div>
+        <div class="alert success" th:if="${param.logout}">Sesión cerrada correctamente.</div>
+
+        <form th:action="@{/login}" method="post" class="form-stack">
+            <label>Correo institucional</label>
+            <input type="email" name="email" placeholder="tu.correo@unillanos.edu.co" required autofocus>
+            <label>Contraseña</label>
+            <input type="password" name="password" placeholder="••••••••" required>
+            <button type="submit" class="btn primary full">Entrar al laberinto</button>
+        </form>
+        <p class="center muted small">¿No tienes cuenta? <a th:href="@{/register}">Crear cuenta</a></p>
+        <p class="center muted small">¿Olvidaste tu contraseña? <a th:href="@{/forgot-password}">Recupérala aquí</a></p>
+    </div>
+</section>
+</body>
+</html>

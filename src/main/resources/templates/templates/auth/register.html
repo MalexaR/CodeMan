@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMan | Registro</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body class="auth-body">
+<section class="auth-shell">
+    <div class="brand-panel">
+        <div class="pacman-logo"><span></span></div>
+        <h1>Registro seguro</h1>
+        <p>Crea tu cuenta de estudiante para acceder al módulo teórico, jugar y medir tu progreso.</p>
+        <div class="code-card"><code>new Student().play(CodeMan);</code></div>
+    </div>
+    <div class="auth-card">
+        <h2>Crear cuenta</h2>
+        <p class="muted">Usa un correo institucional válido.</p>
+        <form th:action="@{/register}" th:object="${registerForm}" method="post" class="form-stack">
+            <div class="alert error" th:if="${#fields.hasGlobalErrors()}" th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
+            <label>Nombre completo</label>
+            <input type="text" th:field="*{name}" placeholder="Tu nombre" required>
+            <small class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
+
+            <label>Correo institucional</label>
+            <input type="email" th:field="*{email}" placeholder="tu.correo@unillanos.edu.co" required>
+            <small class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+
+            <label>Contraseña</label>
+            <input type="password" th:field="*{password}" placeholder="Mínimo 8 caracteres, letras y números" required>
+            <small class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+
+            <label>Confirmar contraseña</label>
+            <input type="password" th:field="*{confirmPassword}" placeholder="Repite tu contraseña" required>
+            <small class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></small>
+
+            <button type="submit" class="btn primary full">Crear cuenta</button>
+        </form>
+        <p class="center muted small">¿Ya tienes cuenta? <a th:href="@{/login}">Iniciar sesión</a></p>
+    </div>
+</section>
+</body>
+</html>

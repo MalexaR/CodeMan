@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CodeMan | Admin</title><link rel="stylesheet" th:href="@{/css/styles.css}"></head>
+<body>
+<header class="topbar"><a class="brand" th:href="@{/}">← Inicio</a><strong>Administración</strong></header>
+<main class="container">
+    <div class="page-title"><p class="eyebrow">Rol administrador</p><h1>Panel de administración</h1><p>Gestión de usuarios, fichas teóricas y banco de preguntas.</p></div>
+    <section class="grid cards-grid three">
+        <a class="menu-card blue"><span>👥</span><h2>Usuarios</h2><p th:text="|${totalUsuarios} usuarios registrados|"></p></a>
+        <a class="menu-card green" th:href="@{/admin/patrones}"><span>📚</span><h2>Fichas teóricas</h2><p th:text="|${totalPatrones} patrones registrados|"></p></a>
+        <a class="menu-card amber" th:href="@{/admin/preguntas}"><span>❔</span><h2>Banco de preguntas</h2><p th:text="|${totalPreguntas} preguntas registradas|"></p></a>
+    </section>
+</main>
+</body></html>
