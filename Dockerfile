@@ -1,6 +1,8 @@
 # ── Etapa 1: build ────────────────────────────────────────────
-FROM maven:3.9-eclipse-temurin-21-alpine AS build
+FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
+
+RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
 
 # Descargar dependencias primero (capa cacheada)
 COPY pom.xml ./
@@ -11,7 +13,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests -q
 
 # ── Etapa 2: runtime ──────────────────────────────────────────
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:21-jre
 WORKDIR /app
 
 COPY --from=build /app/target/*.jar app.jar
