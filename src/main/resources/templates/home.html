@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMan | Menú</title><link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" th:href="@{/}"><span class="mini-pac"></span> CodeMan</a>
+    <div class="userbar"><span th:text="|Hola, ${usuario.name}|">Hola</span><form th:action="@{/logout}" method="post"><button class="btn ghost">Salir</button></form></div>
+</header>
+<main class="container">
+    <section class="hero">
+        <div>
+            <p class="eyebrow">MVC · Spring Boot · Patrones GoF</p>
+            <h1>Aprende diseño de software jugando en un laberinto de código.</h1>
+            <p>Consulta teoría, responde preguntas y evita fantasmas que representan errores acumulados.</p>
+        </div>
+        <div class="terminal-card"><code>class CodeMan extends PacMan {<br>&nbsp;&nbsp;learn(patterns);<br>&nbsp;&nbsp;debug(ghosts);<br>}</code></div>
+    </section>
+
+    <section class="grid cards-grid">
+        <a class="menu-card blue" th:href="@{/teoria}"><span>📚</span><h2>Módulo teórico</h2><p>Fichas de Singleton, Factory Method, Adapter, Observer y más.</p></a>
+        <a class="menu-card green" th:href="@{/jugar}"><span>🕹️</span><h2>Jugar</h2><p>Laberinto tipo Pac-Man con preguntas por categoría.</p></a>
+        <a class="menu-card purple" th:href="@{/progreso}"><span>📊</span><h2>Mi progreso</h2><p>Fichas revisadas, partidas, aciertos y errores.</p></a>
+        <a class="menu-card amber" th:if="${progreso.desafioFinalCompletado}" th:href="@{/reporte}"><span>📄</span><h2>Mi reporte</h2><p>Reporte disponible. Descárgalo en PDF.</p></a>
+        <div class="menu-card amber locked" th:unless="${progreso.desafioFinalCompletado}"><span>📄</span><h2>Mi reporte</h2><p>Completa el desafío final para desbloquearlo.</p></div>
+        <a class="menu-card red" th:if="${isAdmin}" th:href="@{/admin}"><span>🛡️</span><h2>Administración</h2><p>Gestiona patrones y banco de preguntas.</p></a>
+    </section>
+</main>
+<script th:src="@{/js/scorm-bridge.js}"></script>
+</body>
+</html>

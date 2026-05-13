@@ -35,5 +35,5 @@ build/
 ### Claude Code ###
 .claude/
 
-### Secrets ###
-src/main/resources/application.properties
+### Secrets (desarrollo local) ###
+src/main/resources/application-local.properties

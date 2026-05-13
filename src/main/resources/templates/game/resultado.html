@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMan | Resultado</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" th:href="@{/}"><span class="mini-pac"></span> CodeMan</a>
+    <a class="btn outline" th:href="@{/jugar}">Volver a jugar</a>
+</header>
+<main class="container resultado-container">
+
+    <div id="loading" class="resultado-loading">
+        <div class="loading-spinner"></div>
+        <p>Cargando resultados…</p>
+    </div>
+
+    <div id="resultado-content" class="hidden">
+
+        <div class="resultado-hero">
+            <div id="resultado-icon" class="resultado-icon">🏆</div>
+            <h1 id="resultado-titulo">Resultado</h1>
+            <p id="resultado-subtitulo" class="resultado-subtitulo"></p>
+        </div>
+
+        <div class="resultado-stats-grid">
+            <div class="rstat-card green">
+                <span class="rstat-label">Aciertos</span>
+                <strong id="stat-aciertos">0</strong>
+            </div>
+            <div class="rstat-card red">
+                <span class="rstat-label">Errores</span>
+                <strong id="stat-errores">0</strong>
+            </div>
+            <div class="rstat-card blue">
+                <span class="rstat-label">Tiempo</span>
+                <strong id="stat-tiempo">—</strong>
+            </div>
+            <div class="rstat-card purple">
+                <span class="rstat-label">Preguntas</span>
+                <strong id="stat-total">0</strong>
+            </div>
+        </div>
+
+        <div class="resultado-desempeno">
+            <div class="resultado-desempeno-header">
+                <span class="resultado-desempeno-label">Desempeño</span>
+                <span id="stat-porcentaje" class="resultado-porcentaje-valor">0%</span>
+            </div>
+            <div class="progress resultado-progress">
+                <span id="barra-desempeno" style="width:0%"></span>
+            </div>
+            <p id="resultado-msg" class="resultado-msg"></p>
+        </div>
+
+        <div id="errores-section" class="resultado-errores-section hidden">
+            <h2 class="resultado-errores-titulo">Preguntas que fallaste</h2>
+            <div id="errores-list" class="errores-list"></div>
+        </div>
+
+        <div class="resultado-acciones">
+            <a id="btn-teoria" class="btn outline" href="/teoria">Ver teoría</a>
+            <a id="btn-reintentar" class="btn ghost" href="/jugar">Reintentar laberinto</a>
+            <a class="btn primary" th:href="@{/}">Ir al menú</a>
+        </div>
+
+    </div>
+
+</main>
+
+<script th:inline="javascript">
+(function () {
+    const segments = window.location.pathname.split('/');
+    const partidaId = segments[segments.length - 1];
+
+    fetch('/api/game/' + partidaId + '/resultado')
+        .then(r => r.json())
+        .then(render)
+        .catch(() => {
+            document.getElementById('loading').innerHTML = '<p style="color:var(--red)">No se pudo cargar el resultado.</p>';
+        });
+
+    function render(d) {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('resultado-content').classList.remove('hidden');
+
+        const victoria = d.victoria;
+        document.getElementById('resultado-icon').textContent = victoria ? '🏆' : '💀';
+        document.getElementById('resultado-titulo').textContent = victoria ? '¡Partida completada!' : 'Partida terminada';
+        document.getElementById('resultado-subtitulo').textContent =
+            'Categoría: ' + d.categoria;
+
+        document.getElementById('stat-aciertos').textContent = d.aciertos;
+        document.getElementById('stat-errores').textContent = d.errores;
+        document.getElementById('stat-tiempo').textContent = d.tiempoTotal || '—';
+        document.getElementById('stat-total').textContent = d.totalPreguntas;
+
+        const pct = d.porcentajeDesempeno;
+        document.getElementById('stat-porcentaje').textContent = pct + '%';
+
+        const barra = document.getElementById('barra-desempeno');
+        barra.style.width = pct + '%';
+        barra.style.background = pct >= 60
+            ? 'linear-gradient(90deg, #22c55e, #86efac)'
+            : 'linear-gradient(90deg, #fb7185, #fca5a5)';
+
+        document.getElementById('resultado-msg').textContent = pct >= 60
+            ? 'Buen trabajo. Superaste el umbral de aprendizaje.'
+            : 'Sigue practicando. Necesitas al menos un 60% para dominar la categoría.';
+
+        if (d.erroresDetalle && d.erroresDetalle.length > 0) {
+            const section = document.getElementById('errores-section');
+            section.classList.remove('hidden');
+            const list = document.getElementById('errores-list');
+            d.erroresDetalle.forEach(function (e) {
+                const card = document.createElement('div');
+                card.className = 'error-card';
+                card.innerHTML =
+                    '<p class="error-enunciado">' + escHtml(e.enunciado) + '</p>' +
+                    '<div class="error-opciones">' +
+                    '<span class="error-opcion wrong">✗ Tu respuesta: ' + escHtml(e.opcionElegida) + '</span>' +
+                    '<span class="error-opcion correct">✓ Correcta: ' + escHtml(e.respuestaCorrecta) + '</span>' +
+                    '</div>' +
+                    (e.explicacion ? '<p class="error-explicacion">' + escHtml(e.explicacion) + '</p>' : '');
+                list.appendChild(card);
+            });
+        }
+
+        const cat = (d.categoria || '').toLowerCase();
+        document.getElementById('btn-teoria').href = '/teoria?categoria=' + encodeURIComponent(d.categoria || '');
+        document.getElementById('btn-reintentar').href = '/jugar/' + encodeURIComponent(d.categoria || '');
+    }
+
+    function escHtml(s) {
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+})();
+</script>
+</body>
+</html>

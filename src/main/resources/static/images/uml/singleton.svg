@@ -1,0 +1,36 @@
+<svg width="620" height="270" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0 0 L9 4 L0 8Z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <rect width="620" height="270" fill="#f8fafc" rx="8" stroke="#e2e8f0"/>
+  <text x="310" y="26" text-anchor="middle" font-size="15" font-weight="bold" fill="#0f172a">Singleton</text>
+
+  <!-- Cliente A -->
+  <rect x="20" y="68" width="110" height="28" rx="3" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.5"/>
+  <text x="75" y="87" text-anchor="middle" font-size="11" fill="#78350f">Cliente A</text>
+
+  <!-- Cliente B -->
+  <rect x="20" y="155" width="110" height="28" rx="3" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.5"/>
+  <text x="75" y="174" text-anchor="middle" font-size="11" fill="#78350f">Cliente B</text>
+
+  <!-- Singleton box: title -->
+  <rect x="240" y="52" width="300" height="30" fill="#bfdbfe" stroke="#64748b" stroke-width="1.5"/>
+  <text x="390" y="72" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d4ed8">Singleton</text>
+  <!-- attrs -->
+  <rect x="240" y="82" width="300" height="26" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="252" y="99" font-size="11" fill="#374151">&#8211; instancia: Singleton</text>
+  <!-- methods -->
+  <rect x="240" y="108" width="300" height="68" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="252" y="126" font-size="11" fill="#374151" font-style="italic">&#8211; Singleton()  {constructor privado}</text>
+  <text x="252" y="147" font-size="11" fill="#374151">+ getInstance() : Singleton  {estático}</text>
+  <text x="252" y="167" font-size="11" fill="#374151">+ operacion() : void</text>
+
+  <!-- Arrows -->
+  <line x1="130" y1="82" x2="238" y2="118" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="130" y1="169" x2="238" y2="152" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Note -->
+  <text x="310" y="218" text-anchor="middle" font-size="10" fill="#94a3b8" font-style="italic">Ambos clientes obtienen la misma instancia mediante getInstance()</text>
+</svg>

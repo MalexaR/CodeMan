@@ -1,0 +1,10 @@
+target/
+.mvn/wrapper/maven-wrapper.jar
+.idea/
+.vscode/
+.claude/
+*.md
+*.sh
+data-*.sql
+refactor_*.md
+SCORM-INSTALLATION.md

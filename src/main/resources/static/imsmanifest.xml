@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest
+    identifier="CodeMan-SCORM-1.2"
+    version="1.0"
+    xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
+    xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd
+        http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
+
+    <metadata>
+        <schema>ADL SCORM</schema>
+        <schemaversion>1.2</schemaversion>
+        <adlcp:location>imsmanifest.xml</adlcp:location>
+    </metadata>
+
+    <organizations default="CodeMan-Org">
+        <organization identifier="CodeMan-Org" structure="hierarchical">
+            <title>CodeMan — Patrones de Diseño GoF</title>
+
+            <item identifier="item-practica" identifierref="resource-practica" isvisible="true">
+                <title>Práctica: Laberinto de Patrones</title>
+                <adlcp:masteryscore>60</adlcp:masteryscore>
+            </item>
+
+            <item identifier="item-desafio" identifierref="resource-desafio" isvisible="true">
+                <title>Desafío Final — Todas las categorías</title>
+                <adlcp:masteryscore>60</adlcp:masteryscore>
+            </item>
+
+        </organization>
+    </organizations>
+
+    <resources>
+        <!-- SCO principal: laberinto de práctica por categoría -->
+        <resource
+            identifier="resource-practica"
+            type="webcontent"
+            adlcp:scormtype="sco"
+            href="{{CODEMAN_URL}}/jugar">
+            <file href="js/scorm-bridge.js"/>
+        </resource>
+
+        <!-- SCO del desafío final -->
+        <resource
+            identifier="resource-desafio"
+            type="webcontent"
+            adlcp:scormtype="sco"
+            href="{{CODEMAN_URL}}/jugar/desafio-final">
+            <file href="js/scorm-bridge.js"/>
+        </resource>
+
+        <!-- Assets compartidos -->
+        <resource identifier="resource-css" type="webcontent" adlcp:scormtype="asset">
+            <file href="css/styles.css"/>
+        </resource>
+
+        <resource identifier="resource-js-maze" type="webcontent" adlcp:scormtype="asset">
+            <file href="js/maze-game.js"/>
+            <file href="js/desafio-game.js"/>
+            <file href="js/scorm-bridge.js"/>
+        </resource>
+
+    </resources>
+
+</manifest>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Patrones</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" th:href="@{/admin}">← Admin</a>
+    <strong>Patrones de diseño</strong>
+</header>
+<main class="container">
+
+    <section class="admin-form detail-card">
+        <h1 th:text="${patron.id != null} ? 'Editar patrón' : 'Nuevo patrón'">Nuevo patrón</h1>
+        <form th:action="${patron.id != null} ? @{/admin/patrones/{id}(id=${patron.id})} : @{/admin/patrones}"
+              th:object="${patron}" method="post" class="form-grid">
+            <input th:field="*{nombre}" placeholder="Nombre" required>
+            <select th:field="*{categoria}">
+                <option value="">— Categoría —</option>
+                <option th:each="c : ${categorias}" th:value="${c}" th:text="${c}"></option>
+            </select>
+            <textarea th:field="*{descripcion}" placeholder="Descripción" required></textarea>
+            <textarea th:field="*{proposito}" placeholder="Propósito"></textarea>
+            <textarea th:field="*{problemaResuelto}" placeholder="Problema que resuelve"></textarea>
+            <textarea th:field="*{cuandoUsar}" placeholder="Cuándo usarlo"></textarea>
+            <textarea th:field="*{estructura}" placeholder="Estructura"></textarea>
+            <input th:field="*{diagramaUmlUrl}" placeholder="URL del diagrama UML (opcional)">
+            <textarea th:field="*{codigoEjemplo}" placeholder="Código de ejemplo" style="min-height:120px"></textarea>
+            <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center">
+                <button class="btn primary" th:text="${patron.id != null} ? 'Actualizar' : 'Guardar patrón'">Guardar</button>
+                <a th:if="${patron.id != null}" class="btn ghost" th:href="@{/admin/patrones}">Cancelar</a>
+            </div>
+        </form>
+    </section>
+
+    <section class="detail-card">
+        <h1>Patrones registrados</h1>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${patrones}">
+                        <td th:text="${p.id}"></td>
+                        <td th:text="${p.nombre}"></td>
+                        <td th:text="${p.categoria}"></td>
+                        <td>
+                            <div style="display:flex;gap:8px">
+                                <a class="btn outline btn-sm" th:href="@{/admin/patrones/{id}/editar(id=${p.id})}">Editar</a>
+                                <form th:action="@{/admin/patrones/{id}/eliminar(id=${p.id})}" method="post"
+                                      onsubmit="return confirm('¿Eliminar este patrón?')">
+                                    <button class="btn ghost btn-sm" style="color:var(--red)">Eliminar</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+</body>
+</html>

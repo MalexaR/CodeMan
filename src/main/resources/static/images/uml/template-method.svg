@@ -1,0 +1,46 @@
+<svg width="620" height="370" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <defs>
+    <marker id="tri" markerWidth="14" markerHeight="12" refX="13" refY="6" orient="auto">
+      <path d="M1 1 L13 6 L1 11Z" fill="white" stroke="#64748b" stroke-width="1.5"/>
+    </marker>
+  </defs>
+  <rect width="620" height="370" fill="#f8fafc" rx="8" stroke="#e2e8f0"/>
+  <text x="310" y="26" text-anchor="middle" font-size="15" font-weight="bold" fill="#0f172a">Template Method</text>
+
+  <!-- ClaseAbstracta -->
+  <rect x="170" y="50" width="280" height="46" fill="#e0e7ff" stroke="#64748b" stroke-width="1.5"/>
+  <text x="310" y="68" text-anchor="middle" font-size="10" font-style="italic" fill="#6d28d9">&#171;abstract&#187;</text>
+  <text x="310" y="86" text-anchor="middle" font-size="13" font-weight="bold" fill="#4338ca">ClaseAbstracta</text>
+  <rect x="170" y="96" width="280" height="4" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <rect x="170" y="100" width="280" height="88" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="182" y="118" font-size="11" fill="#374151">+ templateMethod() : void  {final}</text>
+  <text x="182" y="138" font-size="11" fill="#374151" font-style="italic"># pasoUno() : void  {abstract}</text>
+  <text x="182" y="158" font-size="11" fill="#374151" font-style="italic"># pasoDos() : void  {abstract}</text>
+  <text x="182" y="178" font-size="11" fill="#374151"># hook() : void</text>
+
+  <!-- SubclaseA -->
+  <rect x="60" y="290" width="200" height="30" fill="#bfdbfe" stroke="#64748b" stroke-width="1.5"/>
+  <text x="160" y="310" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d4ed8">SubclaseA</text>
+  <rect x="60" y="320" width="200" height="4" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <rect x="60" y="324" width="200" height="28" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="72" y="342" font-size="11" fill="#374151"># pasoUno(), # pasoDos()</text>
+
+  <!-- SubclaseB -->
+  <rect x="360" y="290" width="200" height="30" fill="#bfdbfe" stroke="#64748b" stroke-width="1.5"/>
+  <text x="460" y="310" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d4ed8">SubclaseB</text>
+  <rect x="360" y="320" width="200" height="4" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <rect x="360" y="324" width="200" height="28" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="372" y="342" font-size="11" fill="#374151"># pasoUno(), # pasoDos()</text>
+
+  <!-- Vertical trunk line -->
+  <line x1="310" y1="188" x2="310" y2="255" stroke="#64748b" stroke-width="1.5"/>
+  <!-- Branch to SubclaseA -->
+  <line x1="310" y1="255" x2="160" y2="255" stroke="#64748b" stroke-width="1.5"/>
+  <line x1="160" y1="255" x2="160" y2="290" stroke="#64748b" stroke-width="1.5" marker-end="url(#tri)"/>
+  <!-- Branch to SubclaseB -->
+  <line x1="310" y1="255" x2="460" y2="255" stroke="#64748b" stroke-width="1.5"/>
+  <line x1="460" y1="255" x2="460" y2="290" stroke="#64748b" stroke-width="1.5" marker-end="url(#tri)"/>
+
+  <!-- Note -->
+  <text x="310" y="240" text-anchor="middle" font-size="9" fill="#94a3b8" font-style="italic">Las subclases solo implementan los pasos abstractos</text>
+</svg>

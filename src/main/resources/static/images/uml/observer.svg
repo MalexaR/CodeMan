@@ -1,0 +1,55 @@
+<svg width="700" height="380" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <defs>
+    <marker id="tri" markerWidth="14" markerHeight="12" refX="13" refY="6" orient="auto">
+      <path d="M1 1 L13 6 L1 11Z" fill="white" stroke="#64748b" stroke-width="1.5"/>
+    </marker>
+    <marker id="arr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0 0 L9 4 L0 8Z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <rect width="700" height="380" fill="#f8fafc" rx="8" stroke="#e2e8f0"/>
+  <text x="350" y="26" text-anchor="middle" font-size="15" font-weight="bold" fill="#0f172a">Observer</text>
+
+  <!-- Sujeto (interface) -->
+  <rect x="30" y="55" width="220" height="46" fill="#ede9fe" stroke="#64748b" stroke-width="1.5"/>
+  <text x="140" y="73" text-anchor="middle" font-size="10" font-style="italic" fill="#6d28d9">&#171;interface&#187;</text>
+  <text x="140" y="91" text-anchor="middle" font-size="13" font-weight="bold" fill="#6d28d9">Sujeto</text>
+  <rect x="30" y="101" width="220" height="4" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <rect x="30" y="105" width="220" height="68" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="42" y="123" font-size="11" fill="#374151">+ suscribir(o: Observador)</text>
+  <text x="42" y="143" font-size="11" fill="#374151">+ cancelar(o: Observador)</text>
+  <text x="42" y="163" font-size="11" fill="#374151">+ notificar()</text>
+
+  <!-- Observador (interface) -->
+  <rect x="440" y="55" width="220" height="46" fill="#ede9fe" stroke="#64748b" stroke-width="1.5"/>
+  <text x="550" y="73" text-anchor="middle" font-size="10" font-style="italic" fill="#6d28d9">&#171;interface&#187;</text>
+  <text x="550" y="91" text-anchor="middle" font-size="13" font-weight="bold" fill="#6d28d9">Observador</text>
+  <rect x="440" y="101" width="220" height="4" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <rect x="440" y="105" width="220" height="28" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="452" y="123" font-size="11" fill="#374151">+ actualizar(dato: Object)</text>
+
+  <!-- SujetoConcreto -->
+  <rect x="30" y="268" width="220" height="30" fill="#bfdbfe" stroke="#64748b" stroke-width="1.5"/>
+  <text x="140" y="288" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d4ed8">SujetoConcreto</text>
+  <rect x="30" y="298" width="220" height="28" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="42" y="316" font-size="11" fill="#374151">&#8211; observadores: List</text>
+  <rect x="30" y="326" width="220" height="28" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="42" y="344" font-size="11" fill="#374151">+ notificar()</text>
+
+  <!-- ObservadorConcreto -->
+  <rect x="440" y="268" width="220" height="30" fill="#bfdbfe" stroke="#64748b" stroke-width="1.5"/>
+  <text x="550" y="288" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d4ed8">ObservadorConcreto</text>
+  <rect x="440" y="298" width="220" height="4" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <rect x="440" y="302" width="220" height="28" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="452" y="320" font-size="11" fill="#374151">+ actualizar(dato: Object)</text>
+
+  <!-- Arrow: Sujeto → Observador (1-to-many association) -->
+  <line x1="250" y1="125" x2="438" y2="125" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="344" y="118" text-anchor="middle" font-size="9" fill="#64748b">observadores *</text>
+
+  <!-- Arrow: SujetoConcreto → Sujeto (realization) -->
+  <line x1="140" y1="268" x2="140" y2="173" stroke="#64748b" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#tri)"/>
+
+  <!-- Arrow: ObservadorConcreto → Observador (realization) -->
+  <line x1="550" y1="268" x2="550" y2="133" stroke="#64748b" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#tri)"/>
+</svg>

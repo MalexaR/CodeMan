@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMan | Mi Reporte</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" th:href="@{/}"><span class="mini-pac"></span> CodeMan</a>
+    <div class="userbar">
+        <span th:text="${usuario.name}"></span>
+        <a class="btn outline" th:href="@{/}">Inicio</a>
+    </div>
+</header>
+<main class="container">
+
+    <div class="page-title">
+        <p class="eyebrow">Evaluación final</p>
+        <h1>Mi reporte de desempeño</h1>
+        <p>Generado el <span th:text="${#temporals.format(datos.fechaGeneracion, 'dd/MM/yyyy HH:mm')}"></span></p>
+    </div>
+
+    <!-- Tarjeta de desempeño general -->
+    <div class="reporte-general-card">
+        <div class="reporte-general-left">
+            <p class="eyebrow">Desempeño general</p>
+            <div class="reporte-pct-valor"
+                 th:classappend="${datos.porcentajeGeneral >= 60 ? ' pct-green' : ' pct-red'}"
+                 th:text="|${datos.porcentajeGeneral}%|">0%</div>
+            <div class="progress reporte-progress">
+                <span th:style="|width:${datos.porcentajeGeneral}%;background:${datos.porcentajeGeneral >= 60 ? 'linear-gradient(90deg,#22c55e,#86efac)' : 'linear-gradient(90deg,#fb7185,#fca5a5)'}|"></span>
+            </div>
+            <p class="muted" th:text="${datos.porcentajeGeneral >= 60 ? 'Nivel de aprendizaje alcanzado.' : 'Continúa practicando para mejorar.'}"></p>
+        </div>
+        <div class="reporte-general-right">
+            <div class="mini-stat">
+                <span class="mini-stat-label green-text">Aciertos</span>
+                <strong th:text="${datos.aciertosTotal}">0</strong>
+            </div>
+            <div class="mini-stat">
+                <span class="mini-stat-label red-text">Errores</span>
+                <strong th:text="${datos.erroresTotal}">0</strong>
+            </div>
+            <div class="mini-stat">
+                <span class="mini-stat-label muted">Partidas</span>
+                <strong th:text="${datos.totalPartidas}">0</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Desafío Final -->
+    <div class="reporte-desafio-card">
+        <div>
+            <p class="eyebrow amber-text">Desafío Final</p>
+            <h2>Resultado del reto definitivo</h2>
+        </div>
+        <div class="reporte-desafio-stats">
+            <div class="mini-stat">
+                <span class="mini-stat-label muted">Puntuación</span>
+                <strong th:text="${datos.puntuacionDesafioFinal}">0</strong>
+            </div>
+            <div class="mini-stat">
+                <span class="mini-stat-label muted">Tiempo</span>
+                <strong th:text="${datos.tiempoDesafioFinal}">—</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla por categoría -->
+    <div class="detail-card" style="margin-top:24px">
+        <h2 style="margin:0 0 18px">Desempeño por categoría</h2>
+        <div class="table-wrap">
+            <table class="reporte-table">
+                <thead>
+                    <tr>
+                        <th>Categoría</th>
+                        <th>Aciertos</th>
+                        <th>Errores</th>
+                        <th>Desempeño</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="cat : ${datos.porCategoria}">
+                        <td>
+                            <span class="cat-badge"
+                                  th:classappend="${cat.categoria == 'CREACIONAL' ? ' blue' : (cat.categoria == 'ESTRUCTURAL' ? ' purple' : ' amber')}"
+                                  th:text="${cat.categoria}"></span>
+                        </td>
+                        <td class="green-text" th:text="${cat.aciertos}">0</td>
+                        <td class="red-text" th:text="${cat.errores}">0</td>
+                        <td>
+                            <div class="reporte-mini-bar">
+                                <div class="reporte-mini-fill"
+                                     th:style="|width:${cat.porcentaje}%;background:${cat.porcentaje >= 60 ? '#22c55e' : '#fb7185'}|"></div>
+                            </div>
+                            <span class="muted" style="font-size:.85rem" th:text="|${cat.porcentaje}%|">0%</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Botón descargar PDF -->
+    <div class="reporte-acciones">
+        <a class="btn primary btn-lg" th:href="@{/reporte/descargar}">⬇ Descargar PDF</a>
+        <a class="btn ghost" th:href="@{/progreso}">Ver mi progreso</a>
+    </div>
+
+</main>
+</body>
+</html>

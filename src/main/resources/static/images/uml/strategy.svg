@@ -1,0 +1,50 @@
+<svg width="660" height="350" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <defs>
+    <marker id="tri" markerWidth="14" markerHeight="12" refX="13" refY="6" orient="auto">
+      <path d="M1 1 L13 6 L1 11Z" fill="white" stroke="#64748b" stroke-width="1.5"/>
+    </marker>
+    <marker id="arr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0 0 L9 4 L0 8Z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <rect width="660" height="350" fill="#f8fafc" rx="8" stroke="#e2e8f0"/>
+  <text x="330" y="26" text-anchor="middle" font-size="15" font-weight="bold" fill="#0f172a">Strategy</text>
+
+  <!-- Contexto -->
+  <rect x="30" y="85" width="210" height="30" fill="#bfdbfe" stroke="#64748b" stroke-width="1.5"/>
+  <text x="135" y="105" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d4ed8">Contexto</text>
+  <rect x="30" y="115" width="210" height="28" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="42" y="133" font-size="11" fill="#374151">&#8211; estrategia: Estrategia</text>
+  <rect x="30" y="143" width="210" height="48" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="42" y="161" font-size="11" fill="#374151">+ setEstrategia(e)</text>
+  <text x="42" y="181" font-size="11" fill="#374151">+ ejecutar()</text>
+
+  <!-- Estrategia (interface) -->
+  <rect x="360" y="85" width="220" height="46" fill="#ede9fe" stroke="#64748b" stroke-width="1.5"/>
+  <text x="470" y="103" text-anchor="middle" font-size="10" font-style="italic" fill="#6d28d9">&#171;interface&#187;</text>
+  <text x="470" y="121" text-anchor="middle" font-size="13" font-weight="bold" fill="#6d28d9">Estrategia</text>
+  <rect x="360" y="131" width="220" height="4" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <rect x="360" y="135" width="220" height="28" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="372" y="153" font-size="11" fill="#374151">+ ejecutar(datos) : void</text>
+
+  <!-- EstrategiaA -->
+  <rect x="340" y="258" width="180" height="30" fill="#bfdbfe" stroke="#64748b" stroke-width="1.5"/>
+  <text x="430" y="278" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">EstrategiaA</text>
+  <rect x="340" y="288" width="180" height="28" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="352" y="306" font-size="11" fill="#374151">+ ejecutar(datos)</text>
+
+  <!-- EstrategiaB -->
+  <rect x="540" y="258" width="105" height="30" fill="#bfdbfe" stroke="#64748b" stroke-width="1.5"/>
+  <text x="593" y="278" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">EstrategiaB</text>
+  <rect x="540" y="288" width="105" height="28" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="552" y="306" font-size="11" fill="#374151">+ ejecutar(datos)</text>
+
+  <!-- Arrow: Contexto → Estrategia (association) -->
+  <line x1="240" y1="150" x2="358" y2="130" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Arrow: EstrategiaA → Estrategia (realization) -->
+  <line x1="430" y1="258" x2="440" y2="163" stroke="#64748b" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#tri)"/>
+
+  <!-- Arrow: EstrategiaB → Estrategia (realization) -->
+  <line x1="593" y1="258" x2="520" y2="163" stroke="#64748b" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#tri)"/>
+</svg>

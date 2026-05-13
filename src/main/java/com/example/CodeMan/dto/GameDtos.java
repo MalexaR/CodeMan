@@ -40,4 +40,41 @@ public class GameDtos {
 
     public record SimpleResponse(boolean success) {
     }
+
+    // HU-07: Evento de decisión crítica
+    public record EventoDecisionDto(
+        Long id,
+        String escenario,
+        String opcionA,
+        String opcionB,
+        String opcionC,
+        String respuestaCorrecta,
+        String tipoPowerUpRecompensa
+    ) {}
+
+    public record EventoDecisionRequest(Long partidaId, Long eventoId, String opcionElegida) {
+    }
+
+    public record EventoDecisionResponse(boolean esCorrecta, String powerUpAplicado, String penalizacionAplicada) {
+    }
+
+    // HU-08: Retroalimentación al finalizar partida
+    public record ErrorDetalle(
+        String enunciado,
+        String opcionElegida,
+        String respuestaCorrecta,
+        String explicacion
+    ) {}
+
+    public record ResultadoPartidaDto(
+        Long partidaId,
+        int totalPreguntas,
+        int aciertos,
+        int errores,
+        int porcentajeDesempeno,
+        String tiempoTotal,
+        String categoria,
+        boolean victoria,
+        java.util.List<ErrorDetalle> erroresDetalle
+    ) {}
 }

@@ -1,0 +1,56 @@
+<svg width="700" height="370" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <defs>
+    <marker id="tri" markerWidth="14" markerHeight="12" refX="13" refY="6" orient="auto">
+      <path d="M1 1 L13 6 L1 11Z" fill="white" stroke="#64748b" stroke-width="1.5"/>
+    </marker>
+    <marker id="dep" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0 1 L8 4 L0 7" fill="none" stroke="#64748b" stroke-width="1.5"/>
+    </marker>
+  </defs>
+  <rect width="700" height="370" fill="#f8fafc" rx="8" stroke="#e2e8f0"/>
+  <text x="350" y="26" text-anchor="middle" font-size="15" font-weight="bold" fill="#0f172a">Factory Method</text>
+
+  <!-- Creator (abstract) -->
+  <rect x="30" y="55" width="265" height="46" fill="#e0e7ff" stroke="#64748b" stroke-width="1.5"/>
+  <text x="163" y="73" text-anchor="middle" font-size="10" font-style="italic" fill="#6d28d9">&#171;abstract&#187;</text>
+  <text x="163" y="91" text-anchor="middle" font-size="13" font-weight="bold" fill="#4338ca">Creator</text>
+  <rect x="30" y="101" width="265" height="4" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <rect x="30" y="105" width="265" height="48" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="42" y="123" font-size="11" fill="#374151"># factoryMethod() : Producto</text>
+  <text x="42" y="143" font-size="11" fill="#374151">+ operacion() : void</text>
+
+  <!-- Producto (interface) -->
+  <rect x="420" y="55" width="220" height="46" fill="#ede9fe" stroke="#64748b" stroke-width="1.5"/>
+  <text x="530" y="73" text-anchor="middle" font-size="10" font-style="italic" fill="#6d28d9">&#171;interface&#187;</text>
+  <text x="530" y="91" text-anchor="middle" font-size="13" font-weight="bold" fill="#6d28d9">Producto</text>
+  <rect x="420" y="101" width="220" height="4" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <rect x="420" y="105" width="220" height="28" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="432" y="123" font-size="11" fill="#374151">+ operacion() : void</text>
+
+  <!-- CreadorConcreto -->
+  <rect x="30" y="258" width="265" height="30" fill="#bfdbfe" stroke="#64748b" stroke-width="1.5"/>
+  <text x="163" y="278" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d4ed8">CreadorConcreto</text>
+  <rect x="30" y="288" width="265" height="4" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <rect x="30" y="292" width="265" height="28" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="42" y="310" font-size="11" fill="#374151"># factoryMethod() : Producto</text>
+
+  <!-- ProductoConcreto -->
+  <rect x="420" y="258" width="220" height="30" fill="#bfdbfe" stroke="#64748b" stroke-width="1.5"/>
+  <text x="530" y="278" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d4ed8">ProductoConcreto</text>
+  <rect x="420" y="288" width="220" height="4" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <rect x="420" y="292" width="220" height="28" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="432" y="310" font-size="11" fill="#374151">+ operacion() : void</text>
+
+  <!-- Arrow: CreadorConcreto → Creator (generalization) -->
+  <line x1="163" y1="258" x2="163" y2="153" stroke="#64748b" stroke-width="1.5" marker-end="url(#tri)"/>
+
+  <!-- Arrow: ProductoConcreto → Producto (realization, dashed) -->
+  <line x1="530" y1="258" x2="530" y2="133" stroke="#64748b" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#tri)"/>
+
+  <!-- Arrow: Creator → Producto (dependency, dashed) -->
+  <line x1="295" y1="120" x2="418" y2="120" stroke="#64748b" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#dep)"/>
+
+  <!-- Arrow: CreadorConcreto → ProductoConcreto (creates, dashed) -->
+  <line x1="295" y1="305" x2="418" y2="305" stroke="#64748b" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#dep)"/>
+  <text x="357" y="298" text-anchor="middle" font-size="9" fill="#64748b">&#171;creates&#187;</text>
+</svg>

@@ -16,7 +16,7 @@ public class Usuario {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    @Column(nullable = false)
+    @Column(name = "nombre", nullable = false)
     private String name;
 
     @Enumerated(EnumType.STRING)

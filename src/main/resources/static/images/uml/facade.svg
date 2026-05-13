@@ -1,0 +1,47 @@
+<svg width="660" height="340" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0 0 L9 4 L0 8Z" fill="#64748b"/>
+    </marker>
+    <marker id="dep" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0 1 L8 4 L0 7" fill="none" stroke="#64748b" stroke-width="1.5"/>
+    </marker>
+  </defs>
+  <rect width="660" height="340" fill="#f8fafc" rx="8" stroke="#e2e8f0"/>
+  <text x="330" y="26" text-anchor="middle" font-size="15" font-weight="bold" fill="#0f172a">Facade</text>
+
+  <!-- Cliente -->
+  <rect x="20" y="105" width="100" height="30" rx="3" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.5"/>
+  <text x="70" y="125" text-anchor="middle" font-size="12" fill="#78350f">Cliente</text>
+
+  <!-- Facade -->
+  <rect x="185" y="85" width="220" height="30" fill="#bfdbfe" stroke="#64748b" stroke-width="1.5"/>
+  <text x="295" y="105" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d4ed8">Facade</text>
+  <rect x="185" y="115" width="220" height="4" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <rect x="185" y="119" width="220" height="28" fill="white" stroke="#64748b" stroke-width="1.5"/>
+  <text x="197" y="137" font-size="11" fill="#374151">+ operacionSimple() : void</text>
+
+  <!-- Subsistema boxes -->
+  <rect x="165" y="245" width="130" height="60" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5" rx="2"/>
+  <text x="230" y="265" text-anchor="middle" font-size="11" font-weight="bold" fill="#475569">SubsistemaA</text>
+  <line x1="165" y1="275" x2="295" y2="275" stroke="#64748b" stroke-width="1"/>
+  <text x="230" y="292" text-anchor="middle" font-size="10" fill="#64748b">+ operacionA()</text>
+
+  <rect x="310" y="245" width="130" height="60" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5" rx="2"/>
+  <text x="375" y="265" text-anchor="middle" font-size="11" font-weight="bold" fill="#475569">SubsistemaB</text>
+  <line x1="310" y1="275" x2="440" y2="275" stroke="#64748b" stroke-width="1"/>
+  <text x="375" y="292" text-anchor="middle" font-size="10" fill="#64748b">+ operacionB()</text>
+
+  <rect x="455" y="245" width="130" height="60" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5" rx="2"/>
+  <text x="520" y="265" text-anchor="middle" font-size="11" font-weight="bold" fill="#475569">SubsistemaC</text>
+  <line x1="455" y1="275" x2="585" y2="275" stroke="#64748b" stroke-width="1"/>
+  <text x="520" y="292" text-anchor="middle" font-size="10" fill="#64748b">+ operacionC()</text>
+
+  <!-- Arrow: Cliente → Facade -->
+  <line x1="120" y1="120" x2="183" y2="115" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Arrows: Facade → Subsistemas -->
+  <line x1="230" y1="147" x2="230" y2="243" stroke="#64748b" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#dep)"/>
+  <line x1="295" y1="147" x2="375" y2="243" stroke="#64748b" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#dep)"/>
+  <line x1="360" y1="147" x2="510" y2="243" stroke="#64748b" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#dep)"/>
+</svg>

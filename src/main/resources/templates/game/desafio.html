@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMan | Desafío Final</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body class="game-body">
+
+<header class="topbar">
+    <a class="brand" th:href="@{/jugar}">← Volver</a>
+    <strong class="neon-title">CodeMan — Desafío Final</strong>
+    <span th:text="${usuario.name}"></span>
+</header>
+
+<main class="desafio-container">
+    <section class="hud">
+        <div>❤️ Vidas: <strong id="vidas">3</strong></div>
+        <div>⭐ Puntos: <strong id="puntos">0</strong></div>
+        <div>⏱️ Tiempo: <strong id="tiempo">30:00</strong></div>
+        <div>👻 Errores: <strong id="errores">0</strong></div>
+    </section>
+    <canvas id="desafio-canvas" width="588" height="588" aria-label="Laberinto Desafío Final CodeMan"></canvas>
+    <p class="game-help">Usa flechas o WASD. Presiona P para pausar. ESC para abandonar. Necesitas ≥60% de aciertos para completar el desafío.</p>
+</main>
+
+<div id="questionModal" class="modal hidden">
+    <div class="modal-card">
+        <div class="modal-head"><h2>Pregunta de código</h2><span id="questionTimer">20</span></div>
+        <p id="questionText"></p>
+        <div id="answers" class="answers"></div>
+    </div>
+</div>
+
+<script th:src="@{/js/scorm-bridge.js}"></script>
+<script th:src="@{/js/desafio-game.js}"></script>
+</body>
+</html>

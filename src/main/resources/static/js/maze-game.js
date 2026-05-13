@@ -50,15 +50,10 @@
   const $id = id => document.getElementById(id);
 
   // ── Utilidades de grid ────────────────────────────────────────────────────────
-  /** Coordenada X en píxeles del centro del tile (col). */
   const tcx = col => col * TILE + TILE / 2;
-  /** Coordenada Y en píxeles del centro del tile (row). */
   const tcy = row => row * TILE + TILE / 2;
-  /** Tile column más cercana a la posición px. */
   const nearCol = px => Math.round((px - TILE / 2) / TILE);
-  /** Tile row más cercana a la posición py. */
   const nearRow = py => Math.round((py - TILE / 2) / TILE);
-  /** ¿Es el tile (col, row) transitable? */
   const walkable = (col, row) =>
     col >= 0 && col < COLS && row >= 0 && row < ROWS && map[row][col] !== WALL;
 
@@ -67,15 +62,11 @@
   const collected = new Set();
 
   // ── Pac-Man ───────────────────────────────────────────────────────────────────
-  // El personaje viaja de tile center en tile center.
-  // targetCol/Row = próximo tile center al que se dirige.
-  // ndx/ndy       = dirección deseada por el jugador (puede cambiar en cualquier momento).
-  // dx/dy         = dirección actual de movimiento.
   let pac = {
-    px:  tcx(1), py:  tcy(1),   // posición en píxeles
-    dx:  1,      dy:  0,        // dirección actual
-    ndx: 1,      ndy: 0,        // dirección deseada
-    targetCol: 2, targetRow: 1, // primer destino
+    px:  tcx(1), py:  tcy(1),
+    dx:  1,      dy:  0,
+    ndx: 1,      ndy: 0,
+    targetCol: 2, targetRow: 1,
     speed: PAC_SPEED,
     stopped: false,
     mouth: 0, mouthDir: 1
@@ -88,12 +79,8 @@
   ];
 
   function makeGhost(col, row, dx, dy, color, speed) {
-    return {
-      px: tcx(col), py: tcy(row),
-      dx, dy,
-      targetCol: col + dx, targetRow: row + dy,
-      color, speed
-    };
+    return { px: tcx(col), py: tcy(row), dx, dy,
+             targetCol: col + dx, targetRow: row + dy, color, speed };
   }
 
   let ghosts = [
@@ -103,15 +90,26 @@
 
   // ── Estado general ────────────────────────────────────────────────────────────
   let stats      = { vidas: 3, puntos: 0, tiempo: 0, errores: 0 };
-  let state      = 'playing';   // 'playing' | 'paused' | 'question' | 'won' | 'gameover'
+  let state      = 'playing';
   let partidaId  = null;
   let preguntas  = [];
+  let eventos    = [];
+  let eventosActivados = 0;
   let currentQ   = null;
+  let currentEvento = null;
   let qTimer     = 20;
   let qInterval  = null;
   let lastTime   = 0;
   let rafId      = null;
   let protection = 0;
+  let slowModeTimer = 0;
+  let savedGhostSpeeds = null;
+  let frightTimer   = 0;   // fantasmas vulnerables (azul)
+  let pacBoostTimer = 0;   // pac-man acelerado
+  let pacSlowTimer  = 0;   // pac-man ralentizado
+  let feedbackMsg   = '';
+  let feedbackTimer = 0;
+  let feedbackGood  = true;
 
   // ── API ───────────────────────────────────────────────────────────────────────
   const api = async (url, method = 'GET', body = null) => {
@@ -124,6 +122,7 @@
 
   async function init() {
     preguntas = await api(`/api/game/questions?categoria=${categoria}`);
+    try { eventos = await api(`/api/game/eventos?categoria=${categoria}`); } catch(_) { eventos = []; }
     const start = await api('/api/game/start', 'POST', { categoria, modoJuego: 'PRACTICA' });
     partidaId = start.partidaId;
     lastTime = performance.now();
@@ -131,134 +130,70 @@
   }
 
   // ── Lógica de Pac-Man ─────────────────────────────────────────────────────────
-
-  /**
-   * Llamado cuando Pac-Man llega al tile (col, row).
-   * Decide la próxima dirección y fija el siguiente targetCol/Row.
-   */
   function pacArrive(col, row) {
-    // Snap exacto al centro para eliminar deriva flotante
     pac.px = tcx(col);
     pac.py = tcy(row);
-
-    // 1. Intentar la dirección deseada primero
     if (walkable(col + pac.ndx, row + pac.ndy)) {
-      pac.dx = pac.ndx;
-      pac.dy = pac.ndy;
-      pac.targetCol = col + pac.dx;
-      pac.targetRow = row + pac.dy;
-      pac.stopped = false;
-      return;
+      pac.dx = pac.ndx; pac.dy = pac.ndy;
+      pac.targetCol = col + pac.dx; pac.targetRow = row + pac.dy;
+      pac.stopped = false; return;
     }
-
-    // 2. Continuar en la dirección actual si es posible
     if (walkable(col + pac.dx, row + pac.dy)) {
-      pac.targetCol = col + pac.dx;
-      pac.targetRow = row + pac.dy;
-      pac.stopped = false;
-      return;
+      pac.targetCol = col + pac.dx; pac.targetRow = row + pac.dy;
+      pac.stopped = false; return;
     }
-
-    // 3. Pared adelante y no puede girar: se detiene aquí
-    pac.stopped = true;
-    pac.targetCol = col;
-    pac.targetRow = row;
+    pac.stopped = true; pac.targetCol = col; pac.targetRow = row;
   }
 
   function updatePac(dt) {
-    // Animar boca
     pac.mouth += dt * 8 * pac.mouthDir;
     if (pac.mouth >= 1 || pac.mouth <= 0) pac.mouthDir *= -1;
-
-    // Si está detenido, ver si la dirección deseada ya es válida
     if (pac.stopped) {
       const col = pac.targetCol, row = pac.targetRow;
       if (walkable(col + pac.ndx, row + pac.ndy)) {
-        pac.dx = pac.ndx;
-        pac.dy = pac.ndy;
-        pac.targetCol = col + pac.dx;
-        pac.targetRow = row + pac.dy;
+        pac.dx = pac.ndx; pac.dy = pac.ndy;
+        pac.targetCol = col + pac.dx; pac.targetRow = row + pac.dy;
         pac.stopped = false;
-      } else {
-        return; // aún bloqueado
-      }
+      } else { return; }
     }
-
     const step = pac.speed * dt;
     const tx = tcx(pac.targetCol), ty = tcy(pac.targetRow);
-
-    // Distancia al tile destino (solo un eje es no-cero)
     const dist = Math.abs(pac.px - tx) + Math.abs(pac.py - ty);
-
     if (dist <= step) {
-      // Llegó al tile destino: tomar decisión y mover el resto del paso
       const remainder = step - dist;
       pacArrive(pac.targetCol, pac.targetRow);
-      if (!pac.stopped) {
-        pac.px += pac.dx * remainder;
-        pac.py += pac.dy * remainder;
-      }
-    } else {
-      // Avanzar hacia el destino
-      pac.px += pac.dx * step;
-      pac.py += pac.dy * step;
-    }
-
+      if (!pac.stopped) { pac.px += pac.dx * remainder; pac.py += pac.dy * remainder; }
+    } else { pac.px += pac.dx * step; pac.py += pac.dy * step; }
     collectItem();
   }
 
   // ── Lógica de fantasmas ───────────────────────────────────────────────────────
-
-  /**
-   * Llamado cuando un fantasma llega al tile (col, row).
-   * Elige la próxima dirección con IA simple.
-   */
   function ghostArrive(g, col, row) {
-    g.px = tcx(col);
-    g.py = tcy(row);
-
-    // Direcciones válidas: transitables y sin revertir (no U-turn)
+    g.px = tcx(col); g.py = tcy(row);
     const valid = ALL_DIRS.filter(d =>
-      !(d.dx === -g.dx && d.dy === -g.dy) &&
-      walkable(col + d.dx, row + d.dy)
-    );
-
-    if (valid.length === 0) {
-      // Callejón sin salida: dar la vuelta
-      g.dx = -g.dx;
-      g.dy = -g.dy;
-    } else {
-      // Perseguir a Pac-Man con 65 % de probabilidad; 35 % aleatorio
+      !(d.dx === -g.dx && d.dy === -g.dy) && walkable(col + d.dx, row + d.dy));
+    if (valid.length === 0) { g.dx = -g.dx; g.dy = -g.dy; }
+    else {
       const pc = nearCol(pac.px), pr = nearRow(pac.py);
       valid.sort((a, b) =>
         (Math.abs(col + a.dx - pc) + Math.abs(row + a.dy - pr)) -
-        (Math.abs(col + b.dx - pc) + Math.abs(row + b.dy - pr))
-      );
+        (Math.abs(col + b.dx - pc) + Math.abs(row + b.dy - pr)));
       const chosen = (valid.length > 1 && Math.random() >= 0.65)
-        ? valid[Math.floor(Math.random() * valid.length)]
-        : valid[0];
-      g.dx = chosen.dx;
-      g.dy = chosen.dy;
+        ? valid[Math.floor(Math.random() * valid.length)] : valid[0];
+      g.dx = chosen.dx; g.dy = chosen.dy;
     }
-
-    g.targetCol = col + g.dx;
-    g.targetRow = row + g.dy;
+    g.targetCol = col + g.dx; g.targetRow = row + g.dy;
   }
 
   function updateGhost(g, dt) {
     const step = g.speed * dt;
     const tx = tcx(g.targetCol), ty = tcy(g.targetRow);
     const dist = Math.abs(g.px - tx) + Math.abs(g.py - ty);
-
     if (dist <= step) {
       const remainder = step - dist;
       ghostArrive(g, g.targetCol, g.targetRow);
-      g.px += g.dx * remainder;
-      g.py += g.dy * remainder;
-    } else {
-      g.px += g.dx * step;
-      g.py += g.dy * step;
-    }
+      g.px += g.dx * remainder; g.py += g.dy * remainder;
+    } else { g.px += g.dx * step; g.py += g.dy * step; }
   }
 
   // ── Recolección de ítems ──────────────────────────────────────────────────────
@@ -268,37 +203,41 @@
     const key = `${row},${col}`;
     if (collected.has(key)) return;
     if (map[row][col] === DOT) {
-      collected.add(key);
-      map[row][col] = EMPTY;
-      stats.puntos += 10;
+      collected.add(key); map[row][col] = EMPTY; stats.puntos += 10;
     } else if (map[row][col] === QUESTION) {
-      collected.add(key);
-      map[row][col] = EMPTY;
-      activateQuestion();
+      collected.add(key); map[row][col] = EMPTY;
+      if (eventosActivados < 2 && eventos.length > 0 && Math.random() < 0.2) {
+        activateEvento();
+      } else {
+        activateQuestion();
+      }
     }
   }
 
   // ── Colisiones & victoria ─────────────────────────────────────────────────────
   function checkCollisions() {
     if (protection > 0) return;
-    for (const g of ghosts) {
+    for (let i = ghosts.length - 1; i >= 0; i--) {
+      const g = ghosts[i];
       if (Math.hypot(pac.px - g.px, pac.py - g.py) < TILE * 0.78) {
-        stats.vidas--;
-        protection = 2.5;
-        api('/api/game/lives', 'POST', { partidaId, vidas: stats.vidas }).catch(() => {});
-        resetPac();
-        if (stats.vidas <= 0) { endGame(false); return; }
-        break;
+        if (frightTimer > 0) {
+          stats.puntos += 200;
+          ghosts.splice(i, 1);
+        } else {
+          stats.vidas--; protection = 2.5;
+          api('/api/game/lives', 'POST', { partidaId, vidas: stats.vidas }).catch(() => {});
+          resetPac();
+          if (stats.vidas <= 0) { endGame(false); return; }
+          break;
+        }
       }
     }
   }
 
   function resetPac() {
     pac.px = tcx(1); pac.py = tcy(1);
-    pac.dx = 1; pac.dy = 0;
-    pac.ndx = 1; pac.ndy = 0;
-    pac.targetCol = 2; pac.targetRow = 1;
-    pac.stopped = false;
+    pac.dx = 1; pac.dy = 0; pac.ndx = 1; pac.ndy = 0;
+    pac.targetCol = 2; pac.targetRow = 1; pac.stopped = false;
   }
 
   function checkWin() {
@@ -310,106 +249,95 @@
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#020617';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Tiles
     for (let r = 0; r < ROWS; r++) {
       for (let c = 0; c < COLS; c++) {
         const t = map[r][c];
         const x = c * TILE, y = r * TILE;
         if (t === WALL) {
           const grd = ctx.createLinearGradient(x, y, x + TILE, y + TILE);
-          grd.addColorStop(0, '#0ea5e9');
-          grd.addColorStop(1, '#1d4ed8');
+          grd.addColorStop(0, '#0ea5e9'); grd.addColorStop(1, '#1d4ed8');
           ctx.fillStyle = grd;
           ctx.fillRect(x + 2, y + 2, TILE - 4, TILE - 4);
           ctx.strokeStyle = 'rgba(191,219,254,.35)';
           ctx.strokeRect(x + 2, y + 2, TILE - 4, TILE - 4);
         } else if (t === DOT) {
           ctx.fillStyle = '#f8fafc';
-          ctx.beginPath();
-          ctx.arc(x + TILE / 2, y + TILE / 2, 3, 0, Math.PI * 2);
-          ctx.fill();
+          ctx.beginPath(); ctx.arc(x + TILE/2, y + TILE/2, 3, 0, Math.PI*2); ctx.fill();
         } else if (t === QUESTION) {
           ctx.fillStyle = '#22c55e';
-          ctx.beginPath();
-          ctx.arc(x + TILE / 2, y + TILE / 2, 8, 0, Math.PI * 2);
-          ctx.fill();
+          ctx.beginPath(); ctx.arc(x + TILE/2, y + TILE/2, 8, 0, Math.PI*2); ctx.fill();
           ctx.fillStyle = '#052e16';
-          ctx.font = 'bold 14px monospace';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText('?', x + TILE / 2, y + TILE / 2 + 1);
+          ctx.font = 'bold 14px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText('?', x + TILE/2, y + TILE/2 + 1);
         }
       }
     }
-
-    // Overlay de pausa
     if (state === 'paused') {
       ctx.fillStyle = 'rgba(2,6,23,0.75)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#22c55e';
-      ctx.font = 'bold 38px monospace';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('PAUSA', canvas.width / 2, canvas.height / 2);
-      return;
+      ctx.fillStyle = '#22c55e'; ctx.font = 'bold 38px monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('PAUSA', canvas.width/2, canvas.height/2); return;
     }
-
-    drawPac();
-    ghosts.forEach(g => drawGhost(g));
+    drawPac(); ghosts.forEach(g => drawGhost(g));
+    if (feedbackTimer > 0) {
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, feedbackTimer);
+      ctx.font = 'bold 15px monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.lineWidth = 3; ctx.strokeStyle = '#020617';
+      ctx.fillStyle = feedbackGood ? '#22c55e' : '#ef4444';
+      ctx.strokeText(feedbackMsg, canvas.width / 2, 6);
+      ctx.fillText(feedbackMsg, canvas.width / 2, 6);
+      ctx.restore();
+    }
   }
 
   function drawPac() {
-    // Ángulo de apertura oscila entre 0.05 y 0.43 radianes
     const openAngle = pac.mouth * 0.38 + 0.05;
     let rot = 0;
-    if      (pac.dx === -1) rot = Math.PI;
-    else if (pac.dy === -1) rot = -Math.PI / 2;
-    else if (pac.dy ===  1) rot =  Math.PI / 2;
-
-    ctx.save();
-    ctx.translate(pac.px, pac.py);
-    ctx.rotate(rot);
-
+    if (pac.dx === -1) rot = Math.PI;
+    else if (pac.dy === -1) rot = -Math.PI/2;
+    else if (pac.dy === 1) rot = Math.PI/2;
+    ctx.save(); ctx.translate(pac.px, pac.py); ctx.rotate(rot);
     ctx.fillStyle = '#facc15';
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.arc(0, 0, TILE * 0.42, openAngle, Math.PI * 2 - openAngle);
-    ctx.closePath();
-    ctx.fill();
-
-    // Ojo
+    ctx.beginPath(); ctx.moveTo(0, 0);
+    ctx.arc(0, 0, TILE * 0.42, openAngle, Math.PI*2 - openAngle);
+    ctx.closePath(); ctx.fill();
     ctx.fillStyle = '#111827';
-    ctx.beginPath();
-    ctx.arc(3, -8, 2.5, 0, Math.PI * 2);
-    ctx.fill();
-
+    ctx.beginPath(); ctx.arc(3, -8, 2.5, 0, Math.PI*2); ctx.fill();
     ctx.restore();
   }
 
   function drawGhost(g) {
-    const cx = g.px, cy = g.py;
-    const r = TILE * 0.38;
-
-    ctx.fillStyle = g.color;
-    ctx.beginPath();
-    ctx.arc(cx, cy - 2, r, Math.PI, 0);
-    ctx.lineTo(cx + r,       cy + r * 0.9);
-    ctx.lineTo(cx + r * 0.5, cy + r * 0.6);
-    ctx.lineTo(cx,           cy + r * 0.9);
-    ctx.lineTo(cx - r * 0.5, cy + r * 0.6);
-    ctx.lineTo(cx - r,       cy + r * 0.9);
-    ctx.closePath();
-    ctx.fill();
-
-    // Ojos blancos
-    ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.arc(cx - 5, cy - 3, 3.5, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(cx + 5, cy - 3, 3.5, 0, Math.PI * 2); ctx.fill();
-    // Pupilas
-    ctx.fillStyle = '#111827';
-    ctx.beginPath(); ctx.arc(cx - 4, cy - 3, 1.5, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(cx + 6, cy - 3, 1.5, 0, Math.PI * 2); ctx.fill();
+    const cx = g.px, cy = g.py, r = TILE * 0.38;
+    const scared = frightTimer > 0;
+    // parpadea en los últimos 2 segundos
+    const blink = scared && frightTimer < 2 && Math.floor(frightTimer * 5) % 2 === 0;
+    ctx.fillStyle = scared ? (blink ? '#e2e8f0' : '#3b82f6') : g.color;
+    ctx.beginPath(); ctx.arc(cx, cy - 2, r, Math.PI, 0);
+    ctx.lineTo(cx + r, cy + r*0.9); ctx.lineTo(cx + r*0.5, cy + r*0.6);
+    ctx.lineTo(cx, cy + r*0.9); ctx.lineTo(cx - r*0.5, cy + r*0.6);
+    ctx.lineTo(cx - r, cy + r*0.9); ctx.closePath(); ctx.fill();
+    if (!scared) {
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(cx - 5, cy - 3, 3.5, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + 5, cy - 3, 3.5, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#111827';
+      ctx.beginPath(); ctx.arc(cx - 4, cy - 3, 1.5, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + 6, cy - 3, 1.5, 0, Math.PI*2); ctx.fill();
+    } else {
+      // cara asustada: ojos pequeños y boca en zigzag
+      ctx.fillStyle = '#1e3a8a';
+      ctx.beginPath(); ctx.arc(cx - 4, cy - 3, 2, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + 4, cy - 3, 2, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = '#1e3a8a'; ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(cx - 6, cy + 3);
+      ctx.lineTo(cx - 3, cy + 1); ctx.lineTo(cx, cy + 3);
+      ctx.lineTo(cx + 3, cy + 1); ctx.lineTo(cx + 6, cy + 3);
+      ctx.stroke();
+    }
   }
 
   // ── HUD ───────────────────────────────────────────────────────────────────────
@@ -421,30 +349,28 @@
   }
 
   // ── Preguntas ─────────────────────────────────────────────────────────────────
+  const modalTitle = () => document.querySelector('#questionModal .modal-head h2');
+
   function activateQuestion() {
     if (!preguntas.length) return;
     state = 'question';
     currentQ = preguntas.shift();
+    if (modalTitle()) modalTitle().textContent = 'Pregunta de código';
     qTimer = 20;
     $id('questionTimer').textContent = qTimer;
     $id('questionText').textContent  = currentQ.enunciado;
-
     const box = $id('answers');
     box.innerHTML = '';
     [['A', currentQ.opcionA], ['B', currentQ.opcionB],
      ['C', currentQ.opcionC], ['D', currentQ.opcionD]].forEach(([l, t]) => {
       const btn = document.createElement('button');
-      btn.className = 'answer-btn';
-      btn.textContent = `${l}. ${t}`;
-      btn.onclick = () => handleAnswer(l);
-      box.appendChild(btn);
+      btn.className = 'answer-btn'; btn.textContent = `${l}. ${t}`;
+      btn.onclick = () => handleAnswer(l); box.appendChild(btn);
     });
-
     $id('questionModal').classList.remove('hidden');
     clearInterval(qInterval);
     qInterval = setInterval(() => {
-      qTimer--;
-      $id('questionTimer').textContent = qTimer;
+      qTimer--; $id('questionTimer').textContent = qTimer;
       if (qTimer <= 0) handleAnswer('TIMEOUT');
     }, 1000);
   }
@@ -452,35 +378,100 @@
   async function handleAnswer(opcion) {
     clearInterval(qInterval);
     $id('questionModal').classList.add('hidden');
-
     const correct = opcion !== 'TIMEOUT' && opcion === String(currentQ.respuestaCorrecta);
     if (correct) {
       stats.puntos += 100;
+      if (Math.random() < 0.5) activateFrightMode();
+      else                     activatePacBoost();
     } else {
       stats.errores += 1;
-      // Aumentar velocidad de fantasmas con cada error (máx. +50 %)
-      ghosts.forEach(g => { g.speed = Math.min(g.speed * 1.08, GHOST_SPEED * 1.5); });
+      if (Math.random() < 0.5 && ghosts.length < 4) { spawnExtraGhost(); showFeedback('¡+1 Fantasma!', false); }
+      else                                            activatePacSlow();
     }
-
     try {
-      const res = await api('/api/game/answer', 'POST', {
-        partidaId,
-        preguntaId: currentQ.id,
-        opcionElegida: opcion,
-        tiempoRespuesta: 20 - qTimer,
-        esCorrecta: correct
+      await api('/api/game/answer', 'POST', {
+        partidaId, preguntaId: currentQ.id,
+        opcionElegida: opcion, tiempoRespuesta: 20 - qTimer, esCorrecta: correct
       });
-      if (res.fantasmaExtraActivo && ghosts.length < 3) spawnExtraGhost();
-    } catch (e) {
-      console.error('Error al enviar respuesta:', e);
-    }
+    } catch(e) { console.error('Error al enviar respuesta:', e); }
+    state = 'playing';
+  }
 
+  function activateFrightMode() {
+    frightTimer = 6;
+    showFeedback('¡POWER-UP! Come fantasmas · 6s', true);
+  }
+
+  function activatePacBoost() {
+    pac.speed = PAC_SPEED * 1.8;
+    pacBoostTimer = 5;
+    showFeedback('¡POWER-UP! Turbo · 5s', true);
+  }
+
+  function activatePacSlow() {
+    pac.speed = PAC_SPEED * 0.45;
+    pacSlowTimer = 3;
+    showFeedback('¡PENALIZACIÓN! Pac-Man lento · 3s', false);
+  }
+
+  function showFeedback(msg, good) {
+    feedbackMsg = msg; feedbackGood = good; feedbackTimer = 2.5;
+  }
+
+  // ── Eventos de decisión crítica ───────────────────────────────────────────────
+  function activateEvento() {
+    if (!eventos.length) { activateQuestion(); return; }
+    state = 'question';
+    currentEvento = eventos.shift();
+    eventosActivados++;
+    if (modalTitle()) modalTitle().textContent = '⚡ Decisión Crítica';
+    qTimer = 30;
+    $id('questionTimer').textContent = qTimer;
+    $id('questionText').textContent = currentEvento.escenario;
+    const box = $id('answers');
+    box.innerHTML = '';
+    [['A', currentEvento.opcionA], ['B', currentEvento.opcionB], ['C', currentEvento.opcionC]]
+        .filter(([, t]) => t)
+        .forEach(([l, t]) => {
+          const btn = document.createElement('button');
+          btn.className = 'answer-btn'; btn.textContent = `${l}. ${t}`;
+          btn.onclick = () => handleEventoAnswer(l); box.appendChild(btn);
+        });
+    $id('questionModal').classList.remove('hidden');
+    clearInterval(qInterval);
+    qInterval = setInterval(() => {
+      qTimer--; $id('questionTimer').textContent = qTimer;
+      if (qTimer <= 0) handleEventoAnswer('TIMEOUT');
+    }, 1000);
+  }
+
+  async function handleEventoAnswer(opcion) {
+    clearInterval(qInterval);
+    $id('questionModal').classList.add('hidden');
+    try {
+      const res = await api('/api/game/evento', 'POST', {
+        partidaId, eventoId: currentEvento.id, opcionElegida: opcion
+      });
+      if (res.esCorrecta) {
+        if (res.powerUpAplicado === 'RALENTIZAR_FANTASMAS') {
+          savedGhostSpeeds = ghosts.map(g => g.speed);
+          ghosts.forEach(g => { g.speed = g.speed * 0.5; });
+          slowModeTimer = 10;
+        } else if (res.powerUpAplicado === 'VIDA_ADICIONAL') {
+          stats.vidas++;
+          api('/api/game/lives', 'POST', { partidaId, vidas: stats.vidas }).catch(() => {});
+        }
+      } else {
+        stats.vidas--;
+        api('/api/game/lives', 'POST', { partidaId, vidas: stats.vidas }).catch(() => {});
+        if (stats.vidas <= 0) { endGame(false); return; }
+      }
+    } catch(e) { console.error('Error al resolver evento:', e); }
     state = 'playing';
   }
 
   function spawnExtraGhost() {
-    const col = 10, row = 10;
-    ghosts.push(makeGhost(col, row, 0, -1, '#ec4899', GHOST_SPEED * 0.9));
+    ghosts.push(makeGhost(10, 10, 0, -1, '#ec4899', GHOST_SPEED * 0.9));
   }
 
   // ── Fin de partida ────────────────────────────────────────────────────────────
@@ -489,58 +480,60 @@
     state = won ? 'won' : 'gameover';
     clearInterval(qInterval);
     if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-
     try {
       await api('/api/game/finish', 'POST', { partidaId, puntuacion: stats.puntos, vidas: stats.vidas });
-    } catch (e) {
-      console.error('Error al finalizar partida:', e);
-    }
-
-    $id('endTitle').textContent   = won ? '¡Laberinto completado!' : 'Fin del juego';
-    $id('endMessage').textContent = won
-      ? `Puntuación final: ${stats.puntos}. ¡Excelente dominio de patrones!`
-      : `Puntuación final: ${stats.puntos}. Revisa la teoría e inténtalo de nuevo.`;
-    $id('endModal').classList.remove('hidden');
+    } catch(e) { console.error('Error al finalizar partida:', e); }
+    try {
+      const resultado = await api(`/api/game/${partidaId}/resultado`);
+      const pct = resultado.porcentajeDesempeno || 0;
+      window.scormBridge.setScore(pct);
+      if (won) window.scormBridge.setCompletion();
+      window.scormBridge.finishScorm();
+    } catch(e) { /* modo standalone sin SCORM */ }
+    window.location.href = `/resultado/${partidaId}`;
   }
 
   // ── Game loop ─────────────────────────────────────────────────────────────────
   function loop(now) {
     if (state === 'won' || state === 'gameover') return;
-
-    // dt acotado a 50 ms para evitar saltos grandes tras foco perdido
     const dt = Math.min((now - lastTime) / 1000, 0.05);
     lastTime = now;
-
     if (state === 'playing') {
-      stats.tiempo += dt;
-      protection = Math.max(0, protection - dt);
-      updatePac(dt);
-      ghosts.forEach(g => updateGhost(g, dt));
-      checkCollisions();
-      checkWin();
-      renderHud();
+      stats.tiempo += dt; protection = Math.max(0, protection - dt);
+      if (slowModeTimer > 0) {
+        slowModeTimer = Math.max(0, slowModeTimer - dt);
+        if (slowModeTimer === 0 && savedGhostSpeeds) {
+          ghosts.forEach((g, i) => { g.speed = savedGhostSpeeds[i]; });
+          savedGhostSpeeds = null;
+        }
+      }
+      if (frightTimer > 0) frightTimer = Math.max(0, frightTimer - dt);
+      if (pacBoostTimer > 0) {
+        pacBoostTimer = Math.max(0, pacBoostTimer - dt);
+        if (pacBoostTimer === 0) pac.speed = PAC_SPEED;
+      }
+      if (pacSlowTimer > 0) {
+        pacSlowTimer = Math.max(0, pacSlowTimer - dt);
+        if (pacSlowTimer === 0) pac.speed = PAC_SPEED;
+      }
+      if (feedbackTimer > 0) feedbackTimer = Math.max(0, feedbackTimer - dt);
+      updatePac(dt); ghosts.forEach(g => updateGhost(g, dt));
+      checkCollisions(); checkWin(); renderHud();
     }
-
-    draw();
-    rafId = requestAnimationFrame(loop);
+    draw(); rafId = requestAnimationFrame(loop);
   }
 
   // ── Teclado ───────────────────────────────────────────────────────────────────
-  // Las teclas SOLO cambian pac.ndx / pac.ndy.
-  // Nunca mueven directamente al personaje.
   window.addEventListener('keydown', e => {
     const k = e.key.toLowerCase();
-
     if      (k === 'arrowup'    || k === 'w') { pac.ndx =  0; pac.ndy = -1; }
     else if (k === 'arrowdown'  || k === 's') { pac.ndx =  0; pac.ndy =  1; }
     else if (k === 'arrowleft'  || k === 'a') { pac.ndx = -1; pac.ndy =  0; }
     else if (k === 'arrowright' || k === 'd') { pac.ndx =  1; pac.ndy =  0; }
     else if (k === 'p' || k === 'escape') {
-      if (state === 'playing')       { state = 'paused'; draw(); }
-      else if (state === 'paused')   { state = 'playing'; }
+      if (state === 'playing')     { state = 'paused'; draw(); }
+      else if (state === 'paused') { state = 'playing'; }
     }
-
-    // Evitar scroll de página con las flechas
     if (['arrowup','arrowdown','arrowleft','arrowright'].includes(k)) e.preventDefault();
   });
 

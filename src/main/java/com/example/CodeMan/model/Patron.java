@@ -1,6 +1,7 @@
 package com.example.CodeMan.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "patrones")
@@ -23,8 +24,8 @@ public class Patron {
     @Column(columnDefinition = "TEXT")
     private String proposito;
 
-    @Column(columnDefinition = "TEXT")
-    private String problema;
+    @Column(name = "problema_resuelto", columnDefinition = "TEXT")
+    private String problemaResuelto;
 
     @Column(name = "cuando_usar", columnDefinition = "TEXT")
     private String cuandoUsar;
@@ -32,122 +33,69 @@ public class Patron {
     @Column(columnDefinition = "TEXT")
     private String estructura;
 
-    @Column(columnDefinition = "TEXT")
-    private String uml;
+    @Column(name = "diagrama_uml_url", length = 500)
+    private String diagramaUmlUrl;
 
     @Column(name = "codigo_ejemplo", columnDefinition = "TEXT")
     private String codigoEjemplo;
 
-    @Column(name = "problema_resuelto", columnDefinition = "TEXT")
-    private String problemaResuelto;
+    @Column(columnDefinition = "TEXT")
+    private String referencia;
 
-    @Column(name = "cuando_usarlo", columnDefinition = "TEXT")
-    private String cuandoUsarlo;
+    @Column(nullable = false)
+    private boolean activo = true;
 
-    @Column(name = "codigo_ejemplo_java", columnDefinition = "TEXT")
-    private String codigoEjemploJava;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creado_por_id")
+    private Usuario creadoPor;
 
-    public Long getId() {
-        return id;
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) createdAt = LocalDateTime.now();
     }
 
-    public String getNombre() {
-        return nombre;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Categoria getCategoria() {
-        return categoria;
-    }
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
 
-    public String getDescripcion() {
-        return descripcion;
-    }
+    public Categoria getCategoria() { return categoria; }
+    public void setCategoria(Categoria categoria) { this.categoria = categoria; }
 
-    public String getProposito() {
-        return proposito;
-    }
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
-    public String getProblema() {
-        return problema;
-    }
+    public String getProposito() { return proposito; }
+    public void setProposito(String proposito) { this.proposito = proposito; }
 
-    public String getCuandoUsar() {
-        return cuandoUsar;
-    }
+    public String getProblemaResuelto() { return problemaResuelto; }
+    public void setProblemaResuelto(String problemaResuelto) { this.problemaResuelto = problemaResuelto; }
 
-    public String getEstructura() {
-        return estructura;
-    }
+    public String getCuandoUsar() { return cuandoUsar; }
+    public void setCuandoUsar(String cuandoUsar) { this.cuandoUsar = cuandoUsar; }
 
-    public String getUml() {
-        return uml;
-    }
+    public String getEstructura() { return estructura; }
+    public void setEstructura(String estructura) { this.estructura = estructura; }
 
-    public String getCodigoEjemplo() {
-        return codigoEjemplo;
-    }
+    public String getDiagramaUmlUrl() { return diagramaUmlUrl; }
+    public void setDiagramaUmlUrl(String diagramaUmlUrl) { this.diagramaUmlUrl = diagramaUmlUrl; }
 
-    public String getProblemaResuelto() {
-        return problemaResuelto;
-    }
+    public String getCodigoEjemplo() { return codigoEjemplo; }
+    public void setCodigoEjemplo(String codigoEjemplo) { this.codigoEjemplo = codigoEjemplo; }
 
-    public String getCuandoUsarlo() {
-        return cuandoUsarlo;
-    }
+    public String getReferencia() { return referencia; }
+    public void setReferencia(String referencia) { this.referencia = referencia; }
 
-    public String getCodigoEjemploJava() {
-        return codigoEjemploJava;
-    }
+    public boolean isActivo() { return activo; }
+    public void setActivo(boolean activo) { this.activo = activo; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Usuario getCreadoPor() { return creadoPor; }
+    public void setCreadoPor(Usuario creadoPor) { this.creadoPor = creadoPor; }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public void setProposito(String proposito) {
-        this.proposito = proposito;
-    }
-
-    public void setProblema(String problema) {
-        this.problema = problema;
-    }
-
-    public void setCuandoUsar(String cuandoUsar) {
-        this.cuandoUsar = cuandoUsar;
-    }
-
-    public void setEstructura(String estructura) {
-        this.estructura = estructura;
-    }
-
-    public void setUml(String uml) {
-        this.uml = uml;
-    }
-
-    public void setCodigoEjemplo(String codigoEjemplo) {
-        this.codigoEjemplo = codigoEjemplo;
-    }
-
-    public void setProblemaResuelto(String problemaResuelto) {
-        this.problemaResuelto = problemaResuelto;
-    }
-
-    public void setCuandoUsarlo(String cuandoUsarlo) {
-        this.cuandoUsarlo = cuandoUsarlo;
-    }
-
-    public void setCodigoEjemploJava(String codigoEjemploJava) {
-        this.codigoEjemploJava = codigoEjemploJava;
-    }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Preguntas</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" th:href="@{/admin}">← Admin</a>
+    <strong>Banco de preguntas</strong>
+</header>
+<main class="container">
+
+    <section class="admin-form detail-card">
+        <h1 th:text="${pregunta.id != null} ? 'Editar pregunta' : 'Nueva pregunta'">Nueva pregunta</h1>
+        <form th:action="${pregunta.id != null} ? @{/admin/preguntas/{id}(id=${pregunta.id})} : @{/admin/preguntas}"
+              th:object="${pregunta}" method="post" class="form-grid">
+            <textarea th:field="*{enunciado}" placeholder="Enunciado" required style="grid-column:1/-1;min-height:80px"></textarea>
+            <input th:field="*{opcionA}" placeholder="Opción A" required>
+            <input th:field="*{opcionB}" placeholder="Opción B" required>
+            <input th:field="*{opcionC}" placeholder="Opción C" required>
+            <input th:field="*{opcionD}" placeholder="Opción D" required>
+            <textarea th:field="*{explicacion}" placeholder="Explicación (opcional)" style="grid-column:1/-1;min-height:60px"></textarea>
+            <select th:field="*{respuestaCorrecta}">
+                <option value="">— Respuesta correcta —</option>
+                <option th:each="o : ${opciones}" th:value="${o}" th:text="${o}"></option>
+            </select>
+            <select th:field="*{categoria}">
+                <option value="">— Categoría —</option>
+                <option th:each="c : ${categorias}" th:value="${c}" th:text="${c}"></option>
+            </select>
+            <select th:field="*{dificultad}">
+                <option value="">— Dificultad —</option>
+                <option th:each="d : ${dificultades}" th:value="${d}" th:text="${d}"></option>
+            </select>
+            <select th:field="*{tipoEvento}">
+                <option value="">— Tipo de evento —</option>
+                <option th:each="t : ${tiposEvento}" th:value="${t}" th:text="${t}"></option>
+            </select>
+            <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center">
+                <button class="btn primary" th:text="${pregunta.id != null} ? 'Actualizar' : 'Guardar pregunta'">Guardar</button>
+                <a th:if="${pregunta.id != null}" class="btn ghost" th:href="@{/admin/preguntas}">Cancelar</a>
+            </div>
+        </form>
+    </section>
+
+    <section class="detail-card">
+        <h1>Preguntas registradas</h1>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Enunciado</th>
+                        <th>Categoría</th>
+                        <th>Dificultad</th>
+                        <th>Correcta</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${preguntas}">
+                        <td th:text="${p.id}"></td>
+                        <td th:text="${#strings.abbreviate(p.enunciado, 60)}"></td>
+                        <td th:text="${p.categoria}"></td>
+                        <td th:text="${p.dificultad}"></td>
+                        <td th:text="${p.respuestaCorrecta}"></td>
+                        <td>
+                            <div style="display:flex;gap:8px">
+                                <a class="btn outline btn-sm" th:href="@{/admin/preguntas/{id}/editar(id=${p.id})}">Editar</a>
+                                <form th:action="@{/admin/preguntas/{id}/eliminar(id=${p.id})}" method="post"
+                                      onsubmit="return confirm('¿Eliminar esta pregunta?')">
+                                    <button class="btn ghost btn-sm" style="color:var(--red)">Eliminar</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+</body>
+</html>

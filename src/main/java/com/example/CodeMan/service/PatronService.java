@@ -1,32 +1,27 @@
 package com.example.CodeMan.service;
 
 import com.example.CodeMan.model.Categoria;
-import com.example.CodeMan.model.Ficha;
-import com.example.CodeMan.model.FichaRevisada;
 import com.example.CodeMan.model.Patron;
+import com.example.CodeMan.model.PatronRevisado;
 import com.example.CodeMan.model.Usuario;
-import com.example.CodeMan.repository.FichaRepository;
-import com.example.CodeMan.repository.FichaRevisadaRepository;
 import com.example.CodeMan.repository.PatronRepository;
+import com.example.CodeMan.repository.PatronRevisadoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PatronService {
 
     private final PatronRepository patronRepository;
-    private final FichaRepository fichaRepository;
-    private final FichaRevisadaRepository fichaRevisadaRepository;
+    private final PatronRevisadoRepository patronRevisadoRepository;
 
     public PatronService(PatronRepository patronRepository,
-            FichaRepository fichaRepository,
-            FichaRevisadaRepository fichaRevisadaRepository) {
+            PatronRevisadoRepository patronRevisadoRepository) {
         this.patronRepository = patronRepository;
-        this.fichaRepository = fichaRepository;
-        this.fichaRevisadaRepository = fichaRevisadaRepository;
+        this.patronRevisadoRepository = patronRevisadoRepository;
     }
 
     public List<Patron> listar() {
@@ -43,40 +38,43 @@ public class PatronService {
     }
 
     public long total() {
-        return fichaRepository.count();
+        return patronRepository.count();
     }
 
-    public long revisadasPor(Usuario usuario) {
-        return fichaRevisadaRepository.countByUsuario(usuario);
+    public long revisadosPor(Usuario usuario) {
+        return patronRevisadoRepository.countByUsuario(usuario);
     }
 
     public boolean estaRevisado(Usuario usuario, Patron patron) {
-        return fichaRepository.findByPatronId(patron.getId())
-                .map(ficha -> fichaRevisadaRepository.existsByUsuarioAndFicha(usuario, ficha))
-                .orElse(false);
+        return patronRevisadoRepository.existsByUsuarioAndPatron(usuario, patron);
     }
 
     @Transactional
     public void marcarRevisado(Usuario usuario, Long patronId) {
         Patron patron = buscar(patronId);
-
-        Ficha ficha = fichaRepository.findByPatronId(patron.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Ficha no encontrada para este patrón"));
-
-        FichaRevisada registro = fichaRevisadaRepository.findByUsuarioAndFicha(usuario, ficha)
-                .orElseGet(() -> {
-                    FichaRevisada nueva = new FichaRevisada();
-                    nueva.setUsuario(usuario);
-                    nueva.setFicha(ficha);
-                    return nueva;
-                });
-
-        registro.setFechaRevision(LocalDateTime.now());
-        fichaRevisadaRepository.save(registro);
+        if (!patronRevisadoRepository.existsByUsuarioAndPatron(usuario, patron)) {
+            PatronRevisado registro = new PatronRevisado();
+            registro.setUsuario(usuario);
+            registro.setPatron(patron);
+            patronRevisadoRepository.save(registro);
+        }
     }
 
     @Transactional
     public Patron guardar(Patron patron) {
         return patronRepository.save(patron);
+    }
+
+    @Transactional
+    public void eliminar(Long id) {
+        patronRepository.deleteById(id);
+    }
+
+    public Optional<Patron> anterior(Patron patron) {
+        return patronRepository.findFirstByCategoriaAndIdLessThanOrderByIdDesc(patron.getCategoria(), patron.getId());
+    }
+
+    public Optional<Patron> siguiente(Patron patron) {
+        return patronRepository.findFirstByCategoriaAndIdGreaterThanOrderByIdAsc(patron.getCategoria(), patron.getId());
     }
 }
