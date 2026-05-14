@@ -1,0 +1,51 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="32%" cy="28%" r="78%">
+      <stop offset="0%"   stop-color="#0d1f3c"/>
+      <stop offset="100%" stop-color="#020913"/>
+    </radialGradient>
+    <radialGradient id="pac" cx="38%" cy="38%" r="62%">
+      <stop offset="0%"   stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#ca8a04"/>
+    </radialGradient>
+    <filter id="dotGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="8" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="pacGlow" x="-15%" y="-15%" width="130%" height="130%">
+      <feGaussianBlur stdDeviation="14" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Fondo -->
+  <rect width="512" height="512" rx="100" fill="url(#bg)"/>
+
+  <!-- Borde verde brillante -->
+  <rect x="6" y="6" width="500" height="500" rx="95" fill="none"
+        stroke="#22c55e" stroke-width="6" opacity="0.55"/>
+
+  <!-- Resplandor ambiental del Pac-Man -->
+  <circle cx="220" cy="256" r="175" fill="#facc15" opacity="0.10" filter="url(#pacGlow)"/>
+
+  <!--
+    Pac-Man: centro (220, 256), radio 165, boca ±38°
+    Punto superior boca: x=220+165·cos(38°)=220+130=350, y=256−165·sin(38°)=256−102=154
+    Punto inferior boca: x=350, y=256+102=358
+    Arco: A 165,165 0 large=1 sweep=0 → contrahorario (cuerpo del Pac-Man)
+  -->
+  <path d="M220,256 L350,154 A165,165 0 1,0 350,358 Z" fill="url(#pac)"/>
+
+  <!-- Ojo -->
+  <circle cx="258" cy="186" r="15" fill="#07111f"/>
+
+  <!-- Puntos de código (verdes) siendo comidos -->
+  <circle cx="384" cy="256" r="15" fill="#22c55e" filter="url(#dotGlow)"/>
+  <circle cx="428" cy="256" r="11" fill="#22c55e" opacity="0.72" filter="url(#dotGlow)"/>
+  <circle cx="464" cy="256" r="7"  fill="#22c55e" opacity="0.38"/>
+
+  <!-- Puntos decorativos del laberinto (parte superior izquierda) -->
+  <circle cx="56"  cy="72"  r="5" fill="#22c55e" opacity="0.22"/>
+  <circle cx="80"  cy="72"  r="5" fill="#22c55e" opacity="0.22"/>
+  <circle cx="68"  cy="92"  r="5" fill="#22c55e" opacity="0.14"/>
+</svg>

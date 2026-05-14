@@ -1,0 +1,19 @@
+{
+  "name": "CodeMan",
+  "short_name": "CodeMan",
+  "description": "Aprende patrones de diseño GoF jugando al estilo Pac-Man",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#22c55e",
+  "orientation": "portrait-primary",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/images/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
