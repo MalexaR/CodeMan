@@ -8,102 +8,105 @@
 </head>
 <body>
 
+<a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+
 <header class="topbar">
-    <a class="brand" th:href="@{/}"><span class="mini-pac"></span> CodeMan</a>
-    <nav>
+    <a class="brand" th:href="@{/}"><span class="mini-pac" aria-hidden="true"></span> CodeMan</a>
+    <nav aria-label="Navegación secundaria">
         <a th:href="@{/}" class="btn outline">← Volver</a>
         <a th:href="@{/jugar}" class="btn primary">Jugar</a>
     </nav>
 </header>
 
-<main class="container">
+<main id="main-content" class="container">
 
-    <!-- Intro -->
-    <div class="teoria-intro">
+    <header class="teoria-intro">
         <p class="eyebrow">Módulo teórico</p>
         <h1>Patrones de Diseño <span class="neon-title">GoF</span></h1>
         <p class="teoria-sub">Explora cada ficha, estudia el ejemplo de código y márcala como revisada.<br>Cuanto más repases, mejor te irá en el laberinto.</p>
-        <div class="teoria-badges">
-            <span class="tstat blue">🏗️ Creacionales</span>
-            <span class="tstat purple">🔗 Estructurales</span>
-            <span class="tstat amber">🎭 Comportamiento</span>
+        <div class="teoria-badges" aria-label="Categorías de patrones">
+            <span class="tstat blue"><span aria-hidden="true">🏗️</span> Creacionales</span>
+            <span class="tstat purple"><span aria-hidden="true">🔗</span> Estructurales</span>
+            <span class="tstat amber"><span aria-hidden="true">🎭</span> Comportamiento</span>
         </div>
-    </div>
+    </header>
 
-    <!-- Creacionales -->
-    <section class="cat-block">
+    <section class="cat-block" aria-labelledby="cat-creacionales">
         <div class="cat-header blue-bar">
             <div class="cat-header-left">
-                <span class="cat-icon">🏗️</span>
+                <span class="cat-icon" aria-hidden="true">🏗️</span>
                 <div>
-                    <h2>Creacionales</h2>
+                    <h2 id="cat-creacionales">Creacionales</h2>
                     <p>Controlan cómo se crean los objetos</p>
                 </div>
             </div>
             <a th:href="@{/jugar/CREACIONAL}" class="btn outline btn-sm">Practicar →</a>
         </div>
-        <div class="grid cards-grid pcard-grid">
-            <a class="pattern-card blue" th:each="p : ${creacionales}" th:href="@{/teoria/{id}(id=${p.id})}">
-                <span class="pcard-cat">Creacional</span>
-                <h3 th:text="${p.nombre}"></h3>
-                <p th:text="${p.descripcion}"></p>
-                <span class="pcard-arrow">Ver ficha →</span>
-            </a>
-        </div>
+        <ul class="grid cards-grid pcard-grid" role="list">
+            <li th:each="p : ${creacionales}">
+                <a class="pattern-card blue" th:href="@{/teoria/{id}(id=${p.id})}">
+                    <span class="pcard-cat">Creacional</span>
+                    <h3 th:text="${p.nombre}"></h3>
+                    <p th:text="${p.descripcion}"></p>
+                    <span class="pcard-arrow" aria-hidden="true">Ver ficha →</span>
+                </a>
+            </li>
+        </ul>
     </section>
 
-    <!-- Estructurales -->
-    <section class="cat-block">
+    <section class="cat-block" aria-labelledby="cat-estructurales">
         <div class="cat-header purple-bar">
             <div class="cat-header-left">
-                <span class="cat-icon">🔗</span>
+                <span class="cat-icon" aria-hidden="true">🔗</span>
                 <div>
-                    <h2>Estructurales</h2>
+                    <h2 id="cat-estructurales">Estructurales</h2>
                     <p>Organizan clases y objetos en estructuras mayores</p>
                 </div>
             </div>
             <a th:href="@{/jugar/ESTRUCTURAL}" class="btn outline btn-sm">Practicar →</a>
         </div>
-        <div class="grid cards-grid pcard-grid">
-            <a class="pattern-card purple" th:each="p : ${estructurales}" th:href="@{/teoria/{id}(id=${p.id})}">
-                <span class="pcard-cat">Estructural</span>
-                <h3 th:text="${p.nombre}"></h3>
-                <p th:text="${p.descripcion}"></p>
-                <span class="pcard-arrow">Ver ficha →</span>
-            </a>
-        </div>
+        <ul class="grid cards-grid pcard-grid" role="list">
+            <li th:each="p : ${estructurales}">
+                <a class="pattern-card purple" th:href="@{/teoria/{id}(id=${p.id})}">
+                    <span class="pcard-cat">Estructural</span>
+                    <h3 th:text="${p.nombre}"></h3>
+                    <p th:text="${p.descripcion}"></p>
+                    <span class="pcard-arrow" aria-hidden="true">Ver ficha →</span>
+                </a>
+            </li>
+        </ul>
     </section>
 
-    <!-- Comportamiento -->
-    <section class="cat-block">
+    <section class="cat-block" aria-labelledby="cat-comportamiento">
         <div class="cat-header amber-bar">
             <div class="cat-header-left">
-                <span class="cat-icon">🎭</span>
+                <span class="cat-icon" aria-hidden="true">🎭</span>
                 <div>
-                    <h2>Comportamiento</h2>
+                    <h2 id="cat-comportamiento">Comportamiento</h2>
                     <p>Definen cómo se comunican y colaboran los objetos</p>
                 </div>
             </div>
             <a th:href="@{/jugar/COMPORTAMIENTO}" class="btn outline btn-sm">Practicar →</a>
         </div>
-        <div class="grid cards-grid pcard-grid">
-            <a class="pattern-card amber" th:each="p : ${comportamiento}" th:href="@{/teoria/{id}(id=${p.id})}">
-                <span class="pcard-cat">Comportamiento</span>
-                <h3 th:text="${p.nombre}"></h3>
-                <p th:text="${p.descripcion}"></p>
-                <span class="pcard-arrow">Ver ficha →</span>
-            </a>
-        </div>
+        <ul class="grid cards-grid pcard-grid" role="list">
+            <li th:each="p : ${comportamiento}">
+                <a class="pattern-card amber" th:href="@{/teoria/{id}(id=${p.id})}">
+                    <span class="pcard-cat">Comportamiento</span>
+                    <h3 th:text="${p.nombre}"></h3>
+                    <p th:text="${p.descripcion}"></p>
+                    <span class="pcard-arrow" aria-hidden="true">Ver ficha →</span>
+                </a>
+            </li>
+        </ul>
     </section>
 
-    <!-- CTA inferior -->
-    <div class="teoria-cta-bar">
+    <aside class="teoria-cta-bar" aria-label="Ir al juego">
         <div>
             <p class="eyebrow">¿Listo para el desafío?</p>
             <p>Aplica lo aprendido en el laberinto y consigue la puntuación máxima.</p>
         </div>
         <a th:href="@{/jugar}" class="btn primary">Ir al laberinto</a>
-    </div>
+    </aside>
 
 </main>
 </body>

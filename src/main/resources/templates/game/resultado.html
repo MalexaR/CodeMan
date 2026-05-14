@@ -7,65 +7,71 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
+
+<a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+
 <header class="topbar">
-    <a class="brand" th:href="@{/}"><span class="mini-pac"></span> CodeMan</a>
+    <a class="brand" th:href="@{/}"><span class="mini-pac" aria-hidden="true"></span> CodeMan</a>
     <a class="btn outline" th:href="@{/jugar}">Volver a jugar</a>
 </header>
-<main class="container resultado-container">
 
-    <div id="loading" class="resultado-loading">
-        <div class="loading-spinner"></div>
+<main id="main-content" class="container resultado-container">
+
+    <div id="loading" class="resultado-loading" role="status" aria-live="polite">
+        <div class="loading-spinner" aria-hidden="true"></div>
         <p>Cargando resultados…</p>
     </div>
 
     <div id="resultado-content" class="hidden">
 
         <div class="resultado-hero">
-            <div id="resultado-icon" class="resultado-icon">🏆</div>
+            <div id="resultado-icon" class="resultado-icon" aria-hidden="true">🏆</div>
             <h1 id="resultado-titulo">Resultado</h1>
             <p id="resultado-subtitulo" class="resultado-subtitulo"></p>
         </div>
 
-        <div class="resultado-stats-grid">
-            <div class="rstat-card green">
-                <span class="rstat-label">Aciertos</span>
+        <section class="resultado-stats-grid" aria-label="Estadísticas de la partida">
+            <article class="rstat-card green" aria-labelledby="lbl-aciertos">
+                <span id="lbl-aciertos" class="rstat-label">Aciertos</span>
                 <strong id="stat-aciertos">0</strong>
-            </div>
-            <div class="rstat-card red">
-                <span class="rstat-label">Errores</span>
+            </article>
+            <article class="rstat-card red" aria-labelledby="lbl-errores">
+                <span id="lbl-errores" class="rstat-label">Errores</span>
                 <strong id="stat-errores">0</strong>
-            </div>
-            <div class="rstat-card blue">
-                <span class="rstat-label">Tiempo</span>
+            </article>
+            <article class="rstat-card blue" aria-labelledby="lbl-tiempo">
+                <span id="lbl-tiempo" class="rstat-label">Tiempo</span>
                 <strong id="stat-tiempo">—</strong>
-            </div>
-            <div class="rstat-card purple">
-                <span class="rstat-label">Preguntas</span>
+            </article>
+            <article class="rstat-card purple" aria-labelledby="lbl-preguntas">
+                <span id="lbl-preguntas" class="rstat-label">Preguntas</span>
                 <strong id="stat-total">0</strong>
-            </div>
-        </div>
+            </article>
+        </section>
 
         <div class="resultado-desempeno">
             <div class="resultado-desempeno-header">
                 <span class="resultado-desempeno-label">Desempeño</span>
                 <span id="stat-porcentaje" class="resultado-porcentaje-valor">0%</span>
             </div>
-            <div class="progress resultado-progress">
+            <div class="progress resultado-progress" role="progressbar"
+                 id="barra-container" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+                 aria-label="Porcentaje de desempeño">
                 <span id="barra-desempeno" style="width:0%"></span>
             </div>
-            <p id="resultado-msg" class="resultado-msg"></p>
+            <p id="resultado-msg" class="resultado-msg" role="alert"></p>
         </div>
 
-        <div id="errores-section" class="resultado-errores-section hidden">
-            <h2 class="resultado-errores-titulo">Preguntas que fallaste</h2>
+        <section id="errores-section" class="resultado-errores-section hidden" aria-labelledby="errores-titulo">
+            <h2 id="errores-titulo" class="resultado-errores-titulo">Preguntas que fallaste</h2>
             <div id="errores-list" class="errores-list"></div>
-        </div>
+        </section>
 
-        <div class="resultado-acciones">
+        <nav class="resultado-acciones" aria-label="Acciones post-partida">
             <a id="btn-teoria" class="btn outline" href="/teoria">Ver teoría</a>
             <a id="btn-reintentar" class="btn ghost" href="/jugar">Reintentar laberinto</a>
             <a class="btn primary" th:href="@{/}">Ir al menú</a>
-        </div>
+        </nav>
 
     </div>
 
@@ -90,8 +96,7 @@
         const victoria = d.victoria;
         document.getElementById('resultado-icon').textContent = victoria ? '🏆' : '💀';
         document.getElementById('resultado-titulo').textContent = victoria ? '¡Partida completada!' : 'Partida terminada';
-        document.getElementById('resultado-subtitulo').textContent =
-            'Categoría: ' + d.categoria;
+        document.getElementById('resultado-subtitulo').textContent = 'Categoría: ' + d.categoria;
 
         document.getElementById('stat-aciertos').textContent = d.aciertos;
         document.getElementById('stat-errores').textContent = d.errores;
@@ -100,6 +105,10 @@
 
         const pct = d.porcentajeDesempeno;
         document.getElementById('stat-porcentaje').textContent = pct + '%';
+
+        const container = document.getElementById('barra-container');
+        container.setAttribute('aria-valuenow', pct);
+        container.setAttribute('aria-label', 'Desempeño: ' + pct + '%');
 
         const barra = document.getElementById('barra-desempeno');
         barra.style.width = pct + '%';
@@ -116,7 +125,7 @@
             section.classList.remove('hidden');
             const list = document.getElementById('errores-list');
             d.erroresDetalle.forEach(function (e) {
-                const card = document.createElement('div');
+                const card = document.createElement('article');
                 card.className = 'error-card';
                 card.innerHTML =
                     '<p class="error-enunciado">' + escHtml(e.enunciado) + '</p>' +
@@ -129,7 +138,6 @@
             });
         }
 
-        const cat = (d.categoria || '').toLowerCase();
         document.getElementById('btn-teoria').href = '/teoria?categoria=' + encodeURIComponent(d.categoria || '');
         document.getElementById('btn-reintentar').href = '/jugar/' + encodeURIComponent(d.categoria || '');
     }

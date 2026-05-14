@@ -1,17 +1,75 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CodeMan | Jugar</title><link rel="stylesheet" th:href="@{/css/styles.css}"></head>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMan | Jugar</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
 <body>
-<header class="topbar"><a class="brand" th:href="@{/}"><span class="mini-pac"></span> CodeMan</a><a class="btn outline" th:href="@{/teoria}">Teoría</a></header>
-<main class="container">
-    <div class="page-title center"><p class="eyebrow">Laberinto de código</p><h1>Selecciona una categoría</h1><p>Cada mundo contiene preguntas de patrones GoF y fantasmas que aumentan con tus errores.</p></div>
-    <section class="grid cards-grid three">
-        <a class="menu-card blue" th:href="@{/jugar/CREACIONAL}"><span>🏗️</span><h2>Creacionales</h2><p>Singleton, Factory Method, Abstract Factory.</p><button class="btn primary">Iniciar</button></a>
-        <a class="menu-card purple" th:href="@{/jugar/ESTRUCTURAL}"><span>🧩</span><h2>Estructurales</h2><p>Adapter, Decorator, Facade.</p><button class="btn primary">Iniciar</button></a>
-        <a class="menu-card amber" th:href="@{/jugar/COMPORTAMIENTO}"><span>🔁</span><h2>Comportamiento</h2><p>Observer, Strategy, Command.</p><button class="btn primary">Iniciar</button></a>
+<a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+
+<header class="topbar">
+    <a class="brand" th:href="@{/}"><span class="mini-pac" aria-hidden="true"></span> CodeMan</a>
+    <nav aria-label="Navegación secundaria">
+        <a class="btn outline" th:href="@{/teoria}">Teoría</a>
+    </nav>
+</header>
+
+<main id="main-content" class="container">
+
+    <header class="page-title center">
+        <p class="eyebrow">Laberinto de código</p>
+        <h1>Selecciona una categoría</h1>
+        <p>Cada mundo contiene preguntas de patrones GoF y fantasmas que aumentan con tus errores.</p>
+    </header>
+
+    <section aria-label="Categorías de patrones de diseño">
+        <ul class="grid cards-grid three" role="list">
+            <li>
+                <a class="menu-card blue" th:href="@{/jugar/CREACIONAL}">
+                    <span aria-hidden="true">🏗️</span>
+                    <h2>Creacionales</h2>
+                    <p>Singleton, Factory Method, Abstract Factory.</p>
+                    <span class="btn primary" aria-hidden="true">Iniciar</span>
+                </a>
+            </li>
+            <li>
+                <a class="menu-card purple" th:href="@{/jugar/ESTRUCTURAL}">
+                    <span aria-hidden="true">🧩</span>
+                    <h2>Estructurales</h2>
+                    <p>Adapter, Decorator, Facade.</p>
+                    <span class="btn primary" aria-hidden="true">Iniciar</span>
+                </a>
+            </li>
+            <li>
+                <a class="menu-card amber" th:href="@{/jugar/COMPORTAMIENTO}">
+                    <span aria-hidden="true">🔁</span>
+                    <h2>Comportamiento</h2>
+                    <p>Observer, Strategy, Template Method.</p>
+                    <span class="btn primary" aria-hidden="true">Iniciar</span>
+                </a>
+            </li>
+        </ul>
     </section>
-    <div class="page-title center" style="margin-top:2.5rem"><h2>¿Listo para el reto definitivo?</h2><p>El Desafío Final mezcla las tres categorías. Necesitas al menos un 60% de aciertos para completarlo. El cronómetro corre: tienes 30 minutos.</p></div>
-    <section class="grid cards-grid one" style="max-width:420px;margin:0 auto">
-        <a class="menu-card desafio-card" th:href="@{/jugar/desafio-final}"><span>🏆</span><h2>Desafío Final</h2><p>Todas las categorías · Cronómetro 30 min · ≥60% para completar</p><button class="btn desafio-btn">Aceptar el desafío</button></a>
+
+    <section aria-labelledby="desafio-heading" style="margin-top:2.5rem">
+        <header class="page-title center">
+            <h2 id="desafio-heading">¿Listo para el reto definitivo?</h2>
+            <p>El Desafío Final mezcla las tres categorías. Necesitas al menos un 60% de aciertos para completarlo. El cronómetro corre: tienes 30 minutos.</p>
+        </header>
+        <ul class="grid cards-grid" style="max-width:420px;margin:0 auto" role="list">
+            <li>
+                <a class="menu-card desafio-card" th:href="@{/jugar/desafio-final}">
+                    <span aria-hidden="true">🏆</span>
+                    <h2>Desafío Final</h2>
+                    <p>Todas las categorías · Cronómetro 30 min · ≥60% para completar</p>
+                    <span class="btn desafio-btn" aria-hidden="true">Aceptar el desafío</span>
+                </a>
+            </li>
+        </ul>
     </section>
+
 </main>
-</body></html>
+</body>
+</html>

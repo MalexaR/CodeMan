@@ -8,28 +8,39 @@
 </head>
 <body class="game-body">
 
+<a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+
 <header class="topbar">
     <a class="brand" th:href="@{/jugar}">← Volver</a>
     <strong class="neon-title">CodeMan — Desafío Final</strong>
     <span th:text="${usuario.name}"></span>
 </header>
 
-<main class="desafio-container">
-    <section class="hud">
-        <div>❤️ Vidas: <strong id="vidas">3</strong></div>
-        <div>⭐ Puntos: <strong id="puntos">0</strong></div>
-        <div>⏱️ Tiempo: <strong id="tiempo">30:00</strong></div>
-        <div>👻 Errores: <strong id="errores">0</strong></div>
+<main id="main-content" class="desafio-container">
+
+    <section class="hud" aria-label="Estado del desafío final">
+        <div><span aria-hidden="true">❤️</span> Vidas: <strong id="vidas" aria-live="polite">3</strong></div>
+        <div><span aria-hidden="true">⭐</span> Puntos: <strong id="puntos" aria-live="polite">0</strong></div>
+        <div><span aria-hidden="true">⏱️</span> Tiempo: <strong id="tiempo" aria-live="polite">30:00</strong></div>
+        <div><span aria-hidden="true">👻</span> Errores: <strong id="errores" aria-live="polite">0</strong></div>
     </section>
-    <canvas id="desafio-canvas" width="588" height="588" aria-label="Laberinto Desafío Final CodeMan"></canvas>
+
+    <canvas id="desafio-canvas" width="588" height="588"
+            role="img" aria-label="Laberinto Desafío Final CodeMan — usa las flechas o WASD para mover a Pac-Man"></canvas>
+
     <p class="game-help">Usa flechas o WASD. Presiona P para pausar. ESC para abandonar. Necesitas ≥60% de aciertos para completar el desafío.</p>
+
 </main>
 
-<div id="questionModal" class="modal hidden">
+<div id="questionModal" class="modal hidden"
+     role="dialog" aria-modal="true" aria-labelledby="questionModalTitleD" aria-describedby="questionText">
     <div class="modal-card">
-        <div class="modal-head"><h2>Pregunta de código</h2><span id="questionTimer">20</span></div>
+        <header class="modal-head">
+            <h2 id="questionModalTitleD">Pregunta de código</h2>
+            <span id="questionTimer" aria-live="assertive" aria-label="Tiempo restante">20</span>
+        </header>
         <p id="questionText"></p>
-        <div id="answers" class="answers"></div>
+        <div id="answers" class="answers" role="group" aria-label="Opciones de respuesta"></div>
     </div>
 </div>
 

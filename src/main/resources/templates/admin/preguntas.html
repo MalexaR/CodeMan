@@ -7,57 +7,108 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
+
+<a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+
 <header class="topbar">
     <a class="brand" th:href="@{/admin}">← Admin</a>
     <strong>Banco de preguntas</strong>
 </header>
-<main class="container">
 
-    <section class="admin-form detail-card">
-        <h1 th:text="${pregunta.id != null} ? 'Editar pregunta' : 'Nueva pregunta'">Nueva pregunta</h1>
+<main id="main-content" class="container">
+
+    <section class="admin-form detail-card" aria-labelledby="form-pregunta-title">
+        <h1 id="form-pregunta-title" th:text="${pregunta.id != null} ? 'Editar pregunta' : 'Nueva pregunta'">Nueva pregunta</h1>
+
         <form th:action="${pregunta.id != null} ? @{/admin/preguntas/{id}(id=${pregunta.id})} : @{/admin/preguntas}"
-              th:object="${pregunta}" method="post" class="form-grid">
-            <textarea th:field="*{enunciado}" placeholder="Enunciado" required style="grid-column:1/-1;min-height:80px"></textarea>
-            <input th:field="*{opcionA}" placeholder="Opción A" required>
-            <input th:field="*{opcionB}" placeholder="Opción B" required>
-            <input th:field="*{opcionC}" placeholder="Opción C" required>
-            <input th:field="*{opcionD}" placeholder="Opción D" required>
-            <textarea th:field="*{explicacion}" placeholder="Explicación (opcional)" style="grid-column:1/-1;min-height:60px"></textarea>
-            <select th:field="*{respuestaCorrecta}">
-                <option value="">— Respuesta correcta —</option>
-                <option th:each="o : ${opciones}" th:value="${o}" th:text="${o}"></option>
-            </select>
-            <select th:field="*{categoria}">
-                <option value="">— Categoría —</option>
-                <option th:each="c : ${categorias}" th:value="${c}" th:text="${c}"></option>
-            </select>
-            <select th:field="*{dificultad}">
-                <option value="">— Dificultad —</option>
-                <option th:each="d : ${dificultades}" th:value="${d}" th:text="${d}"></option>
-            </select>
-            <select th:field="*{tipoEvento}">
-                <option value="">— Tipo de evento —</option>
-                <option th:each="t : ${tiposEvento}" th:value="${t}" th:text="${t}"></option>
-            </select>
+              th:object="${pregunta}" method="post" class="form-grid" novalidate>
+
+            <div style="grid-column:1/-1">
+                <label for="enunciado">Enunciado</label>
+                <textarea th:field="*{enunciado}" id="enunciado" placeholder="Enunciado de la pregunta"
+                          required style="min-height:80px"></textarea>
+            </div>
+
+            <div>
+                <label for="opcionA">Opción A</label>
+                <input th:field="*{opcionA}" id="opcionA" placeholder="Opción A" required>
+            </div>
+
+            <div>
+                <label for="opcionB">Opción B</label>
+                <input th:field="*{opcionB}" id="opcionB" placeholder="Opción B" required>
+            </div>
+
+            <div>
+                <label for="opcionC">Opción C</label>
+                <input th:field="*{opcionC}" id="opcionC" placeholder="Opción C" required>
+            </div>
+
+            <div>
+                <label for="opcionD">Opción D</label>
+                <input th:field="*{opcionD}" id="opcionD" placeholder="Opción D" required>
+            </div>
+
+            <div style="grid-column:1/-1">
+                <label for="explicacion">Explicación</label>
+                <textarea th:field="*{explicacion}" id="explicacion"
+                          placeholder="Explicación de la respuesta correcta (opcional)"
+                          style="min-height:60px"></textarea>
+            </div>
+
+            <div>
+                <label for="respuestaCorrecta">Respuesta correcta</label>
+                <select th:field="*{respuestaCorrecta}" id="respuestaCorrecta">
+                    <option value="">— Respuesta correcta —</option>
+                    <option th:each="o : ${opciones}" th:value="${o}" th:text="${o}"></option>
+                </select>
+            </div>
+
+            <div>
+                <label for="categoria">Categoría</label>
+                <select th:field="*{categoria}" id="categoria">
+                    <option value="">— Categoría —</option>
+                    <option th:each="c : ${categorias}" th:value="${c}" th:text="${c}"></option>
+                </select>
+            </div>
+
+            <div>
+                <label for="dificultad">Dificultad</label>
+                <select th:field="*{dificultad}" id="dificultad">
+                    <option value="">— Dificultad —</option>
+                    <option th:each="d : ${dificultades}" th:value="${d}" th:text="${d}"></option>
+                </select>
+            </div>
+
+            <div>
+                <label for="tipoEvento">Tipo de evento</label>
+                <select th:field="*{tipoEvento}" id="tipoEvento">
+                    <option value="">— Tipo de evento —</option>
+                    <option th:each="t : ${tiposEvento}" th:value="${t}" th:text="${t}"></option>
+                </select>
+            </div>
+
             <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center">
-                <button class="btn primary" th:text="${pregunta.id != null} ? 'Actualizar' : 'Guardar pregunta'">Guardar</button>
+                <button class="btn primary" type="submit"
+                        th:text="${pregunta.id != null} ? 'Actualizar' : 'Guardar pregunta'">Guardar</button>
                 <a th:if="${pregunta.id != null}" class="btn ghost" th:href="@{/admin/preguntas}">Cancelar</a>
             </div>
         </form>
     </section>
 
-    <section class="detail-card">
-        <h1>Preguntas registradas</h1>
+    <section class="detail-card" aria-labelledby="lista-preguntas-title">
+        <h1 id="lista-preguntas-title">Preguntas registradas</h1>
         <div class="table-wrap">
             <table>
+                <caption class="sr-only">Lista de preguntas del banco de preguntas</caption>
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Enunciado</th>
-                        <th>Categoría</th>
-                        <th>Dificultad</th>
-                        <th>Correcta</th>
-                        <th>Acciones</th>
+                        <th scope="col">ID</th>
+                        <th scope="col">Enunciado</th>
+                        <th scope="col">Categoría</th>
+                        <th scope="col">Dificultad</th>
+                        <th scope="col">Correcta</th>
+                        <th scope="col">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -69,10 +120,13 @@
                         <td th:text="${p.respuestaCorrecta}"></td>
                         <td>
                             <div style="display:flex;gap:8px">
-                                <a class="btn outline btn-sm" th:href="@{/admin/preguntas/{id}/editar(id=${p.id})}">Editar</a>
+                                <a class="btn outline btn-sm"
+                                   th:href="@{/admin/preguntas/{id}/editar(id=${p.id})}"
+                                   th:aria-label="${'Editar pregunta ' + p.id}">Editar</a>
                                 <form th:action="@{/admin/preguntas/{id}/eliminar(id=${p.id})}" method="post"
                                       onsubmit="return confirm('¿Eliminar esta pregunta?')">
-                                    <button class="btn ghost btn-sm" style="color:var(--red)">Eliminar</button>
+                                    <button class="btn ghost btn-sm" type="submit" style="color:var(--red)"
+                                            th:aria-label="${'Eliminar pregunta ' + p.id}">Eliminar</button>
                                 </form>
                             </div>
                         </td>

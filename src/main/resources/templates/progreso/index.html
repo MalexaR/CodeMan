@@ -1,16 +1,77 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CodeMan | Progreso</title><link rel="stylesheet" th:href="@{/css/styles.css}"></head>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMan | Progreso</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
 <body>
-<header class="topbar"><a class="brand" th:href="@{/}">← Inicio</a><span th:text="${usuario.name}"></span></header>
-<main class="container">
-    <div class="page-title"><p class="eyebrow">Panel del estudiante</p><h1>Mi progreso</h1><p>Resumen de avance en teoría, partidas y respuestas.</p></div>
-    <section class="grid stats-grid">
-        <div class="stat-card blue"><h2>Patrones revisados</h2><strong th:text="|${progreso.patronesRevisadosCache}/${progreso.totalPatrones}|"></strong><div class="progress"><span th:style="|width:${progreso.porcentajePatrones}%|"></span></div><small th:text="|${progreso.porcentajePatrones}% completado|"></small></div>
-        <div class="stat-card green"><h2>Partidas jugadas</h2><strong th:text="${progreso.partidasJugadasCache}"></strong><small>Total de sesiones de juego</small></div>
-        <div class="stat-card green"><h2>Aciertos</h2><strong th:text="${progreso.aciertosCache}"></strong><small>Respuestas correctas</small></div>
-        <div class="stat-card red"><h2>Errores</h2><strong th:text="${progreso.erroresCache}"></strong><small>Respuestas incorrectas</small></div>
-        <div class="stat-card amber"><h2>Desempeño</h2><strong th:text="|${progreso.porcentajeAciertos}%|"></strong><div class="progress"><span th:style="|width:${progreso.porcentajeAciertos}%|"></span></div><small>Aciertos sobre el total</small></div>
-        <div class="stat-card purple"><h2>Desafío final</h2><strong th:text="${progreso.desafioFinalCompletado ? 'Completado' : 'Pendiente'}"></strong><small>Requisito para reporte final</small></div>
+
+<a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+
+<header class="topbar">
+    <a class="brand" th:href="@{/}">← Inicio</a>
+    <span th:text="${usuario.name}"></span>
+</header>
+
+<main id="main-content" class="container">
+
+    <header class="page-title">
+        <p class="eyebrow">Panel del estudiante</p>
+        <h1>Mi progreso</h1>
+        <p>Resumen de avance en teoría, partidas y respuestas.</p>
+    </header>
+
+    <section class="grid stats-grid" aria-label="Estadísticas de progreso">
+
+        <article class="stat-card blue" aria-labelledby="stat-patrones-title">
+            <h2 id="stat-patrones-title">Patrones revisados</h2>
+            <strong th:text="|${progreso.patronesRevisadosCache}/${progreso.totalPatrones}|" aria-live="polite"></strong>
+            <div class="progress" role="progressbar"
+                 th:attr="aria-valuenow=${progreso.porcentajePatrones}, aria-label='Progreso: ' + ${progreso.porcentajePatrones} + '% completado'"
+                 aria-valuemin="0" aria-valuemax="100">
+                <span th:style="|width:${progreso.porcentajePatrones}%|"></span>
+            </div>
+            <small th:text="|${progreso.porcentajePatrones}% completado|"></small>
+        </article>
+
+        <article class="stat-card green" aria-labelledby="stat-partidas-title">
+            <h2 id="stat-partidas-title">Partidas jugadas</h2>
+            <strong th:text="${progreso.partidasJugadasCache}" aria-live="polite"></strong>
+            <small>Total de sesiones de juego</small>
+        </article>
+
+        <article class="stat-card green" aria-labelledby="stat-aciertos-title">
+            <h2 id="stat-aciertos-title">Aciertos</h2>
+            <strong th:text="${progreso.aciertosCache}" aria-live="polite"></strong>
+            <small>Respuestas correctas</small>
+        </article>
+
+        <article class="stat-card red" aria-labelledby="stat-errores-title">
+            <h2 id="stat-errores-title">Errores</h2>
+            <strong th:text="${progreso.erroresCache}" aria-live="polite"></strong>
+            <small>Respuestas incorrectas</small>
+        </article>
+
+        <article class="stat-card amber" aria-labelledby="stat-desempeno-title">
+            <h2 id="stat-desempeno-title">Desempeño</h2>
+            <strong th:text="|${progreso.porcentajeAciertos}%|" aria-live="polite"></strong>
+            <div class="progress" role="progressbar"
+                 th:attr="aria-valuenow=${progreso.porcentajeAciertos}, aria-label='Desempeño: ' + ${progreso.porcentajeAciertos} + '%'"
+                 aria-valuemin="0" aria-valuemax="100">
+                <span th:style="|width:${progreso.porcentajeAciertos}%|"></span>
+            </div>
+            <small>Aciertos sobre el total</small>
+        </article>
+
+        <article class="stat-card purple" aria-labelledby="stat-desafio-title">
+            <h2 id="stat-desafio-title">Desafío final</h2>
+            <strong th:text="${progreso.desafioFinalCompletado ? 'Completado' : 'Pendiente'}" aria-live="polite"></strong>
+            <small>Requisito para reporte final</small>
+        </article>
+
     </section>
 </main>
-</body></html>
+</body>
+</html>

@@ -7,29 +7,35 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
+
+<a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+
 <header class="topbar">
-    <a class="brand" th:href="@{/}"><span class="mini-pac"></span> CodeMan</a>
+    <a class="brand" th:href="@{/}"><span class="mini-pac" aria-hidden="true"></span> CodeMan</a>
     <div class="userbar">
         <span th:text="${usuario.name}"></span>
         <a class="btn outline" th:href="@{/}">Inicio</a>
     </div>
 </header>
-<main class="container">
 
-    <div class="page-title">
+<main id="main-content" class="container">
+
+    <header class="page-title">
         <p class="eyebrow">Evaluación final</p>
         <h1>Mi reporte de desempeño</h1>
-        <p>Generado el <span th:text="${#temporals.format(datos.fechaGeneracion, 'dd/MM/yyyy HH:mm')}"></span></p>
-    </div>
+        <p>Generado el <time th:text="${#temporals.format(datos.fechaGeneracion, 'dd/MM/yyyy HH:mm')}"></time></p>
+    </header>
 
-    <!-- Tarjeta de desempeño general -->
-    <div class="reporte-general-card">
+    <section class="reporte-general-card" aria-labelledby="reporte-general-heading">
         <div class="reporte-general-left">
-            <p class="eyebrow">Desempeño general</p>
+            <p class="eyebrow" id="reporte-general-heading">Desempeño general</p>
             <div class="reporte-pct-valor"
                  th:classappend="${datos.porcentajeGeneral >= 60 ? ' pct-green' : ' pct-red'}"
                  th:text="|${datos.porcentajeGeneral}%|">0%</div>
-            <div class="progress reporte-progress">
+            <div class="progress reporte-progress"
+                 role="progressbar"
+                 th:attr="aria-valuenow=${datos.porcentajeGeneral}, aria-label='Desempeño general: ' + ${datos.porcentajeGeneral} + '%'"
+                 aria-valuemin="0" aria-valuemax="100">
                 <span th:style="|width:${datos.porcentajeGeneral}%;background:${datos.porcentajeGeneral >= 60 ? 'linear-gradient(90deg,#22c55e,#86efac)' : 'linear-gradient(90deg,#fb7185,#fca5a5)'}|"></span>
             </div>
             <p class="muted" th:text="${datos.porcentajeGeneral >= 60 ? 'Nivel de aprendizaje alcanzado.' : 'Continúa practicando para mejorar.'}"></p>
@@ -48,13 +54,12 @@
                 <strong th:text="${datos.totalPartidas}">0</strong>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Desafío Final -->
-    <div class="reporte-desafio-card">
+    <section class="reporte-desafio-card" aria-labelledby="reporte-desafio-heading">
         <div>
             <p class="eyebrow amber-text">Desafío Final</p>
-            <h2>Resultado del reto definitivo</h2>
+            <h2 id="reporte-desafio-heading">Resultado del reto definitivo</h2>
         </div>
         <div class="reporte-desafio-stats">
             <div class="mini-stat">
@@ -66,19 +71,19 @@
                 <strong th:text="${datos.tiempoDesafioFinal}">—</strong>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Tabla por categoría -->
-    <div class="detail-card" style="margin-top:24px">
-        <h2 style="margin:0 0 18px">Desempeño por categoría</h2>
+    <section class="detail-card" style="margin-top:24px" aria-labelledby="tabla-cat-heading">
+        <h2 id="tabla-cat-heading" style="margin:0 0 18px">Desempeño por categoría</h2>
         <div class="table-wrap">
             <table class="reporte-table">
+                <caption class="sr-only">Resumen de aciertos, errores y porcentaje por categoría de patrones</caption>
                 <thead>
                     <tr>
-                        <th>Categoría</th>
-                        <th>Aciertos</th>
-                        <th>Errores</th>
-                        <th>Desempeño</th>
+                        <th scope="col">Categoría</th>
+                        <th scope="col">Aciertos</th>
+                        <th scope="col">Errores</th>
+                        <th scope="col">Desempeño</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -91,7 +96,10 @@
                         <td class="green-text" th:text="${cat.aciertos}">0</td>
                         <td class="red-text" th:text="${cat.errores}">0</td>
                         <td>
-                            <div class="reporte-mini-bar">
+                            <div class="reporte-mini-bar"
+                                 role="progressbar"
+                                 th:attr="aria-valuenow=${cat.porcentaje}, aria-label=${cat.categoria} + ': ' + ${cat.porcentaje} + '%'"
+                                 aria-valuemin="0" aria-valuemax="100">
                                 <div class="reporte-mini-fill"
                                      th:style="|width:${cat.porcentaje}%;background:${cat.porcentaje >= 60 ? '#22c55e' : '#fb7185'}|"></div>
                             </div>
@@ -101,13 +109,14 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </section>
 
-    <!-- Botón descargar PDF -->
-    <div class="reporte-acciones">
-        <a class="btn primary btn-lg" th:href="@{/reporte/descargar}">⬇ Descargar PDF</a>
+    <nav class="reporte-acciones" aria-label="Acciones del reporte">
+        <a class="btn primary btn-lg" th:href="@{/reporte/descargar}" aria-label="Descargar reporte en PDF">
+            <span aria-hidden="true">⬇</span> Descargar PDF
+        </a>
         <a class="btn ghost" th:href="@{/progreso}">Ver mi progreso</a>
-    </div>
+    </nav>
 
 </main>
 </body>

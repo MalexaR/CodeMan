@@ -7,45 +7,94 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
+
+<a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+
 <header class="topbar">
     <a class="brand" th:href="@{/admin}">← Admin</a>
     <strong>Patrones de diseño</strong>
 </header>
-<main class="container">
 
-    <section class="admin-form detail-card">
-        <h1 th:text="${patron.id != null} ? 'Editar patrón' : 'Nuevo patrón'">Nuevo patrón</h1>
+<main id="main-content" class="container">
+
+    <section class="admin-form detail-card" aria-labelledby="form-patron-title">
+        <h1 id="form-patron-title" th:text="${patron.id != null} ? 'Editar patrón' : 'Nuevo patrón'">Nuevo patrón</h1>
+
         <form th:action="${patron.id != null} ? @{/admin/patrones/{id}(id=${patron.id})} : @{/admin/patrones}"
-              th:object="${patron}" method="post" class="form-grid">
-            <input th:field="*{nombre}" placeholder="Nombre" required>
-            <select th:field="*{categoria}">
-                <option value="">— Categoría —</option>
-                <option th:each="c : ${categorias}" th:value="${c}" th:text="${c}"></option>
-            </select>
-            <textarea th:field="*{descripcion}" placeholder="Descripción" required></textarea>
-            <textarea th:field="*{proposito}" placeholder="Propósito"></textarea>
-            <textarea th:field="*{problemaResuelto}" placeholder="Problema que resuelve"></textarea>
-            <textarea th:field="*{cuandoUsar}" placeholder="Cuándo usarlo"></textarea>
-            <textarea th:field="*{estructura}" placeholder="Estructura"></textarea>
-            <input th:field="*{diagramaUmlUrl}" placeholder="URL del diagrama UML (opcional)">
-            <textarea th:field="*{codigoEjemplo}" placeholder="Código de ejemplo" style="min-height:120px"></textarea>
+              th:object="${patron}" method="post" class="form-grid" novalidate>
+
+            <div>
+                <label for="nombre">Nombre</label>
+                <input th:field="*{nombre}" id="nombre" placeholder="Nombre del patrón" required>
+            </div>
+
+            <div>
+                <label for="categoria">Categoría</label>
+                <select th:field="*{categoria}" id="categoria">
+                    <option value="">— Categoría —</option>
+                    <option th:each="c : ${categorias}" th:value="${c}" th:text="${c}"></option>
+                </select>
+            </div>
+
+            <div style="grid-column:1/-1">
+                <label for="descripcion">Descripción</label>
+                <textarea th:field="*{descripcion}" id="descripcion" placeholder="Descripción breve" required></textarea>
+            </div>
+
+            <div style="grid-column:1/-1">
+                <label for="proposito">Propósito</label>
+                <textarea th:field="*{proposito}" id="proposito" placeholder="Propósito del patrón"></textarea>
+            </div>
+
+            <div style="grid-column:1/-1">
+                <label for="problemaResuelto">Problema que resuelve</label>
+                <textarea th:field="*{problemaResuelto}" id="problemaResuelto" placeholder="Problema que resuelve"></textarea>
+            </div>
+
+            <div style="grid-column:1/-1">
+                <label for="cuandoUsar">Cuándo usarlo</label>
+                <textarea th:field="*{cuandoUsar}" id="cuandoUsar" placeholder="Cuándo usarlo"></textarea>
+            </div>
+
+            <div style="grid-column:1/-1">
+                <label for="estructura">Estructura</label>
+                <textarea th:field="*{estructura}" id="estructura" placeholder="Estructura del patrón"></textarea>
+            </div>
+
+            <div style="grid-column:1/-1">
+                <label for="diagramaUmlUrl">URL del diagrama UML</label>
+                <input th:field="*{diagramaUmlUrl}" id="diagramaUmlUrl" placeholder="https://... (opcional)">
+            </div>
+
+            <div style="grid-column:1/-1">
+                <label for="codigoEjemplo">Código de ejemplo</label>
+                <textarea th:field="*{codigoEjemplo}" id="codigoEjemplo" placeholder="Código Java de ejemplo" style="min-height:120px"></textarea>
+            </div>
+
+            <div style="grid-column:1/-1">
+                <label for="referencia">Referencia bibliográfica</label>
+                <input th:field="*{referencia}" id="referencia" placeholder="Referencia (opcional)">
+            </div>
+
             <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center">
-                <button class="btn primary" th:text="${patron.id != null} ? 'Actualizar' : 'Guardar patrón'">Guardar</button>
+                <button class="btn primary" type="submit"
+                        th:text="${patron.id != null} ? 'Actualizar' : 'Guardar patrón'">Guardar</button>
                 <a th:if="${patron.id != null}" class="btn ghost" th:href="@{/admin/patrones}">Cancelar</a>
             </div>
         </form>
     </section>
 
-    <section class="detail-card">
-        <h1>Patrones registrados</h1>
+    <section class="detail-card" aria-labelledby="lista-patrones-title">
+        <h1 id="lista-patrones-title">Patrones registrados</h1>
         <div class="table-wrap">
             <table>
+                <caption class="sr-only">Lista de patrones de diseño registrados</caption>
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Categoría</th>
-                        <th>Acciones</th>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Categoría</th>
+                        <th scope="col">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,10 +104,13 @@
                         <td th:text="${p.categoria}"></td>
                         <td>
                             <div style="display:flex;gap:8px">
-                                <a class="btn outline btn-sm" th:href="@{/admin/patrones/{id}/editar(id=${p.id})}">Editar</a>
+                                <a class="btn outline btn-sm"
+                                   th:href="@{/admin/patrones/{id}/editar(id=${p.id})}"
+                                   th:aria-label="${'Editar ' + p.nombre}">Editar</a>
                                 <form th:action="@{/admin/patrones/{id}/eliminar(id=${p.id})}" method="post"
                                       onsubmit="return confirm('¿Eliminar este patrón?')">
-                                    <button class="btn ghost btn-sm" style="color:var(--red)">Eliminar</button>
+                                    <button class="btn ghost btn-sm" type="submit" style="color:var(--red)"
+                                            th:aria-label="${'Eliminar ' + p.nombre}">Eliminar</button>
                                 </form>
                             </div>
                         </td>

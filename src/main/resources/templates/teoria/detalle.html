@@ -1,141 +1,139 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${'CodeMan | ' + patron.nombre}">CodeMan</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
-
 <body>
 
-    <header class="topbar">
-        <a class="brand" th:href="@{/teoria}">← Teoría</a>
-        <nav>
-            <a class="btn outline" th:href="@{/teoria}">Todos los patrones</a>
-            <a class="btn primary" th:href="@{/jugar}">Jugar</a>
-        </nav>
-    </header>
+<a class="skip-link" href="#main-content">Saltar al contenido principal</a>
 
-    <main>
+<header class="topbar">
+    <a class="brand" th:href="@{/teoria}">← Teoría</a>
+    <nav aria-label="Navegación secundaria">
+        <a class="btn outline" th:href="@{/teoria}">Todos los patrones</a>
+        <a class="btn primary" th:href="@{/jugar}">Jugar</a>
+    </nav>
+</header>
 
-        <!-- Hero del patrón -->
-        <div class="patron-hero" th:classappend="${'hero-' + #strings.toLowerCase(patron.categoria)}">
-            <div class="patron-hero-inner container narrow">
-                <span class="patron-badge" th:text="${patron.categoria}"></span>
-                <h1 th:text="${patron.nombre}"></h1>
-                <p class="patron-lead" th:text="${patron.descripcion}"></p>
-                <div th:if="${revisado}" class="revisado-pill">✓ Patrón revisado</div>
-            </div>
+<main id="main-content">
+
+    <div class="patron-hero" th:classappend="${'hero-' + #strings.toLowerCase(patron.categoria)}">
+        <div class="patron-hero-inner container narrow">
+            <span class="patron-badge" th:text="${patron.categoria}"></span>
+            <h1 th:text="${patron.nombre}"></h1>
+            <p class="patron-lead" th:text="${patron.descripcion}"></p>
+            <div th:if="${revisado}" class="revisado-pill">✓ Patrón revisado</div>
         </div>
+    </div>
 
-        <!-- Contenido -->
-        <div class="container narrow patron-body">
+    <div class="container narrow patron-body">
 
-            <!-- Grid de secciones informativas -->
-            <div class="info-grid">
+        <div class="info-grid">
 
-                <div class="info-block" th:if="${patron.proposito != null and !#strings.isEmpty(patron.proposito)}">
-                    <div class="info-block-head">
-                        <h2>Propósito</h2>
-                    </div>
-                    <p th:text="${patron.proposito}"></p>
-                </div>
-
-                <div class="info-block" th:if="${patron.problemaResuelto != null and !#strings.isEmpty(patron.problemaResuelto)}">
-                    <div class="info-block-head">
-                        <span class="info-icon">🔍</span>
-                        <h2>Problema que resuelve</h2>
-                    </div>
-                    <p th:text="${patron.problemaResuelto}"></p>
-                </div>
-
-                <div class="info-block" th:if="${patron.cuandoUsar != null and !#strings.isEmpty(patron.cuandoUsar)}">
-                    <div class="info-block-head">
-                        <h2>Cuándo usarlo</h2>
-                    </div>
-                    <p th:text="${patron.cuandoUsar}"></p>
-                </div>
-
-                <div class="info-block" th:if="${patron.estructura != null and !#strings.isEmpty(patron.estructura)}">
-                    <div class="info-block-head">
-                        <h2>Estructura</h2>
-                    </div>
-                    <p th:text="${patron.estructura}"></p>
-                </div>
-
-            </div>
-
-            <!-- Diagrama UML -->
-            <div th:if="${patron.diagramaUmlUrl != null and !#strings.isEmpty(patron.diagramaUmlUrl)}" class="uml-section">
-                <div class="section-label">
-                    <h2>Diagrama UML</h2>
-                </div>
-                <div class="uml-wrapper">
-                    <img th:src="@{${patron.diagramaUmlUrl}}" alt="Diagrama UML" class="uml-diagram">
-                </div>
-            </div>
-
-            <!-- Código de ejemplo -->
-            <div th:if="${patron.codigoEjemplo != null and !#strings.isEmpty(patron.codigoEjemplo)}"
-                class="code-section">
-                <div class="section-label">
-                    <h2>Ejemplo en código</h2>
-                </div>
-                <div class="code-block-wrapper">
-                    <div class="code-header">
-                        <div class="code-dots">
-                            <span></span><span></span><span></span>
-                        </div>
-                        <span class="code-lang">Java</span>
-                    </div>
-                    <pre class="code-pre" th:text="${patron.codigoEjemplo}"></pre>
-                </div>
-            </div>
-
-            <!-- Referencia bibliográfica -->
-            <div th:if="${patron.referencia != null and !#strings.isEmpty(patron.referencia)}" class="info-block" style="margin-top:24px">
+            <section class="info-block" th:if="${patron.proposito != null and !#strings.isEmpty(patron.proposito)}"
+                     aria-labelledby="sec-proposito">
                 <div class="info-block-head">
-                    <h2>Referencia bibliográfica</h2>
+                    <h2 id="sec-proposito">Propósito</h2>
                 </div>
-                <p class="muted" style="font-style:italic" th:text="${patron.referencia}"></p>
-            </div>
+                <p th:text="${patron.proposito}"></p>
+            </section>
 
-            <!-- Botón de revisión -->
-            <div class="review-bar">
-                <div class="review-bar-text">
-                    <span th:if="${revisado}">Ya revisaste este patrón.</span>
-                    <span th:unless="${revisado}">¿Entendiste el patrón? Márcalo como revisado para llevar tu
-                        progreso.</span>
+            <section class="info-block" th:if="${patron.problemaResuelto != null and !#strings.isEmpty(patron.problemaResuelto)}"
+                     aria-labelledby="sec-problema">
+                <div class="info-block-head">
+                    <span class="info-icon" aria-hidden="true">🔍</span>
+                    <h2 id="sec-problema">Problema que resuelve</h2>
                 </div>
-                <form th:action="@{/teoria/{id}/revisar(id=${patron.id})}" method="post">
-                    <button class="btn primary btn-lg" th:text="${revisado ? '✓ Revisado' : 'Marcar como revisado'}"
-                        th:disabled="${revisado}">
-                    </button>
-                </form>
-            </div>
+                <p th:text="${patron.problemaResuelto}"></p>
+            </section>
 
-            <!-- Navegación anterior / siguiente -->
-            <div class="detalle-paginacion">
-                <a class="btn outline detalle-prev"
-                   th:if="${patronAnterior != null}"
-                   th:href="@{/teoria/{id}(id=${patronAnterior.id})}">← <span th:text="${patronAnterior.nombre}">Anterior</span></a>
-                <span th:unless="${patronAnterior != null}"></span>
-                <a class="btn outline detalle-next"
-                   th:if="${patronSiguiente != null}"
-                   th:href="@{/teoria/{id}(id=${patronSiguiente.id})}"><span th:text="${patronSiguiente.nombre}">Siguiente</span> →</a>
-                <span th:unless="${patronSiguiente != null}"></span>
-            </div>
+            <section class="info-block" th:if="${patron.cuandoUsar != null and !#strings.isEmpty(patron.cuandoUsar)}"
+                     aria-labelledby="sec-cuando">
+                <div class="info-block-head">
+                    <h2 id="sec-cuando">Cuándo usarlo</h2>
+                </div>
+                <p th:text="${patron.cuandoUsar}"></p>
+            </section>
 
-            <!-- Navegación inferior -->
-            <div class="detalle-nav">
-                <a class="btn outline" th:href="@{/teoria}">← Volver a teoría</a>
-                <a class="btn ghost" th:href="@{/jugar/{cat}(cat=${patron.categoria})}">Practicar en el laberinto →</a>
-            </div>
+            <section class="info-block" th:if="${patron.estructura != null and !#strings.isEmpty(patron.estructura)}"
+                     aria-labelledby="sec-estructura">
+                <div class="info-block-head">
+                    <h2 id="sec-estructura">Estructura</h2>
+                </div>
+                <p th:text="${patron.estructura}"></p>
+            </section>
 
         </div>
-    </main>
-</body>
 
+        <section th:if="${patron.diagramaUmlUrl != null and !#strings.isEmpty(patron.diagramaUmlUrl)}"
+                 class="uml-section" aria-labelledby="sec-uml">
+            <div class="section-label">
+                <h2 id="sec-uml">Diagrama UML</h2>
+            </div>
+            <div class="uml-wrapper">
+                <img th:src="@{${patron.diagramaUmlUrl}}"
+                     th:alt="${'Diagrama UML del patrón ' + patron.nombre}"
+                     class="uml-diagram">
+            </div>
+        </section>
+
+        <section th:if="${patron.codigoEjemplo != null and !#strings.isEmpty(patron.codigoEjemplo)}"
+                 class="code-section" aria-labelledby="sec-codigo">
+            <div class="section-label">
+                <h2 id="sec-codigo">Ejemplo en código</h2>
+            </div>
+            <div class="code-block-wrapper">
+                <div class="code-header" aria-hidden="true">
+                    <div class="code-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <span class="code-lang">Java</span>
+                </div>
+                <pre class="code-pre" th:text="${patron.codigoEjemplo}"></pre>
+            </div>
+        </section>
+
+        <section th:if="${patron.referencia != null and !#strings.isEmpty(patron.referencia)}"
+                 class="info-block" style="margin-top:24px" aria-labelledby="sec-referencia">
+            <div class="info-block-head">
+                <h2 id="sec-referencia">Referencia bibliográfica</h2>
+            </div>
+            <p class="muted" style="font-style:italic" th:text="${patron.referencia}"></p>
+        </section>
+
+        <div class="review-bar">
+            <div class="review-bar-text">
+                <span th:if="${revisado}">Ya revisaste este patrón.</span>
+                <span th:unless="${revisado}">¿Entendiste el patrón? Márcalo como revisado para llevar tu progreso.</span>
+            </div>
+            <form th:action="@{/teoria/{id}/revisar(id=${patron.id})}" method="post">
+                <button class="btn primary btn-lg"
+                        th:text="${revisado ? '✓ Revisado' : 'Marcar como revisado'}"
+                        th:disabled="${revisado}">
+                </button>
+            </form>
+        </div>
+
+        <nav class="detalle-paginacion" aria-label="Patrones anterior y siguiente">
+            <a class="btn outline detalle-prev"
+               th:if="${patronAnterior != null}"
+               th:href="@{/teoria/{id}(id=${patronAnterior.id})}">← <span th:text="${patronAnterior.nombre}">Anterior</span></a>
+            <span th:unless="${patronAnterior != null}"></span>
+            <a class="btn outline detalle-next"
+               th:if="${patronSiguiente != null}"
+               th:href="@{/teoria/{id}(id=${patronSiguiente.id})}"><span th:text="${patronSiguiente.nombre}">Siguiente</span> →</a>
+            <span th:unless="${patronSiguiente != null}"></span>
+        </nav>
+
+        <nav class="detalle-nav" aria-label="Navegación de la página">
+            <a class="btn outline" th:href="@{/teoria}">← Volver a teoría</a>
+            <a class="btn ghost" th:href="@{/jugar/{cat}(cat=${patron.categoria})}">Practicar en el laberinto →</a>
+        </nav>
+
+    </div>
+</main>
+</body>
 </html>

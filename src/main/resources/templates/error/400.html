@@ -1,15 +1,27 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeMan | Error 400</title><link rel="stylesheet" th:href="@{/css/styles.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMan | Error 400</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
+
+<a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+
 <header class="topbar">
-    <a class="brand" th:href="@{/}"><span class="mini-pac"></span> CodeMan</a>
+    <a class="brand" th:href="@{/}"><span class="mini-pac" aria-hidden="true"></span> CodeMan</a>
 </header>
-<main class="container">
-    <!-- TODO: mensaje de error 400 con estilo galáctico Pac-Man y botón para volver -->
+
+<main id="main-content" class="container">
+    <div class="page-title center" style="padding:4rem 0">
+        <p class="eyebrow" style="color:var(--amber)">Error 400</p>
+        <h1>Solicitud inválida</h1>
+        <p>La solicitud no pudo ser procesada. Verifica los datos e inténtalo de nuevo.</p>
+        <a class="btn primary" th:href="@{/}" style="margin-top:1.5rem">Volver al inicio</a>
+    </div>
 </main>
+
 </body>
 </html>
