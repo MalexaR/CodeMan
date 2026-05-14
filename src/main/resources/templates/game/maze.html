@@ -10,7 +10,20 @@
         <div>👻 Errores: <strong id="errores">0</strong></div>
     </section>
     <canvas id="mazeCanvas" width="588" height="588" aria-label="Laberinto CodeMan"></canvas>
-    <p class="game-help">Usa flechas o WASD. Presiona P para pausar. Responde las preguntas antes de que termine el tiempo.</p>
+
+    <!-- Controles táctiles (solo visibles en móvil) -->
+    <div class="dpad" id="dpad" aria-label="Controles direccionales">
+        <button class="dpad-btn dpad-up"   aria-label="Arriba">▲</button>
+        <div class="dpad-middle">
+            <button class="dpad-btn dpad-left"  aria-label="Izquierda">◀</button>
+            <div class="dpad-center"></div>
+            <button class="dpad-btn dpad-right" aria-label="Derecha">▶</button>
+        </div>
+        <button class="dpad-btn dpad-down" aria-label="Abajo">▼</button>
+    </div>
+    <button class="mobile-pause-btn" id="pauseBtn">⏸ Pausa</button>
+
+    <p class="game-help">Flechas / WASD para mover · P para pausar · Responde antes de que acabe el tiempo</p>
 </main>
 
 <div id="questionModal" class="modal hidden">

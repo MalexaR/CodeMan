@@ -537,17 +537,43 @@
     if (['arrowup','arrowdown','arrowleft','arrowright'].includes(k)) e.preventDefault();
   });
 
-  // ── Controles táctiles ────────────────────────────────────────────────────────
+  // ── Controles táctiles (swipe sobre canvas) ───────────────────────────────────
   let touchStart = null;
   canvas.addEventListener('touchstart', e => { touchStart = e.touches[0]; }, { passive: true });
+  canvas.addEventListener('touchmove',  e => e.preventDefault(), { passive: false });
   canvas.addEventListener('touchend', e => {
     if (!touchStart) return;
     const dx = e.changedTouches[0].clientX - touchStart.clientX;
     const dy = e.changedTouches[0].clientY - touchStart.clientY;
+    if (Math.abs(dx) < 8 && Math.abs(dy) < 8) { touchStart = null; return; }
     if (Math.abs(dx) > Math.abs(dy)) { pac.ndx = dx > 0 ? 1 : -1; pac.ndy =  0; }
     else                             { pac.ndx =  0; pac.ndy = dy > 0 ? 1 : -1; }
     touchStart = null;
   }, { passive: true });
+
+  // ── D-pad (botones de dirección móvil) ────────────────────────────────────────
+  const DPAD = {
+    'dpad-up':    { ndx:  0, ndy: -1 },
+    'dpad-down':  { ndx:  0, ndy:  1 },
+    'dpad-left':  { ndx: -1, ndy:  0 },
+    'dpad-right': { ndx:  1, ndy:  0 }
+  };
+  Object.entries(DPAD).forEach(([cls, dir]) => {
+    const btn = document.querySelector(`.${cls}`);
+    if (!btn) return;
+    const move = e => { e.preventDefault(); if (state === 'playing' || state === 'paused') { pac.ndx = dir.ndx; pac.ndy = dir.ndy; } };
+    btn.addEventListener('touchstart', move, { passive: false });
+    btn.addEventListener('mousedown',  move);
+  });
+
+  // ── Botón pausa móvil ─────────────────────────────────────────────────────────
+  const pauseBtn = $id('pauseBtn');
+  if (pauseBtn) {
+    pauseBtn.addEventListener('click', () => {
+      if      (state === 'playing') { state = 'paused';  draw(); pauseBtn.textContent = '▶ Continuar'; }
+      else if (state === 'paused')  { state = 'playing';         pauseBtn.textContent = '⏸ Pausa'; }
+    });
+  }
 
   // ── Arranque ──────────────────────────────────────────────────────────────────
   init().catch(err => {
