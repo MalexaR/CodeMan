@@ -108,7 +108,7 @@ public class GameService {
         partida.setUsuario(usuario);
         partida.setCategoria(request.categoria());
         partida.setModoJuego(request.modoJuego() == null ? ModoJuego.PRACTICA : request.modoJuego());
-        partida.setVidas(3);
+        partida.setVidasRestantes(3);
         partida.setPuntuacion(0);
         partida.setCompletada(false);
         partida.setErroresAcumulados(0);
@@ -132,7 +132,7 @@ public class GameService {
         respuesta.setPregunta(pregunta);
         respuesta.setOpcionElegida(request.opcionElegida());
         respuesta.setEsCorrecta(request.esCorrecta());
-        respuesta.setTiempoRespuesta(request.tiempoRespuesta());
+        respuesta.setTiempoRespuestaMs(request.tiempoRespuesta());
         respuestaPartidaRepository.save(respuesta);
 
         int nuevosErrores = partida.getErroresAcumulados() + (request.esCorrecta() ? 0 : 1);
@@ -168,7 +168,7 @@ public class GameService {
             powerUpAplicado = values[(int) (Math.random() * values.length)].name();
         } else {
             penalizacionAplicada = "PIERDE_VIDA";
-            partida.setVidas(Math.max(0, partida.getVidas() - 1));
+            partida.setVidasRestantes(Math.max(0, partida.getVidasRestantes() - 1));
             partidaRepository.save(partida);
         }
 
@@ -185,7 +185,7 @@ public class GameService {
         partida.setFechaFin(LocalDateTime.now());
         partida.setCompletada(true);
         partida.setPuntuacion(request.puntuacion());
-        partida.setVidas(request.vidas());
+        partida.setVidasRestantes(request.vidas());
         partidaRepository.save(partida);
 
         Progreso progreso = progresoRepository.findByUsuario(usuario).orElseGet(() -> {
@@ -232,7 +232,7 @@ public class GameService {
             tiempoTotal = String.format("%02d:%02d", seg / 60, seg % 60);
         }
 
-        boolean victoria = partida.getVidas() > 0;
+        boolean victoria = partida.getVidasRestantes() > 0;
         String categoria = partida.getCategoria() != null ? partida.getCategoria().name() : "DESAFIO";
 
         List<ErrorDetalle> erroresDetalle = incorrectas.stream()
@@ -253,7 +253,7 @@ public class GameService {
                 .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
         if (!partida.getUsuario().getId().equals(usuario.getId()))
             throw new IllegalArgumentException("Partida no pertenece al usuario actual");
-        partida.setVidas(request.vidas());
+        partida.setVidasRestantes(request.vidas());
         partidaRepository.save(partida);
         return new SimpleResponse(true);
     }

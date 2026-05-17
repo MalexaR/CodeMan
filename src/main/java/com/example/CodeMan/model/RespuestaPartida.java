@@ -3,7 +3,7 @@ package com.example.CodeMan.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "respuesta_partida")
+@Table(name = "respuestas_partida")
 public class RespuestaPartida {
 
     @Id
@@ -24,9 +24,6 @@ public class RespuestaPartida {
 
     @Column(name = "es_correcta", nullable = false)
     private boolean esCorrecta = false;
-
-    @Column(name = "tiempo_respuesta")
-    private Integer tiempoRespuesta;
 
     @Column(name = "tiempo_respuesta_ms")
     private Integer tiempoRespuestaMs;
@@ -55,10 +52,6 @@ public class RespuestaPartida {
 
     public boolean isEsCorrecta() {
         return esCorrecta;
-    }
-
-    public Integer getTiempoRespuesta() {
-        return tiempoRespuesta;
     }
 
     public Integer getTiempoRespuestaMs() {
@@ -91,10 +84,6 @@ public class RespuestaPartida {
 
     public void setEsCorrecta(boolean esCorrecta) {
         this.esCorrecta = esCorrecta;
-    }
-
-    public void setTiempoRespuesta(Integer tiempoRespuesta) {
-        this.tiempoRespuesta = tiempoRespuesta;
     }
 
     public void setTiempoRespuestaMs(Integer tiempoRespuestaMs) {

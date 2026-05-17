@@ -28,8 +28,8 @@ public class Partida {
     @Column(name = "fecha_fin")
     private LocalDateTime fechaFin;
 
-    @Column(nullable = false)
-    private int vidas = 3;
+    @Column(name = "vidas_restantes", nullable = false)
+    private int vidasRestantes = 3;
 
     @Column(nullable = false)
     private int puntuacion = 0;
@@ -97,12 +97,12 @@ public class Partida {
         this.fechaFin = fechaFin;
     }
 
-    public int getVidas() {
-        return vidas;
+    public int getVidasRestantes() {
+        return vidasRestantes;
     }
 
-    public void setVidas(int vidas) {
-        this.vidas = vidas;
+    public void setVidasRestantes(int vidasRestantes) {
+        this.vidasRestantes = vidasRestantes;
     }
 
     public int getPuntuacion() {
