@@ -11,42 +11,72 @@
 <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
 
 <header class="topbar">
-    <a class="brand" th:href="@{/admin}">← Admin</a>
-    <strong>Banco de preguntas</strong>
+    <a class="brand" th:href="@{/}">← Inicio</a>
+    <nav class="admin-tabs" aria-label="Secciones de administración">
+        <a class="tab-link" th:href="@{/admin}">Panel</a>
+        <a class="tab-link" th:href="@{/admin/patrones}">Patrones</a>
+        <a class="tab-link active" th:href="@{/admin/preguntas}">Preguntas</a>
+    </nav>
 </header>
 
 <main id="main-content" class="container">
 
-    <section class="admin-form detail-card" aria-labelledby="form-pregunta-title">
-        <h1 id="form-pregunta-title" th:text="${pregunta.id != null} ? 'Editar pregunta' : 'Nueva pregunta'">Nueva pregunta</h1>
+    <div th:if="${exito}"      class="alert success" role="status" th:text="${exito}"></div>
+    <div th:if="${error}"      class="alert error"   role="alert"  th:text="${error}"></div>
+    <div th:if="${advertencia}" class="alert warn"   role="alert"  th:text="${advertencia}"></div>
 
-        <form th:action="${pregunta.id != null} ? @{/admin/preguntas/{id}(id=${pregunta.id})} : @{/admin/preguntas}"
+    <section class="detail-card" aria-labelledby="form-pregunta-title">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:18px">
+            <h1 id="form-pregunta-title" style="margin:0"
+                th:text="${pregunta.id != null} ? 'Editar pregunta' : 'Nueva pregunta'">Nueva pregunta</h1>
+            <button type="button" class="btn outline btn-sm" onclick="mostrarVistaPrevia()">Vista previa</button>
+        </div>
+
+        <div th:if="${warnDuplicado}" class="alert warn" role="alert" style="margin-bottom:16px">
+            <strong>⚠ Posible duplicado detectado.</strong>
+            Ya existe una pregunta con un enunciado idéntico. Si desea guardarla de todas formas, haga clic en "Confirmar y guardar".
+        </div>
+
+        <form id="form-pregunta"
+              th:action="${pregunta.id != null} ? @{/admin/preguntas/{id}(id=${pregunta.id})} : @{/admin/preguntas}"
               th:object="${pregunta}" method="post" class="form-grid" novalidate>
 
+            <input type="hidden" name="confirmar" th:value="${warnDuplicado ? 'true' : 'false'}">
+
             <div style="grid-column:1/-1">
-                <label for="enunciado">Enunciado</label>
+                <label for="enunciado">Enunciado <span style="color:var(--red)">*</span></label>
                 <textarea th:field="*{enunciado}" id="enunciado" placeholder="Enunciado de la pregunta"
+                          th:classappend="${#fields.hasErrors('enunciado')} ? 'error-input' : ''"
                           required style="min-height:80px"></textarea>
+                <span th:if="${#fields.hasErrors('enunciado')}" th:errors="*{enunciado}" class="field-error"></span>
             </div>
 
             <div>
-                <label for="opcionA">Opción A</label>
-                <input th:field="*{opcionA}" id="opcionA" placeholder="Opción A" required>
+                <label for="opcionA">Opción A <span style="color:var(--red)">*</span></label>
+                <input th:field="*{opcionA}" id="opcionA" placeholder="Opción A"
+                       th:classappend="${#fields.hasErrors('opcionA')} ? 'error-input' : ''" required>
+                <span th:if="${#fields.hasErrors('opcionA')}" th:errors="*{opcionA}" class="field-error"></span>
             </div>
 
             <div>
-                <label for="opcionB">Opción B</label>
-                <input th:field="*{opcionB}" id="opcionB" placeholder="Opción B" required>
+                <label for="opcionB">Opción B <span style="color:var(--red)">*</span></label>
+                <input th:field="*{opcionB}" id="opcionB" placeholder="Opción B"
+                       th:classappend="${#fields.hasErrors('opcionB')} ? 'error-input' : ''" required>
+                <span th:if="${#fields.hasErrors('opcionB')}" th:errors="*{opcionB}" class="field-error"></span>
             </div>
 
             <div>
-                <label for="opcionC">Opción C</label>
-                <input th:field="*{opcionC}" id="opcionC" placeholder="Opción C" required>
+                <label for="opcionC">Opción C <span style="color:var(--red)">*</span></label>
+                <input th:field="*{opcionC}" id="opcionC" placeholder="Opción C"
+                       th:classappend="${#fields.hasErrors('opcionC')} ? 'error-input' : ''" required>
+                <span th:if="${#fields.hasErrors('opcionC')}" th:errors="*{opcionC}" class="field-error"></span>
             </div>
 
             <div>
-                <label for="opcionD">Opción D</label>
-                <input th:field="*{opcionD}" id="opcionD" placeholder="Opción D" required>
+                <label for="opcionD">Opción D <span style="color:var(--red)">*</span></label>
+                <input th:field="*{opcionD}" id="opcionD" placeholder="Opción D"
+                       th:classappend="${#fields.hasErrors('opcionD')} ? 'error-input' : ''" required>
+                <span th:if="${#fields.hasErrors('opcionD')}" th:errors="*{opcionD}" class="field-error"></span>
             </div>
 
             <div style="grid-column:1/-1">
@@ -57,16 +87,16 @@
             </div>
 
             <div>
-                <label for="respuestaCorrecta">Respuesta correcta</label>
-                <select th:field="*{respuestaCorrecta}" id="respuestaCorrecta">
+                <label for="respuestaCorrecta">Respuesta correcta <span style="color:var(--red)">*</span></label>
+                <select th:field="*{respuestaCorrecta}" id="respuestaCorrecta" required>
                     <option value="">— Respuesta correcta —</option>
                     <option th:each="o : ${opciones}" th:value="${o}" th:text="${o}"></option>
                 </select>
             </div>
 
             <div>
-                <label for="categoria">Categoría</label>
-                <select th:field="*{categoria}" id="categoria">
+                <label for="categoria">Categoría <span style="color:var(--red)">*</span></label>
+                <select th:field="*{categoria}" id="categoria" required>
                     <option value="">— Categoría —</option>
                     <option th:each="c : ${categorias}" th:value="${c}" th:text="${c}"></option>
                 </select>
@@ -75,7 +105,6 @@
             <div>
                 <label for="dificultad">Dificultad</label>
                 <select th:field="*{dificultad}" id="dificultad">
-                    <option value="">— Dificultad —</option>
                     <option th:each="d : ${dificultades}" th:value="${d}" th:text="${d}"></option>
                 </select>
             </div>
@@ -83,21 +112,26 @@
             <div>
                 <label for="tipoEvento">Tipo de evento</label>
                 <select th:field="*{tipoEvento}" id="tipoEvento">
-                    <option value="">— Tipo de evento —</option>
                     <option th:each="t : ${tiposEvento}" th:value="${t}" th:text="${t}"></option>
                 </select>
             </div>
 
-            <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center">
+            <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
                 <button class="btn primary" type="submit"
-                        th:text="${pregunta.id != null} ? 'Actualizar' : 'Guardar pregunta'">Guardar</button>
+                        th:text="${warnDuplicado ? 'Confirmar y guardar' : (pregunta.id != null ? 'Actualizar pregunta' : 'Guardar pregunta')}">
+                    Guardar
+                </button>
                 <a th:if="${pregunta.id != null}" class="btn ghost" th:href="@{/admin/preguntas}">Cancelar</a>
             </div>
         </form>
     </section>
 
     <section class="detail-card" aria-labelledby="lista-preguntas-title">
-        <h1 id="lista-preguntas-title">Preguntas registradas</h1>
+        <h2 id="lista-preguntas-title" style="margin-bottom:16px">
+            Preguntas registradas
+            <span class="badge" style="margin-left:8px;font-size:.8rem;vertical-align:middle"
+                  th:text="${#lists.size(preguntas)}"></span>
+        </h2>
         <div class="table-wrap">
             <table>
                 <caption class="sr-only">Lista de preguntas del banco de preguntas</caption>
@@ -114,21 +148,31 @@
                 <tbody>
                     <tr th:each="p : ${preguntas}">
                         <td th:text="${p.id}"></td>
-                        <td th:text="${#strings.abbreviate(p.enunciado, 60)}"></td>
-                        <td th:text="${p.categoria}"></td>
+                        <td th:text="${#strings.abbreviate(p.enunciado, 60)}"
+                            th:title="${p.enunciado}"></td>
+                        <td>
+                            <span class="cat-badge"
+                                  th:classappend="${p.categoria.name() == 'CREACIONAL'} ? ' blue' : (${p.categoria.name() == 'ESTRUCTURAL'} ? ' purple' : ' amber')"
+                                  th:text="${p.categoria}"></span>
+                        </td>
                         <td th:text="${p.dificultad}"></td>
                         <td th:text="${p.respuestaCorrecta}"></td>
                         <td>
-                            <div style="display:flex;gap:8px">
+                            <div style="display:flex;gap:8px;flex-wrap:wrap">
                                 <a class="btn outline btn-sm"
                                    th:href="@{/admin/preguntas/{id}/editar(id=${p.id})}"
                                    th:aria-label="${'Editar pregunta ' + p.id}">Editar</a>
                                 <form th:action="@{/admin/preguntas/{id}/eliminar(id=${p.id})}" method="post"
-                                      onsubmit="return confirm('¿Eliminar esta pregunta?')">
+                                      onsubmit="return confirm('¿Eliminar esta pregunta? Si tiene respuestas de estudiantes, se bloqueará automáticamente.')">
                                     <button class="btn ghost btn-sm" type="submit" style="color:var(--red)"
                                             th:aria-label="${'Eliminar pregunta ' + p.id}">Eliminar</button>
                                 </form>
                             </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(preguntas)}">
+                        <td colspan="6" style="text-align:center;color:var(--muted);padding:28px 12px">
+                            No hay preguntas registradas.
                         </td>
                     </tr>
                 </tbody>
@@ -137,5 +181,60 @@
     </section>
 
 </main>
+
+<div id="modal-preview" class="modal hidden" role="dialog" aria-labelledby="preview-titulo" aria-modal="true">
+    <div class="modal-card" style="max-width:680px">
+        <div class="modal-head">
+            <h2 id="preview-titulo" style="margin:0;font-size:1.15rem">Vista previa de la pregunta</h2>
+            <button class="btn ghost btn-sm" type="button"
+                    onclick="document.getElementById('modal-preview').classList.add('hidden')"
+                    aria-label="Cerrar vista previa">✕</button>
+        </div>
+        <div id="preview-content" style="margin-top:18px"></div>
+    </div>
+</div>
+
+<script>
+function esc(str) {
+    const d = document.createElement('div');
+    d.appendChild(document.createTextNode(str));
+    return d.innerHTML;
+}
+function mostrarVistaPrevia() {
+    const enunciado   = document.getElementById('enunciado').value || '(sin enunciado)';
+    const opA         = document.getElementById('opcionA').value || '';
+    const opB         = document.getElementById('opcionB').value || '';
+    const opC         = document.getElementById('opcionC').value || '';
+    const opD         = document.getElementById('opcionD').value || '';
+    const correcta    = document.getElementById('respuestaCorrecta').value || '';
+    const explicacion = document.getElementById('explicacion').value || '';
+
+    const ops = [['A', opA], ['B', opB], ['C', opC], ['D', opD]];
+    const opcionesHTML = ops.map(([letra, texto]) => {
+        const es = correcta === letra;
+        return `<button class="answer-btn${es ? ' correct-preview' : ''}" type="button">
+            <strong>${letra}.</strong> ${esc(texto)}${es ? ' <span style="float:right">✓</span>' : ''}
+        </button>`;
+    }).join('');
+
+    let html = `<p style="font-size:1.05rem;font-weight:700;line-height:1.6;margin-bottom:18px">${esc(enunciado)}</p>
+        <div class="answers">${opcionesHTML}</div>`;
+
+    if (explicacion) {
+        html += `<div style="margin-top:16px;padding:14px;background:rgba(34,197,94,.08);border-radius:12px;border:1px solid rgba(34,197,94,.22)">
+            <p style="margin:0;color:var(--muted);font-size:.9rem;line-height:1.6"><strong style="color:#86efac">Explicación:</strong> ${esc(explicacion)}</p>
+        </div>`;
+    }
+
+    document.getElementById('preview-content').innerHTML = html;
+    document.getElementById('modal-preview').classList.remove('hidden');
+}
+document.getElementById('modal-preview').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.add('hidden');
+});
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') document.getElementById('modal-preview').classList.add('hidden');
+});
+</script>
 </body>
 </html>

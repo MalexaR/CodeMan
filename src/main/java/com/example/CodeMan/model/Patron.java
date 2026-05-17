@@ -1,6 +1,8 @@
 package com.example.CodeMan.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
@@ -11,6 +13,8 @@ public class Patron {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "El nombre es obligatorio")
+    @Size(max = 100, message = "El nombre no puede superar 100 caracteres")
     @Column(nullable = false, unique = true, length = 100)
     private String nombre;
 
@@ -18,6 +22,7 @@ public class Patron {
     @Column(nullable = false, length = 40)
     private Categoria categoria;
 
+    @NotBlank(message = "La descripción es obligatoria")
     @Column(columnDefinition = "TEXT")
     private String descripcion;
 

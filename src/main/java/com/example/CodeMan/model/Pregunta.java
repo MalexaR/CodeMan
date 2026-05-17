@@ -1,6 +1,7 @@
 package com.example.CodeMan.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "preguntas")
@@ -10,18 +11,23 @@ public class Pregunta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "El enunciado es obligatorio")
     @Column(nullable = false, columnDefinition = "TEXT")
     private String enunciado;
 
+    @NotBlank(message = "La opción A es obligatoria")
     @Column(name = "opcion_a", nullable = false, columnDefinition = "TEXT")
     private String opcionA;
 
+    @NotBlank(message = "La opción B es obligatoria")
     @Column(name = "opcion_b", nullable = false, columnDefinition = "TEXT")
     private String opcionB;
 
+    @NotBlank(message = "La opción C es obligatoria")
     @Column(name = "opcion_c", nullable = false, columnDefinition = "TEXT")
     private String opcionC;
 
+    @NotBlank(message = "La opción D es obligatoria")
     @Column(name = "opcion_d", nullable = false, columnDefinition = "TEXT")
     private String opcionD;
 

@@ -11,34 +11,51 @@
 <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
 
 <header class="topbar">
-    <a class="brand" th:href="@{/admin}">← Admin</a>
-    <strong>Patrones de diseño</strong>
+    <a class="brand" th:href="@{/}">← Inicio</a>
+    <nav class="admin-tabs" aria-label="Secciones de administración">
+        <a class="tab-link" th:href="@{/admin}">Panel</a>
+        <a class="tab-link active" th:href="@{/admin/patrones}">Patrones</a>
+        <a class="tab-link" th:href="@{/admin/preguntas}">Preguntas</a>
+    </nav>
 </header>
 
 <main id="main-content" class="container">
 
-    <section class="admin-form detail-card" aria-labelledby="form-patron-title">
-        <h1 id="form-patron-title" th:text="${patron.id != null} ? 'Editar patrón' : 'Nuevo patrón'">Nuevo patrón</h1>
+    <div th:if="${exito}"      class="alert success" role="status"  th:text="${exito}"></div>
+    <div th:if="${error}"      class="alert error"   role="alert"   th:text="${error}"></div>
+    <div th:if="${advertencia}" class="alert warn"   role="alert"   th:text="${advertencia}"></div>
 
-        <form th:action="${patron.id != null} ? @{/admin/patrones/{id}(id=${patron.id})} : @{/admin/patrones}"
+    <section class="detail-card" aria-labelledby="form-patron-title">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:18px">
+            <h1 id="form-patron-title" style="margin:0"
+                th:text="${patron.id != null} ? 'Editar patrón' : 'Nuevo patrón'">Nuevo patrón</h1>
+            <button type="button" class="btn outline btn-sm" onclick="mostrarVistaPrevia()">Vista previa</button>
+        </div>
+
+        <form id="form-patron"
+              th:action="${patron.id != null} ? @{/admin/patrones/{id}(id=${patron.id})} : @{/admin/patrones}"
               th:object="${patron}" method="post" class="form-grid" novalidate>
 
             <div>
-                <label for="nombre">Nombre</label>
-                <input th:field="*{nombre}" id="nombre" placeholder="Nombre del patrón" required>
+                <label for="nombre">Nombre <span style="color:var(--red)">*</span></label>
+                <input th:field="*{nombre}" id="nombre" placeholder="Nombre del patrón"
+                       th:classappend="${#fields.hasErrors('nombre')} ? 'error-input' : ''" required>
+                <span th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}" class="field-error"></span>
             </div>
 
             <div>
-                <label for="categoria">Categoría</label>
-                <select th:field="*{categoria}" id="categoria">
+                <label for="categoria">Categoría <span style="color:var(--red)">*</span></label>
+                <select th:field="*{categoria}" id="categoria" required>
                     <option value="">— Categoría —</option>
                     <option th:each="c : ${categorias}" th:value="${c}" th:text="${c}"></option>
                 </select>
             </div>
 
             <div style="grid-column:1/-1">
-                <label for="descripcion">Descripción</label>
-                <textarea th:field="*{descripcion}" id="descripcion" placeholder="Descripción breve" required></textarea>
+                <label for="descripcion">Descripción <span style="color:var(--red)">*</span></label>
+                <textarea th:field="*{descripcion}" id="descripcion" placeholder="Descripción breve del patrón"
+                          th:classappend="${#fields.hasErrors('descripcion')} ? 'error-input' : ''" required></textarea>
+                <span th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}" class="field-error"></span>
             </div>
 
             <div style="grid-column:1/-1">
@@ -53,12 +70,12 @@
 
             <div style="grid-column:1/-1">
                 <label for="cuandoUsar">Cuándo usarlo</label>
-                <textarea th:field="*{cuandoUsar}" id="cuandoUsar" placeholder="Cuándo usarlo"></textarea>
+                <textarea th:field="*{cuandoUsar}" id="cuandoUsar" placeholder="Cuándo aplicar este patrón"></textarea>
             </div>
 
             <div style="grid-column:1/-1">
                 <label for="estructura">Estructura</label>
-                <textarea th:field="*{estructura}" id="estructura" placeholder="Estructura del patrón"></textarea>
+                <textarea th:field="*{estructura}" id="estructura" placeholder="Estructura y participantes del patrón"></textarea>
             </div>
 
             <div style="grid-column:1/-1">
@@ -68,7 +85,8 @@
 
             <div style="grid-column:1/-1">
                 <label for="codigoEjemplo">Código de ejemplo</label>
-                <textarea th:field="*{codigoEjemplo}" id="codigoEjemplo" placeholder="Código Java de ejemplo" style="min-height:120px"></textarea>
+                <textarea th:field="*{codigoEjemplo}" id="codigoEjemplo"
+                          placeholder="Código Java de ejemplo" style="min-height:120px;font-family:monospace"></textarea>
             </div>
 
             <div style="grid-column:1/-1">
@@ -76,16 +94,20 @@
                 <input th:field="*{referencia}" id="referencia" placeholder="Referencia (opcional)">
             </div>
 
-            <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center">
+            <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
                 <button class="btn primary" type="submit"
-                        th:text="${patron.id != null} ? 'Actualizar' : 'Guardar patrón'">Guardar</button>
+                        th:text="${patron.id != null} ? 'Actualizar patrón' : 'Guardar patrón'">Guardar</button>
                 <a th:if="${patron.id != null}" class="btn ghost" th:href="@{/admin/patrones}">Cancelar</a>
             </div>
         </form>
     </section>
 
     <section class="detail-card" aria-labelledby="lista-patrones-title">
-        <h1 id="lista-patrones-title">Patrones registrados</h1>
+        <h2 id="lista-patrones-title" style="margin-bottom:16px">
+            Patrones registrados
+            <span class="badge" style="margin-left:8px;font-size:.8rem;vertical-align:middle"
+                  th:text="${#lists.size(patrones)}"></span>
+        </h2>
         <div class="table-wrap">
             <table>
                 <caption class="sr-only">Lista de patrones de diseño registrados</caption>
@@ -101,18 +123,28 @@
                     <tr th:each="p : ${patrones}">
                         <td th:text="${p.id}"></td>
                         <td th:text="${p.nombre}"></td>
-                        <td th:text="${p.categoria}"></td>
                         <td>
-                            <div style="display:flex;gap:8px">
+                            <span class="cat-badge"
+                                  th:classappend="${p.categoria.name() == 'CREACIONAL'} ? ' blue' : (${p.categoria.name() == 'ESTRUCTURAL'} ? ' purple' : ' amber')"
+                                  th:text="${p.categoria}"></span>
+                        </td>
+                        <td>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap">
                                 <a class="btn outline btn-sm"
                                    th:href="@{/admin/patrones/{id}/editar(id=${p.id})}"
                                    th:aria-label="${'Editar ' + p.nombre}">Editar</a>
                                 <form th:action="@{/admin/patrones/{id}/eliminar(id=${p.id})}" method="post"
-                                      onsubmit="return confirm('¿Eliminar este patrón?')">
+                                      th:data-nombre="${p.nombre}"
+                                      onsubmit="return confirm('¿Eliminar el patrón «' + this.dataset.nombre + '»? Esta acción no se puede deshacer.')">
                                     <button class="btn ghost btn-sm" type="submit" style="color:var(--red)"
                                             th:aria-label="${'Eliminar ' + p.nombre}">Eliminar</button>
                                 </form>
                             </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(patrones)}">
+                        <td colspan="4" style="text-align:center;color:var(--muted);padding:28px 12px">
+                            No hay patrones registrados.
                         </td>
                     </tr>
                 </tbody>
@@ -121,5 +153,64 @@
     </section>
 
 </main>
+
+<div id="modal-preview" class="modal hidden" role="dialog" aria-labelledby="preview-titulo" aria-modal="true">
+    <div class="modal-card" style="max-width:720px">
+        <div class="modal-head">
+            <h2 id="preview-titulo" style="margin:0;font-size:1.15rem">Vista previa del patrón</h2>
+            <button class="btn ghost btn-sm" type="button"
+                    onclick="document.getElementById('modal-preview').classList.add('hidden')"
+                    aria-label="Cerrar vista previa">✕</button>
+        </div>
+        <div id="preview-content" style="margin-top:18px;max-height:70vh;overflow-y:auto"></div>
+    </div>
+</div>
+
+<script>
+function esc(str) {
+    const d = document.createElement('div');
+    d.appendChild(document.createTextNode(str));
+    return d.innerHTML;
+}
+function mostrarVistaPrevia() {
+    const nombre        = document.getElementById('nombre').value || '(sin nombre)';
+    const categoria     = document.getElementById('categoria').value || '';
+    const descripcion   = document.getElementById('descripcion').value || '';
+    const proposito     = document.getElementById('proposito').value || '';
+    const problema      = document.getElementById('problemaResuelto').value || '';
+    const cuando        = document.getElementById('cuandoUsar').value || '';
+    const estructura    = document.getElementById('estructura').value || '';
+    const codigo        = document.getElementById('codigoEjemplo').value || '';
+    const referencia    = document.getElementById('referencia').value || '';
+    const uml           = document.getElementById('diagramaUmlUrl').value || '';
+
+    let html = `<span class="patron-badge">${esc(categoria)}</span>
+        <h2 style="font-size:1.8rem;margin:12px 0 8px">${esc(nombre)}</h2>
+        <p style="color:#cbd5e1;margin:0 0 20px;line-height:1.65">${esc(descripcion)}</p>`;
+
+    const bloque = (titulo, texto) =>
+        `<div class="info-block" style="margin-bottom:12px">
+            <h3 style="margin:0 0 8px;font-size:.88rem;text-transform:uppercase;letter-spacing:.06em;font-weight:800">${titulo}</h3>
+            <p style="margin:0;color:#cbd5e1;line-height:1.65">${esc(texto)}</p>
+        </div>`;
+
+    if (proposito)   html += bloque('Propósito', proposito);
+    if (problema)    html += bloque('Problema que resuelve', problema);
+    if (cuando)      html += bloque('Cuándo usarlo', cuando);
+    if (estructura)  html += bloque('Estructura', estructura);
+    if (uml)         html += `<div style="text-align:center;margin:16px 0"><img src="${uml.replace(/"/g,'&quot;')}" alt="Diagrama UML" style="max-width:100%;border-radius:12px;border:1px solid rgba(148,163,184,.2)"></div>`;
+    if (codigo)      html += `<pre class="code-pre" style="margin:16px 0">${esc(codigo)}</pre>`;
+    if (referencia)  html += `<p style="font-style:italic;color:var(--muted);margin:12px 0 0;font-size:.88rem">${esc(referencia)}</p>`;
+
+    document.getElementById('preview-content').innerHTML = html;
+    document.getElementById('modal-preview').classList.remove('hidden');
+}
+document.getElementById('modal-preview').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.add('hidden');
+});
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') document.getElementById('modal-preview').classList.add('hidden');
+});
+</script>
 </body>
 </html>

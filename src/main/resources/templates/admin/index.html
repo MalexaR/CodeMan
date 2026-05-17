@@ -12,7 +12,11 @@
 
 <header class="topbar">
     <a class="brand" th:href="@{/}">← Inicio</a>
-    <strong>Administración</strong>
+    <nav class="admin-tabs" aria-label="Secciones de administración">
+        <a class="tab-link active" th:href="@{/admin}">Panel</a>
+        <a class="tab-link" th:href="@{/admin/patrones}">Patrones</a>
+        <a class="tab-link" th:href="@{/admin/preguntas}">Preguntas</a>
+    </nav>
 </header>
 
 <main id="main-content" class="container">
@@ -20,13 +24,13 @@
     <header class="page-title">
         <p class="eyebrow">Rol administrador</p>
         <h1>Panel de administración</h1>
-        <p>Gestión de usuarios, fichas teóricas y banco de preguntas.</p>
+        <p>Gestión de contenido académico: fichas teóricas y banco de preguntas.</p>
     </header>
 
     <nav aria-label="Secciones de administración">
         <ul class="grid cards-grid three" role="list">
             <li>
-                <div class="menu-card blue" aria-disabled="true">
+                <div class="menu-card blue">
                     <span aria-hidden="true">👥</span>
                     <h2>Usuarios</h2>
                     <p th:text="|${totalUsuarios} usuarios registrados|"></p>
@@ -35,15 +39,17 @@
             <li>
                 <a class="menu-card green" th:href="@{/admin/patrones}">
                     <span aria-hidden="true">📚</span>
-                    <h2>Fichas teóricas</h2>
+                    <h2>Patrones</h2>
                     <p th:text="|${totalPatrones} patrones registrados|"></p>
+                    <span class="card-arrow" aria-hidden="true">→</span>
                 </a>
             </li>
             <li>
                 <a class="menu-card amber" th:href="@{/admin/preguntas}">
                     <span aria-hidden="true">❔</span>
-                    <h2>Banco de preguntas</h2>
+                    <h2>Preguntas</h2>
                     <p th:text="|${totalPreguntas} preguntas registradas|"></p>
+                    <span class="card-arrow" aria-hidden="true">→</span>
                 </a>
             </li>
         </ul>

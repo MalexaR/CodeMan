@@ -3,6 +3,7 @@ package com.example.CodeMan.service;
 import com.example.CodeMan.model.Categoria;
 import com.example.CodeMan.model.Pregunta;
 import com.example.CodeMan.repository.PreguntaRepository;
+import com.example.CodeMan.repository.RespuestaPartidaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,9 +13,12 @@ import java.util.List;
 public class PreguntaService {
 
     private final PreguntaRepository preguntaRepository;
+    private final RespuestaPartidaRepository respuestaPartidaRepository;
 
-    public PreguntaService(PreguntaRepository preguntaRepository) {
+    public PreguntaService(PreguntaRepository preguntaRepository,
+            RespuestaPartidaRepository respuestaPartidaRepository) {
         this.preguntaRepository = preguntaRepository;
+        this.respuestaPartidaRepository = respuestaPartidaRepository;
     }
 
     public List<Pregunta> listar() {
@@ -42,5 +46,17 @@ public class PreguntaService {
     @Transactional
     public void eliminar(Long id) {
         preguntaRepository.deleteById(id);
+    }
+
+    public boolean posibleDuplicado(String enunciado, Long excluirId) {
+        String trimmed = enunciado == null ? "" : enunciado.trim();
+        if (excluirId != null) {
+            return preguntaRepository.existsByEnunciadoIgnoreCaseAndIdNot(trimmed, excluirId);
+        }
+        return preguntaRepository.existsByEnunciadoIgnoreCase(trimmed);
+    }
+
+    public boolean tieneRespuestas(Long preguntaId) {
+        return respuestaPartidaRepository.existsByPreguntaId(preguntaId);
     }
 }

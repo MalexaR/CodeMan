@@ -6,6 +6,7 @@ import com.example.CodeMan.model.PatronRevisado;
 import com.example.CodeMan.model.Usuario;
 import com.example.CodeMan.repository.PatronRepository;
 import com.example.CodeMan.repository.PatronRevisadoRepository;
+import com.example.CodeMan.repository.PreguntaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,11 +18,14 @@ public class PatronService {
 
     private final PatronRepository patronRepository;
     private final PatronRevisadoRepository patronRevisadoRepository;
+    private final PreguntaRepository preguntaRepository;
 
     public PatronService(PatronRepository patronRepository,
-            PatronRevisadoRepository patronRevisadoRepository) {
+            PatronRevisadoRepository patronRevisadoRepository,
+            PreguntaRepository preguntaRepository) {
         this.patronRepository = patronRepository;
         this.patronRevisadoRepository = patronRevisadoRepository;
+        this.preguntaRepository = preguntaRepository;
     }
 
     public List<Patron> listar() {
@@ -67,6 +71,7 @@ public class PatronService {
 
     @Transactional
     public void eliminar(Long id) {
+        patronRevisadoRepository.deleteByPatronId(id);
         patronRepository.deleteById(id);
     }
 
@@ -76,5 +81,22 @@ public class PatronService {
 
     public Optional<Patron> siguiente(Patron patron) {
         return patronRepository.findFirstByCategoriaAndIdGreaterThanOrderByIdAsc(patron.getCategoria(), patron.getId());
+    }
+
+    /** Retorna mensaje de advertencia si el patrón tiene dependencias que bloquean su eliminación, o null si puede borrarse. */
+    public String advertenciaEliminar(Long id) {
+        long preguntas = preguntaRepository.countByPatronId(id);
+        if (preguntas > 0) {
+            return "Este patrón tiene " + preguntas + " pregunta(s) asociada(s). Elimínalas primero desde el banco de preguntas.";
+        }
+        return null;
+    }
+
+    public boolean posibleDuplicado(String nombre, Long excluirId) {
+        String trimmed = nombre == null ? "" : nombre.trim();
+        if (excluirId != null) {
+            return patronRepository.existsByNombreIgnoreCaseAndIdNot(trimmed, excluirId);
+        }
+        return patronRepository.existsByNombreIgnoreCase(trimmed);
     }
 }

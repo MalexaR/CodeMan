@@ -14,4 +14,8 @@ public interface PatronRevisadoRepository extends JpaRepository<PatronRevisado, 
     long countByUsuario(Usuario usuario);
 
     List<PatronRevisado> findByUsuarioId(Long usuarioId);
+
+    long countByPatronId(Long patronId);
+
+    void deleteByPatronId(Long patronId);
 }

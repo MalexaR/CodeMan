@@ -15,4 +15,6 @@ public interface RespuestaPartidaRepository extends JpaRepository<RespuestaParti
     List<RespuestaPartida> findByPartida(Partida partida);
     List<RespuestaPartida> findByPartidaAndEsCorrecta(Partida partida, boolean esCorrecta);
     long countByPartida_UsuarioAndPregunta_CategoriaAndEsCorrecta(Usuario usuario, Categoria categoria, boolean esCorrecta);
+
+    boolean existsByPreguntaId(Long preguntaId);
 }
