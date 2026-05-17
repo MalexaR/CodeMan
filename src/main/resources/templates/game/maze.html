@@ -13,7 +13,7 @@
 <header class="topbar">
     <a class="brand" th:href="@{/jugar}">← Volver</a>
     <strong class="neon-title">CodeMan — Laberinto</strong>
-    <span th:text="${usuario.name}"></span>
+    <div class="userbar"><span th:text="${usuario.name}"></span></div>
 </header>
 
 <main id="main-content" class="game-container" th:data-categoria="${categoria}">

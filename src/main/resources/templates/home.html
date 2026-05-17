@@ -41,10 +41,10 @@
     </section>
 
     <nav aria-label="Módulos principales">
-        <ul class="grid cards-grid" role="list">
+        <ul class="grid cards-grid home-grid" role="list">
             <li>
                 <a class="menu-card blue" th:href="@{/teoria}">
-                    <span aria-hidden="true">📚</span>
+                    <span class="card-icon" aria-hidden="true">📚</span>
                     <h2>Módulo teórico</h2>
                     <p>Fichas de Singleton, Factory Method, Adapter, Observer y más.</p>
                     <span class="card-arrow" aria-hidden="true">→</span>
@@ -52,7 +52,7 @@
             </li>
             <li>
                 <a class="menu-card green" th:href="@{/jugar}">
-                    <span aria-hidden="true">🕹️</span>
+                    <span class="card-icon" aria-hidden="true">🕹️</span>
                     <h2>Jugar</h2>
                     <p>Laberinto tipo Pac-Man con preguntas por categoría.</p>
                     <span class="card-arrow" aria-hidden="true">→</span>
@@ -60,7 +60,7 @@
             </li>
             <li>
                 <a class="menu-card purple" th:href="@{/progreso}">
-                    <span aria-hidden="true">📊</span>
+                    <span class="card-icon" aria-hidden="true">📊</span>
                     <h2>Mi progreso</h2>
                     <p>Patrones revisados, partidas, aciertos y errores.</p>
                     <span class="card-arrow" aria-hidden="true">→</span>
@@ -68,7 +68,7 @@
             </li>
             <li th:if="${progreso.desafioFinalCompletado}">
                 <a class="menu-card amber" th:href="@{/reporte}">
-                    <span aria-hidden="true">📄</span>
+                    <span class="card-icon" aria-hidden="true">📄</span>
                     <h2>Mi reporte</h2>
                     <p>Reporte disponible. Descárgalo en PDF.</p>
                     <span class="card-arrow" aria-hidden="true">→</span>
@@ -76,18 +76,10 @@
             </li>
             <li th:unless="${progreso.desafioFinalCompletado}">
                 <div class="menu-card amber locked" aria-disabled="true">
-                    <span aria-hidden="true">📄</span>
+                    <span class="card-icon" aria-hidden="true">📄</span>
                     <h2>Mi reporte</h2>
                     <p>Completa el desafío final para desbloquearlo.</p>
                 </div>
-            </li>
-            <li th:if="${isAdmin}">
-                <a class="menu-card red" th:href="@{/admin}">
-                    <span aria-hidden="true">🛡️</span>
-                    <h2>Administración</h2>
-                    <p>Gestiona patrones y banco de preguntas.</p>
-                    <span class="card-arrow" aria-hidden="true">→</span>
-                </a>
             </li>
         </ul>
     </nav>

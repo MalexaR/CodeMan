@@ -31,14 +31,14 @@
         <ul class="grid cards-grid three" role="list">
             <li>
                 <div class="menu-card blue">
-                    <span aria-hidden="true">👥</span>
+                    <span class="card-icon" aria-hidden="true">👥</span>
                     <h2>Usuarios</h2>
                     <p th:text="|${totalUsuarios} usuarios registrados|"></p>
                 </div>
             </li>
             <li>
                 <a class="menu-card green" th:href="@{/admin/patrones}">
-                    <span aria-hidden="true">📚</span>
+                    <span class="card-icon" aria-hidden="true">📚</span>
                     <h2>Patrones</h2>
                     <p th:text="|${totalPatrones} patrones registrados|"></p>
                     <span class="card-arrow" aria-hidden="true">→</span>
@@ -46,7 +46,7 @@
             </li>
             <li>
                 <a class="menu-card amber" th:href="@{/admin/preguntas}">
-                    <span aria-hidden="true">❔</span>
+                    <span class="card-icon" aria-hidden="true">❔</span>
                     <h2>Preguntas</h2>
                     <p th:text="|${totalPreguntas} preguntas registradas|"></p>
                     <span class="card-arrow" aria-hidden="true">→</span>
