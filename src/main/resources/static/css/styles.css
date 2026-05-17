@@ -134,7 +134,10 @@ pre { white-space: pre-wrap; overflow:auto; padding: 18px; border-radius: 18px; 
 /* ── Home: fix list bullets in cards-grid ────────────────────── */
 ul.cards-grid { list-style:none; padding:0; margin-top:26px; margin-bottom:0; }
 ul.cards-grid > li { list-style:none; padding:0; margin:0; }
-.card-arrow { display:block; margin-top:10px; font-size:.9rem; font-weight:700; color:var(--accent); transition:transform .18s ease; }
+/* a.menu-card needs block so it fills the grid cell */
+a.menu-card { display:block; }
+/* .menu-card .card-arrow needs higher specificity than .menu-card span (0,1,1) */
+.menu-card .card-arrow { display:block; margin-top:10px; margin-bottom:0; font-size:.9rem; font-weight:700; color:var(--accent); transition:transform .18s ease; }
 .menu-card:hover .card-arrow { transform:translateX(4px); }
 
 /* ── Form validation ─────────────────────────────────────────── */
