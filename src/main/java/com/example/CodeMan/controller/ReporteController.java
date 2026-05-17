@@ -1,6 +1,7 @@
 package com.example.CodeMan.controller;
 
 import com.example.CodeMan.model.Progreso;
+import com.example.CodeMan.model.Rol;
 import com.example.CodeMan.model.Usuario;
 import com.example.CodeMan.service.ProgresoService;
 import com.example.CodeMan.service.ReporteService;
@@ -34,6 +35,7 @@ public class ReporteController {
     @GetMapping
     public String index(Authentication authentication, Model model, RedirectAttributes flash) {
         Usuario usuario = usuarioService.actual(authentication);
+        if (usuario != null && usuario.getRole() == Rol.ADMIN) return "redirect:/admin";
         Progreso progreso = progresoService.resumen(usuario);
 
         if (!progreso.isDesafioFinalCompletado()) {
@@ -49,6 +51,7 @@ public class ReporteController {
     @GetMapping("/descargar")
     public ResponseEntity<byte[]> descargar(Authentication authentication) {
         Usuario usuario = usuarioService.actual(authentication);
+        if (usuario != null && usuario.getRole() == Rol.ADMIN) return ResponseEntity.status(403).build();
         Progreso progreso = progresoService.resumen(usuario);
 
         if (!progreso.isDesafioFinalCompletado()) {

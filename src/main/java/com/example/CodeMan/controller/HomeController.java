@@ -1,5 +1,6 @@
 package com.example.CodeMan.controller;
 
+import com.example.CodeMan.model.Rol;
 import com.example.CodeMan.model.Usuario;
 import com.example.CodeMan.service.ProgresoService;
 import com.example.CodeMan.service.UsuarioService;
@@ -27,9 +28,10 @@ public class HomeController {
         if (usuario == null) {
             return "redirect:/login";
         }
+        if (usuario.getRole() == Rol.ADMIN) return "redirect:/admin";
         model.addAttribute("usuario", usuario);
         model.addAttribute("progreso", progresoService.resumen(usuario));
-        model.addAttribute("isAdmin", usuario.getRole().name().equals("ADMIN"));
+        model.addAttribute("isAdmin", false);
         return "home";
     }
 }

@@ -2,6 +2,7 @@ package com.example.CodeMan.controller;
 
 import com.example.CodeMan.model.Categoria;
 import com.example.CodeMan.model.Patron;
+import com.example.CodeMan.model.Rol;
 import com.example.CodeMan.model.Usuario;
 import com.example.CodeMan.service.PatronService;
 import com.example.CodeMan.service.UsuarioService;
@@ -28,7 +29,8 @@ public class TeoriaController {
     }
 
     @GetMapping("/teoria")
-    public String teoria(Model model) {
+    public String teoria(Authentication authentication, Model model) {
+        if (esAdmin(authentication)) return "redirect:/admin";
         model.addAttribute("creacionales", patronService.porCategoria(Categoria.CREACIONAL));
         model.addAttribute("estructurales", patronService.porCategoria(Categoria.ESTRUCTURAL));
         model.addAttribute("comportamiento", patronService.porCategoria(Categoria.COMPORTAMIENTO));
@@ -37,6 +39,7 @@ public class TeoriaController {
 
     @GetMapping("/teoria/{id}")
     public String detalle(@PathVariable Long id, Authentication authentication, Model model) {
+        if (esAdmin(authentication)) return "redirect:/admin";
         Usuario usuario = usuarioService.actual(authentication);
         Patron patron = patronService.buscar(id);
         model.addAttribute("patron", patron);
@@ -48,8 +51,14 @@ public class TeoriaController {
 
     @PostMapping("/teoria/{id}/revisar")
     public String revisar(@PathVariable Long id, Authentication authentication) {
+        if (esAdmin(authentication)) return "redirect:/admin";
         patronService.marcarRevisado(usuarioService.actual(authentication), id);
         return "redirect:/teoria/" + id;
+    }
+
+    private boolean esAdmin(Authentication authentication) {
+        Usuario usuario = usuarioService.actual(authentication);
+        return usuario != null && usuario.getRole() == Rol.ADMIN;
     }
 
     @GetMapping("/api/teoria/patrones")

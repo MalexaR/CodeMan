@@ -1,6 +1,7 @@
 package com.example.CodeMan.controller;
 
 import com.example.CodeMan.model.Categoria;
+import com.example.CodeMan.model.Rol;
 import com.example.CodeMan.model.Usuario;
 import com.example.CodeMan.service.PartidaService;
 import com.example.CodeMan.service.UsuarioService;
@@ -21,12 +22,14 @@ public class GameController {
     }
 
     @GetMapping("/jugar")
-    public String jugar() {
+    public String jugar(Authentication authentication) {
+        if (esAdmin(authentication)) return "redirect:/admin";
         return "game/select";
     }
 
     @GetMapping("/jugar/{categoria}")
     public String laberinto(@PathVariable Categoria categoria, Authentication authentication, Model model) {
+        if (esAdmin(authentication)) return "redirect:/admin";
         Usuario usuario = usuarioService.actual(authentication);
         model.addAttribute("categoria", categoria);
         model.addAttribute("usuario", usuario);
@@ -35,16 +38,21 @@ public class GameController {
 
     @GetMapping("/jugar/desafio-final")
     public String desafioFinal(Authentication authentication, Model model) {
+        if (esAdmin(authentication)) return "redirect:/admin";
         Usuario usuario = usuarioService.actual(authentication);
         model.addAttribute("usuario", usuario);
         model.addAttribute("esDesafio", true);
         return "game/desafio";
     }
 
-    // HU-08
     @GetMapping("/resultado/{partidaId}")
     public String resultado(@PathVariable Long partidaId, Authentication authentication, Model model) {
-        // TODO
+        if (esAdmin(authentication)) return "redirect:/admin";
         return "game/resultado";
+    }
+
+    private boolean esAdmin(Authentication authentication) {
+        Usuario usuario = usuarioService.actual(authentication);
+        return usuario != null && usuario.getRole() == Rol.ADMIN;
     }
 }
