@@ -134,6 +134,9 @@ public class AdminPreguntaController {
     }
 
     private void addEnums(Model model) {
+        if (!model.containsAttribute("warnDuplicado")) {
+            model.addAttribute("warnDuplicado", false);
+        }
         model.addAttribute("categorias",
                 new Categoria[]{ Categoria.CREACIONAL, Categoria.ESTRUCTURAL, Categoria.COMPORTAMIENTO });
         model.addAttribute("dificultades", Dificultad.values());
