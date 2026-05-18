@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin | Preguntas</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/accessibility.css}">
 </head>
 <body>
 
@@ -236,5 +237,6 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') document.getElementById('modal-preview').classList.add('hidden');
 });
 </script>
+<script th:src="@{/js/accessibility.js}"></script>
 </body>
 </html>

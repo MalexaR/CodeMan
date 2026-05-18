@@ -1,0 +1,353 @@
+/* ============================================================
+   CodeMan — Accessibility Panel
+   Extends the existing CSS variable system without modifying
+   the original styles.css file.
+   ============================================================ */
+
+/* ── Light theme ─────────────────────────────────────────── */
+:root[data-theme="light"] {
+    --bg:      #f1f5f9;
+    --panel:   rgba(255, 255, 255, 0.96);
+    --panel-2: rgba(241, 245, 249, 0.98);
+    --line:    rgba(15, 23, 42, 0.14);
+    --text:    #0f172a;
+    --muted:   #475569;
+}
+:root[data-theme="light"] body {
+    background:
+        radial-gradient(circle at top left,  rgba(34, 197,  94, .10), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(56, 189, 248, .08), transparent 32%),
+        var(--bg);
+}
+:root[data-theme="light"] .topbar {
+    background: rgba(248, 250, 252, 0.92);
+    border-color: rgba(15, 23, 42, 0.12);
+}
+:root[data-theme="light"] label { color: #334155; }
+:root[data-theme="light"] input,
+:root[data-theme="light"] textarea,
+:root[data-theme="light"] select {
+    background: rgba(241, 245, 249, 0.9);
+    color: #0f172a;
+    border-color: rgba(15, 23, 42, 0.2);
+}
+:root[data-theme="light"] .terminal-card,
+:root[data-theme="light"] .code-card {
+    background: rgba(241, 245, 249, 0.95);
+    border-color: rgba(34, 197, 94, 0.4);
+    color: #166534;
+}
+
+/* ── Auto theme — respects OS preference ─────────────────── */
+@media (prefers-color-scheme: light) {
+    :root[data-theme="auto"] {
+        --bg:      #f1f5f9;
+        --panel:   rgba(255, 255, 255, 0.96);
+        --panel-2: rgba(241, 245, 249, 0.98);
+        --line:    rgba(15, 23, 42, 0.14);
+        --text:    #0f172a;
+        --muted:   #475569;
+    }
+    :root[data-theme="auto"] body {
+        background:
+            radial-gradient(circle at top left,  rgba(34, 197,  94, .10), transparent 30%),
+            radial-gradient(circle at bottom right, rgba(56, 189, 248, .08), transparent 32%),
+            var(--bg);
+    }
+    :root[data-theme="auto"] .topbar {
+        background: rgba(248, 250, 252, 0.92);
+        border-color: rgba(15, 23, 42, 0.12);
+    }
+    :root[data-theme="auto"] label { color: #334155; }
+    :root[data-theme="auto"] input,
+    :root[data-theme="auto"] textarea,
+    :root[data-theme="auto"] select {
+        background: rgba(241, 245, 249, 0.9);
+        color: #0f172a;
+        border-color: rgba(15, 23, 42, 0.2);
+    }
+    :root[data-theme="auto"] .terminal-card,
+    :root[data-theme="auto"] .code-card {
+        background: rgba(241, 245, 249, 0.95);
+        border-color: rgba(34, 197, 94, 0.4);
+        color: #166534;
+    }
+}
+
+/* ── High contrast ───────────────────────────────────────── */
+:root[data-hc="1"] {
+    --bg:      #000000;
+    --panel:   #000000;
+    --panel-2: #0a0a0a;
+    --line:    #ffffff;
+    --text:    #ffffff;
+    --muted:   #ffffff;
+    --green:   #00ff00;
+    --blue:    #00ffff;
+    --amber:   #ffff00;
+    --red:     #ff4444;
+    --purple:  #ff88ff;
+}
+:root[data-hc="1"] body {
+    background: #000 !important;
+}
+:root[data-hc="1"] .topbar {
+    background: #000 !important;
+    border-color: #fff !important;
+}
+:root[data-hc="1"] a { color: #ffff00 !important; }
+:root[data-hc="1"] label { color: #fff !important; }
+:root[data-hc="1"] input,
+:root[data-hc="1"] textarea,
+:root[data-hc="1"] select {
+    background: #000 !important;
+    color: #fff !important;
+    border-color: #fff !important;
+}
+:root[data-hc="1"] .btn {
+    border: 2px solid #ffff00 !important;
+    color: #ffff00 !important;
+    background: #000 !important;
+}
+:root[data-hc="1"] .btn.primary {
+    background: #ffff00 !important;
+    color: #000 !important;
+}
+:root[data-hc="1"] .terminal-card,
+:root[data-hc="1"] .code-card {
+    background: #000 !important;
+    color: #00ff00 !important;
+    border-color: #00ff00 !important;
+}
+
+/* ── Dyslexia-friendly font ──────────────────────────────── */
+:root[data-dyslexia="1"] body,
+:root[data-dyslexia="1"] input,
+:root[data-dyslexia="1"] textarea,
+:root[data-dyslexia="1"] select,
+:root[data-dyslexia="1"] button {
+    font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif !important;
+    letter-spacing: 0.09em !important;
+    word-spacing:   0.22em !important;
+    line-height:    1.85   !important;
+}
+
+/* ── Floating trigger button ─────────────────────────────── */
+#a11y-wrapper {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9800;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+#a11y-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: none;
+    background: var(--green, #22c55e);
+    color: #03131e;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(34, 197, 94, 0.45);
+    transition: transform 0.15s, box-shadow 0.15s;
+    flex-shrink: 0;
+    line-height: 1;
+}
+#a11y-btn:hover {
+    transform: scale(1.09);
+    box-shadow: 0 6px 28px rgba(34, 197, 94, 0.65);
+}
+#a11y-btn:focus-visible {
+    outline: 3px solid var(--amber, #fbbf24);
+    outline-offset: 3px;
+}
+
+/* ── Panel container ─────────────────────────────────────── */
+#a11y-panel {
+    width: 296px;
+    background: var(--panel-2, rgba(30, 41, 59, 0.98));
+    border: 1px solid var(--line, rgba(148, 163, 184, 0.2));
+    border-radius: 20px;
+    padding: 18px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+#a11y-panel[hidden] { display: none; }
+
+.a11y-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line, rgba(148, 163, 184, 0.2));
+}
+.a11y-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text, #f8fafc);
+}
+.a11y-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--muted, #94a3b8);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.12s, color 0.12s;
+    padding: 0;
+}
+.a11y-close:hover {
+    background: rgba(148, 163, 184, 0.15);
+    color: var(--text, #f8fafc);
+}
+.a11y-close:focus-visible { outline: 2px solid var(--amber, #fbbf24); }
+
+.a11y-section { margin-bottom: 14px; }
+.a11y-section:last-child { margin-bottom: 0; }
+
+.a11y-lbl {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--muted, #94a3b8);
+    margin-bottom: 7px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+.a11y-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.a11y-row .a11y-lbl { margin-bottom: 0; flex: 1; }
+
+/* ── Segmented control (theme) ───────────────────────────── */
+.a11y-seg {
+    display: flex;
+    gap: 3px;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    padding: 3px;
+}
+.a11y-seg-btn {
+    flex: 1;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: transparent;
+    color: var(--muted, #94a3b8);
+    transition: background 0.15s, color 0.15s;
+}
+.a11y-seg-btn.on {
+    background: var(--green, #22c55e);
+    color: #03131e;
+}
+.a11y-seg-btn:focus-visible { outline: 2px solid var(--amber, #fbbf24); }
+
+/* ── Toggle switch ───────────────────────────────────────── */
+.a11y-toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(148, 163, 184, 0.28);
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+    padding: 0;
+}
+.a11y-toggle.on { background: var(--green, #22c55e); }
+.a11y-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    transition: left 0.2s;
+    display: block;
+    pointer-events: none;
+}
+.a11y-toggle.on .a11y-thumb { left: 23px; }
+.a11y-toggle:focus-visible { outline: 2px solid var(--amber, #fbbf24); outline-offset: 2px; }
+
+/* ── Font-size slider ────────────────────────────────────── */
+.a11y-slider-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+.a11y-size-val {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--green, #22c55e);
+}
+#a11y-size {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    accent-color: var(--green, #22c55e);
+    cursor: pointer;
+    /* reset global input styles */
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    outline: none;
+}
+#a11y-size:focus { border-color: transparent; box-shadow: none; }
+#a11y-size:focus-visible { outline: 2px solid var(--amber, #fbbf24); outline-offset: 2px; border-radius: 4px; }
+
+/* ── TTS button ──────────────────────────────────────────── */
+#a11y-tts {
+    width: 100%;
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    border-radius: 10px;
+    padding: 8px 12px;
+    background: transparent;
+    color: var(--green, #22c55e);
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-align: center;
+    /* reset global input styles */
+    outline: none;
+}
+#a11y-tts:hover { background: rgba(34, 197, 94, 0.1); }
+#a11y-tts.speaking {
+    border-color: var(--amber, #fbbf24);
+    color: var(--amber, #fbbf24);
+}
+#a11y-tts:focus-visible { outline: 2px solid var(--amber, #fbbf24); outline-offset: 2px; }
+
+/* ── High-contrast overrides for the panel itself ────────── */
+:root[data-hc="1"] #a11y-panel {
+    background: #000 !important;
+    border-color: #fff !important;
+}
+:root[data-hc="1"] .a11y-title,
+:root[data-hc="1"] .a11y-lbl { color: #fff !important; }
+:root[data-hc="1"] #a11y-tts { color: #ffff00 !important; border-color: #ffff00 !important; }
