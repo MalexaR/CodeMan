@@ -38,7 +38,8 @@ public class AdminPreguntaController {
 
     @GetMapping
     public String listar(Authentication authentication, Model model) {
-        requireAdmin(authentication);
+        Usuario actual = requireAdmin(authentication);
+        model.addAttribute("usuario", actual);
         model.addAttribute("preguntas", preguntaService.listar());
         if (!model.containsAttribute("pregunta")) {
             model.addAttribute("pregunta", new Pregunta());
@@ -49,7 +50,8 @@ public class AdminPreguntaController {
 
     @GetMapping("/{id}/editar")
     public String editar(Authentication authentication, @PathVariable Long id, Model model) {
-        requireAdmin(authentication);
+        Usuario actual = requireAdmin(authentication);
+        model.addAttribute("usuario", actual);
         model.addAttribute("pregunta", preguntaService.buscar(id));
         model.addAttribute("preguntas", preguntaService.listar());
         addEnums(model);
@@ -63,14 +65,16 @@ public class AdminPreguntaController {
                           @RequestParam(name = "confirmar", defaultValue = "false") boolean confirmar,
                           Model model,
                           RedirectAttributes flash) {
-        requireAdmin(authentication);
+        Usuario actual = requireAdmin(authentication);
         if (binding.hasErrors()) {
+            model.addAttribute("usuario", actual);
             model.addAttribute("preguntas", preguntaService.listar());
             addEnums(model);
             return "admin/preguntas";
         }
         if (!confirmar && pregunta.getEnunciado() != null
                 && preguntaService.posibleDuplicado(pregunta.getEnunciado(), null)) {
+            model.addAttribute("usuario", actual);
             model.addAttribute("warnDuplicado", true);
             model.addAttribute("preguntas", preguntaService.listar());
             addEnums(model);
@@ -89,14 +93,16 @@ public class AdminPreguntaController {
                              @RequestParam(name = "confirmar", defaultValue = "false") boolean confirmar,
                              Model model,
                              RedirectAttributes flash) {
-        requireAdmin(authentication);
+        Usuario actual = requireAdmin(authentication);
         if (binding.hasErrors()) {
+            model.addAttribute("usuario", actual);
             model.addAttribute("preguntas", preguntaService.listar());
             addEnums(model);
             return "admin/preguntas";
         }
         if (!confirmar && form.getEnunciado() != null
                 && preguntaService.posibleDuplicado(form.getEnunciado(), id)) {
+            model.addAttribute("usuario", actual);
             model.addAttribute("warnDuplicado", true);
             model.addAttribute("preguntas", preguntaService.listar());
             addEnums(model);
@@ -144,10 +150,11 @@ public class AdminPreguntaController {
         model.addAttribute("tiposEvento", TipoEvento.values());
     }
 
-    private void requireAdmin(Authentication authentication) {
+    private Usuario requireAdmin(Authentication authentication) {
         Usuario usuario = usuarioService.actual(authentication);
         if (usuario == null || usuario.getRole() != Rol.ADMIN) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acceso restringido a administradores");
         }
+        return usuario;
     }
 }

@@ -34,7 +34,8 @@ public class AdminPatronController {
 
     @GetMapping
     public String listar(Authentication authentication, Model model) {
-        requireAdmin(authentication);
+        Usuario actual = requireAdmin(authentication);
+        model.addAttribute("usuario", actual);
         model.addAttribute("patrones", patronService.listar());
         if (!model.containsAttribute("patron")) {
             model.addAttribute("patron", new Patron());
@@ -45,7 +46,8 @@ public class AdminPatronController {
 
     @GetMapping("/{id}/editar")
     public String editar(Authentication authentication, @PathVariable Long id, Model model) {
-        requireAdmin(authentication);
+        Usuario actual = requireAdmin(authentication);
+        model.addAttribute("usuario", actual);
         model.addAttribute("patron", patronService.buscar(id));
         model.addAttribute("patrones", patronService.listar());
         addEnums(model);
@@ -58,14 +60,16 @@ public class AdminPatronController {
                           BindingResult binding,
                           Model model,
                           RedirectAttributes flash) {
-        requireAdmin(authentication);
+        Usuario actual = requireAdmin(authentication);
         if (binding.hasErrors()) {
+            model.addAttribute("usuario", actual);
             model.addAttribute("patrones", patronService.listar());
             addEnums(model);
             return "admin/patrones";
         }
         if (patron.getNombre() != null && patronService.posibleDuplicado(patron.getNombre(), null)) {
             binding.rejectValue("nombre", "duplicate", "Ya existe un patrón con ese nombre.");
+            model.addAttribute("usuario", actual);
             model.addAttribute("patrones", patronService.listar());
             addEnums(model);
             return "admin/patrones";
@@ -82,14 +86,16 @@ public class AdminPatronController {
                              BindingResult binding,
                              Model model,
                              RedirectAttributes flash) {
-        requireAdmin(authentication);
+        Usuario actual = requireAdmin(authentication);
         if (binding.hasErrors()) {
+            model.addAttribute("usuario", actual);
             model.addAttribute("patrones", patronService.listar());
             addEnums(model);
             return "admin/patrones";
         }
         if (form.getNombre() != null && patronService.posibleDuplicado(form.getNombre(), id)) {
             binding.rejectValue("nombre", "duplicate", "Ya existe un patrón con ese nombre.");
+            model.addAttribute("usuario", actual);
             model.addAttribute("patrones", patronService.listar());
             addEnums(model);
             return "admin/patrones";
@@ -130,10 +136,11 @@ public class AdminPatronController {
                 new Categoria[]{ Categoria.CREACIONAL, Categoria.ESTRUCTURAL, Categoria.COMPORTAMIENTO });
     }
 
-    private void requireAdmin(Authentication authentication) {
+    private Usuario requireAdmin(Authentication authentication) {
         Usuario usuario = usuarioService.actual(authentication);
         if (usuario == null || usuario.getRole() != Rol.ADMIN) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acceso restringido a administradores");
         }
+        return usuario;
     }
 }

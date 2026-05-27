@@ -11,13 +11,20 @@
 
 <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
 
-<header class="topbar">
-    <a class="brand" th:href="@{/}">← Inicio</a>
+<header class="topbar admin-topbar">
+    <a class="brand" th:href="@{/admin}"><span class="mini-pac" aria-hidden="true"></span> CodeMan</a>
     <nav class="admin-tabs" aria-label="Secciones de administración">
         <a class="tab-link active" th:href="@{/admin}">Panel</a>
+        <a class="tab-link" th:href="@{/admin/usuarios}">Usuarios</a>
         <a class="tab-link" th:href="@{/admin/patrones}">Patrones</a>
         <a class="tab-link" th:href="@{/admin/preguntas}">Preguntas</a>
     </nav>
+    <div class="userbar">
+        <span class="user-greet" th:if="${usuario != null}" th:text="|Hola, ${usuario.name}|">Hola</span>
+        <form th:action="@{/logout}" method="post">
+            <button class="btn ghost btn-sm" type="submit">Cerrar sesión</button>
+        </form>
+    </div>
 </header>
 
 <main id="main-content" class="container">
@@ -25,32 +32,36 @@
     <header class="page-title">
         <p class="eyebrow">Rol administrador</p>
         <h1>Panel de administración</h1>
-        <p>Gestión de contenido académico: fichas teóricas y banco de preguntas.</p>
+        <p>Gestión académica: usuarios, patrones de diseño y banco de preguntas.</p>
     </header>
 
     <nav aria-label="Secciones de administración">
-        <ul class="grid cards-grid three" role="list">
+        <ul class="grid cards-grid three admin-cards" role="list">
             <li>
-                <div class="menu-card blue">
+                <a class="menu-card blue" th:href="@{/admin/usuarios}">
                     <span class="card-icon" aria-hidden="true">👥</span>
                     <h2>Usuarios</h2>
-                    <p th:text="|${totalUsuarios} usuarios registrados|"></p>
-                </div>
+                    <strong class="stat-num" th:text="${totalUsuarios}">0</strong>
+                    <p class="stat-label">registrados</p>
+                    <span class="card-arrow" aria-hidden="true">Gestionar →</span>
+                </a>
             </li>
             <li>
                 <a class="menu-card green" th:href="@{/admin/patrones}">
                     <span class="card-icon" aria-hidden="true">📚</span>
                     <h2>Patrones</h2>
-                    <p th:text="|${totalPatrones} patrones registrados|"></p>
-                    <span class="card-arrow" aria-hidden="true">→</span>
+                    <strong class="stat-num" th:text="${totalPatrones}">0</strong>
+                    <p class="stat-label">registrados</p>
+                    <span class="card-arrow" aria-hidden="true">Gestionar →</span>
                 </a>
             </li>
             <li>
                 <a class="menu-card amber" th:href="@{/admin/preguntas}">
                     <span class="card-icon" aria-hidden="true">❔</span>
                     <h2>Preguntas</h2>
-                    <p th:text="|${totalPreguntas} preguntas registradas|"></p>
-                    <span class="card-arrow" aria-hidden="true">→</span>
+                    <strong class="stat-num" th:text="${totalPreguntas}">0</strong>
+                    <p class="stat-label">registradas</p>
+                    <span class="card-arrow" aria-hidden="true">Gestionar →</span>
                 </a>
             </li>
         </ul>

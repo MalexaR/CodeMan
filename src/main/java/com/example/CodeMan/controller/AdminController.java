@@ -35,17 +35,19 @@ public class AdminController {
 
     @GetMapping
     public String index(Authentication authentication, Model model) {
-        requireAdmin(authentication);
+        Usuario actual = requireAdmin(authentication);
+        model.addAttribute("usuario", actual);
         model.addAttribute("totalUsuarios", usuarioRepository.count());
         model.addAttribute("totalPatrones", patronService.total());
         model.addAttribute("totalPreguntas", preguntaService.total());
         return "admin/index";
     }
 
-    private void requireAdmin(Authentication authentication) {
+    private Usuario requireAdmin(Authentication authentication) {
         Usuario usuario = usuarioService.actual(authentication);
         if (usuario == null || usuario.getRole() != Rol.ADMIN) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acceso restringido a administradores");
         }
+        return usuario;
     }
 }

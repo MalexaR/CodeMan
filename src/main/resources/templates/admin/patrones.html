@@ -11,13 +11,20 @@
 
 <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
 
-<header class="topbar">
-    <a class="brand" th:href="@{/}">← Inicio</a>
+<header class="topbar admin-topbar">
+    <a class="brand" th:href="@{/admin}"><span class="mini-pac" aria-hidden="true"></span> CodeMan</a>
     <nav class="admin-tabs" aria-label="Secciones de administración">
         <a class="tab-link" th:href="@{/admin}">Panel</a>
+        <a class="tab-link" th:href="@{/admin/usuarios}">Usuarios</a>
         <a class="tab-link active" th:href="@{/admin/patrones}">Patrones</a>
         <a class="tab-link" th:href="@{/admin/preguntas}">Preguntas</a>
     </nav>
+    <div class="userbar">
+        <span class="user-greet" th:if="${usuario != null}" th:text="|Hola, ${usuario.name}|">Hola</span>
+        <form th:action="@{/logout}" method="post">
+            <button class="btn ghost btn-sm" type="submit">Cerrar sesión</button>
+        </form>
+    </div>
 </header>
 
 <main id="main-content" class="container">

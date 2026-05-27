@@ -133,6 +133,38 @@ pre { white-space: pre-wrap; overflow:auto; padding: 18px; border-radius: 18px; 
 .tab-link:hover { color:var(--text); background:rgba(148,163,184,.16); }
 .tab-link.active { color:var(--green); background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.3); }
 
+/* ── Admin topbar (brand + tabs + userbar) ────────────────────── */
+.topbar.admin-topbar { flex-wrap:wrap; row-gap:10px; }
+.topbar.admin-topbar .userbar .user-greet { font-size:.88rem; }
+.btn-sm { padding:7px 12px; font-size:.85rem; border-radius:10px; }
+@media (max-width: 720px) {
+    .topbar.admin-topbar { padding:12px 14px; }
+    .topbar.admin-topbar .brand { font-size:1.1rem; }
+    .topbar.admin-topbar .user-greet { display:none; }
+}
+
+/* ── Admin index cards (uniform height, prominent stat) ───────── */
+ul.cards-grid.admin-cards { align-items:stretch; }
+ul.cards-grid.admin-cards > li { display:flex; }
+ul.cards-grid.admin-cards > li > a.menu-card {
+    display:flex; flex-direction:column; width:100%;
+    min-height: 230px;
+    background: linear-gradient(160deg, rgba(15,23,42,.92), rgba(30,41,59,.7));
+}
+ul.cards-grid.admin-cards .card-icon { font-size: 2rem; margin-bottom:8px; }
+ul.cards-grid.admin-cards .stat-num {
+    display:block; font-size: 2.6rem; font-weight: 900; line-height: 1;
+    color: var(--text); margin: 6px 0 2px;
+    background: linear-gradient(135deg, var(--accent), #f8fafc);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+ul.cards-grid.admin-cards .stat-label { color: var(--muted); font-size:.92rem; margin: 0; }
+ul.cards-grid.admin-cards .card-arrow {
+    margin-top:auto; padding-top:18px;
+    color: var(--accent); font-weight:800; font-size:.92rem;
+}
+
 /* ── Home: fix list bullets in cards-grid ────────────────────── */
 ul.cards-grid { list-style:none; padding:0; margin-top:26px; margin-bottom:0; }
 ul.cards-grid > li { list-style:none; padding:0; margin:0; }
