@@ -12,7 +12,9 @@
 <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
 
 <header class="topbar admin-topbar">
-    <a class="brand" th:href="@{/admin}"><span class="mini-pac" aria-hidden="true"></span> CodeMan</a>
+    <a class="brand" th:href="@{/admin}">
+        <span class="mini-pac" aria-hidden="true"></span> CodeMan
+    </a>
     <nav class="admin-tabs" aria-label="Secciones de administración">
         <a class="tab-link" th:href="@{/admin}">Panel</a>
         <a class="tab-link active" th:href="@{/admin/usuarios}">Usuarios</a>
@@ -20,7 +22,10 @@
         <a class="tab-link" th:href="@{/admin/preguntas}">Preguntas</a>
     </nav>
     <div class="userbar">
-        <span class="user-greet" th:if="${usuario != null}" th:text="|Hola, ${usuario.name}|">Hola</span>
+        <span class="user-greet"
+              th:if="${usuario != null}"
+              th:text="|Hola, ${usuario.name}|">Hola</span>
+
         <form th:action="@{/logout}" method="post">
             <button class="btn ghost btn-sm" type="submit">Cerrar sesión</button>
         </form>
@@ -30,76 +35,143 @@
 <main id="main-content" class="container">
 
     <div th:if="${exito}" class="alert success" role="status" th:text="${exito}"></div>
-    <div th:if="${error}" class="alert error"   role="alert"  th:text="${error}"></div>
-
+    <div th:if="${error}" class="alert error" role="alert" th:text="${error}"></div>
+    
     <section class="detail-card" aria-labelledby="form-usuario-title">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:18px">
-            <h1 id="form-usuario-title" style="margin:0"
-                th:text="${form.id != null} ? 'Editar usuario' : 'Nuevo usuario'">Nuevo usuario</h1>
-        </div>
 
-        <div th:if="${#fields.hasGlobalErrors('form')}" class="alert error" role="alert">
-            <ul style="margin:0;padding-left:18px">
-                <li th:each="err : ${#fields.globalErrors('form')}" th:text="${err}"></li>
-            </ul>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:18px">
+            <h1 id="form-usuario-title"
+                style="margin:0"
+                th:text="${form.id != null} ? 'Editar usuario' : 'Nuevo usuario'">
+                Nuevo usuario
+            </h1>
         </div>
 
         <form id="form-usuario"
               th:action="${form.id != null} ? @{/admin/usuarios/{id}(id=${form.id})} : @{/admin/usuarios}"
-              th:object="${form}" method="post" class="form-grid" novalidate>
+              th:object="${form}"
+              method="post"
+              class="form-grid"
+              novalidate>
 
-            <div>
-                <label for="name">Nombre completo <span style="color:var(--red)">*</span></label>
-                <input th:field="*{name}" id="name" placeholder="Ej. María Pérez"
-                       th:classappend="${#fields.hasErrors('name')} ? 'error-input' : ''" required>
-                <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="field-error"></span>
+            <div th:if="${formHasErrors}"
+                 class="alert error"
+                 role="alert"
+                 style="grid-column:1/-1">
+                <ul style="margin:0;padding-left:18px">
+                    <li th:each="err : ${#fields.globalErrors()}"
+                        th:text="${err}">
+                    </li>
+                </ul>
             </div>
 
             <div>
-                <label for="email">Correo <span style="color:var(--red)">*</span></label>
-                <input th:field="*{email}" id="email" type="email" placeholder="usuario@dominio"
-                       th:classappend="${#fields.hasErrors('email')} ? 'error-input' : ''" required>
-                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="field-error"></span>
+                <label for="name">
+                    Nombre completo <span style="color:var(--red)">*</span>
+                </label>
+
+                <input th:field="*{name}"
+                       id="name"
+                       placeholder="Ej. María Pérez"
+                       th:classappend="${#fields.hasErrors('name')} ? 'error-input' : ''"
+                       required>
+
+                <span th:if="${#fields.hasErrors('name')}"
+                      th:errors="*{name}"
+                      class="field-error">
+                </span>
             </div>
 
             <div>
-                <label for="role">Rol <span style="color:var(--red)">*</span></label>
+                <label for="email">
+                    Correo <span style="color:var(--red)">*</span>
+                </label>
+
+                <input th:field="*{email}"
+                       id="email"
+                       type="email"
+                       placeholder="usuario@dominio"
+                       th:classappend="${#fields.hasErrors('email')} ? 'error-input' : ''"
+                       required>
+
+                <span th:if="${#fields.hasErrors('email')}"
+                      th:errors="*{email}"
+                      class="field-error">
+                </span>
+            </div>
+
+            <div>
+                <label for="role">
+                    Rol <span style="color:var(--red)">*</span>
+                </label>
+
                 <select th:field="*{role}" id="role" required>
-                    <option th:each="r : ${roles}" th:value="${r}" th:text="${r}"></option>
+                    <option th:each="r : ${roles}"
+                            th:value="${r}"
+                            th:text="${r}">
+                    </option>
                 </select>
-                <span th:if="${#fields.hasErrors('role')}" th:errors="*{role}" class="field-error"></span>
+
+                <span th:if="${#fields.hasErrors('role')}"
+                      th:errors="*{role}"
+                      class="field-error">
+                </span>
             </div>
 
             <div>
                 <label for="password">
                     Contraseña
                     <span th:if="${form.id == null}" style="color:var(--red)">*</span>
-                    <span th:if="${form.id != null}" style="color:var(--muted);font-weight:500;font-size:.85rem">(dejar vacío para mantener)</span>
+                    <span th:if="${form.id != null}"
+                          style="color:var(--muted);font-weight:500;font-size:.85rem">
+                        (dejar vacío para mantener)
+                    </span>
                 </label>
-                <input th:field="*{password}" id="password" type="password"
+
+                <input th:field="*{password}"
+                       id="password"
+                       type="password"
                        placeholder="Mínimo 8 caracteres, letras y números"
                        autocomplete="new-password"
                        th:required="${form.id == null}">
-                <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="field-error"></span>
+
+                <span th:if="${#fields.hasErrors('password')}"
+                      th:errors="*{password}"
+                      class="field-error">
+                </span>
             </div>
 
             <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-                <button class="btn primary" type="submit"
-                        th:text="${form.id != null} ? 'Actualizar usuario' : 'Crear usuario'">Guardar</button>
-                <a th:if="${form.id != null}" class="btn ghost" th:href="@{/admin/usuarios}">Cancelar</a>
+                <button class="btn primary"
+                        type="submit"
+                        th:text="${form.id != null} ? 'Actualizar usuario' : 'Crear usuario'">
+                    Guardar
+                </button>
+
+                <a th:if="${form.id != null}"
+                   class="btn ghost"
+                   th:href="@{/admin/usuarios}">
+                    Cancelar
+                </a>
             </div>
+
         </form>
     </section>
 
     <section class="detail-card" aria-labelledby="lista-usuarios-title">
+
         <h2 id="lista-usuarios-title" style="margin-bottom:16px">
             Usuarios registrados
-            <span class="badge" style="margin-left:8px;font-size:.8rem;vertical-align:middle"
-                  th:text="${#lists.size(usuarios)}"></span>
+            <span class="badge"
+                  style="margin-left:8px;font-size:.8rem;vertical-align:middle"
+                  th:text="${#lists.size(usuarios)}">
+            </span>
         </h2>
+
         <div class="table-wrap">
             <table>
                 <caption class="sr-only">Lista de usuarios registrados</caption>
+
                 <thead>
                     <tr>
                         <th scope="col">ID</th>
@@ -109,44 +181,69 @@
                         <th scope="col">Acciones</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     <tr th:each="u : ${usuarios}">
                         <td th:text="${u.id}"></td>
                         <td th:text="${u.name}"></td>
                         <td th:text="${u.email}"></td>
+
                         <td>
                             <span class="cat-badge"
                                   th:classappend="${u.role.name() == 'ADMIN'} ? ' purple' : ' blue'"
-                                  th:text="${u.role}"></span>
+                                  th:text="${u.role}">
+                            </span>
                         </td>
+
                         <td>
                             <div style="display:flex;gap:8px;flex-wrap:wrap">
+
                                 <a class="btn outline btn-sm"
                                    th:href="@{/admin/usuarios/{id}/editar(id=${u.id})}"
-                                   th:aria-label="${'Editar ' + u.name}">Editar</a>
+                                   th:aria-label="${'Editar ' + u.name}">
+                                    Editar
+                                </a>
+
                                 <form th:if="${usuario == null or u.id != usuario.id}"
-                                      th:action="@{/admin/usuarios/{id}/eliminar(id=${u.id})}" method="post"
+                                      th:action="@{/admin/usuarios/{id}/eliminar(id=${u.id})}"
+                                      method="post"
                                       th:data-nombre="${u.name}"
                                       onsubmit="return confirm('¿Eliminar al usuario «' + this.dataset.nombre + '»? Esta acción no se puede deshacer y borrará en cascada su progreso, partidas y reportes.')">
-                                    <button class="btn ghost btn-sm" type="submit" style="color:var(--red)"
-                                            th:aria-label="${'Eliminar ' + u.name}">Eliminar</button>
+
+                                    <button class="btn ghost btn-sm"
+                                            type="submit"
+                                            style="color:var(--red)"
+                                            th:aria-label="${'Eliminar ' + u.name}">
+                                        Eliminar
+                                    </button>
                                 </form>
+
                                 <span th:if="${usuario != null and u.id == usuario.id}"
-                                      class="small" style="color:var(--muted);font-style:italic">(tu cuenta)</span>
+                                      class="small"
+                                      style="color:var(--muted);font-style:italic">
+                                    (tu cuenta)
+                                </span>
+
                             </div>
                         </td>
                     </tr>
+
                     <tr th:if="${#lists.isEmpty(usuarios)}">
-                        <td colspan="5" style="text-align:center;color:var(--muted);padding:28px 12px">
+                        <td colspan="5"
+                            style="text-align:center;color:var(--muted);padding:28px 12px">
                             No hay usuarios registrados.
                         </td>
                     </tr>
                 </tbody>
+
             </table>
         </div>
+
     </section>
 
 </main>
+
 <script th:src="@{/js/accessibility.js}"></script>
+
 </body>
 </html>

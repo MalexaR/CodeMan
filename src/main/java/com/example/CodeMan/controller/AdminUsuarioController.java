@@ -36,6 +36,9 @@ public class AdminUsuarioController {
         if (!model.containsAttribute("form")) {
             model.addAttribute("form", new UsuarioForm());
         }
+        if (!model.containsAttribute("formHasErrors")) {
+            model.addAttribute("formHasErrors", false);
+        }
         addEnums(model);
         return "admin/usuarios";
     }
@@ -54,6 +57,7 @@ public class AdminUsuarioController {
         model.addAttribute("usuario", actual);
         model.addAttribute("form", form);
         model.addAttribute("usuarios", usuarioService.listar());
+        model.addAttribute("formHasErrors", false);
         addEnums(model);
         return "admin/usuarios";
     }
@@ -68,6 +72,7 @@ public class AdminUsuarioController {
         if (binding.hasErrors()) {
             model.addAttribute("usuario", actual);
             model.addAttribute("usuarios", usuarioService.listar());
+            model.addAttribute("formHasErrors", true);
             addEnums(model);
             return "admin/usuarios";
         }
@@ -77,6 +82,7 @@ public class AdminUsuarioController {
             binding.reject("usuario.error", ex.getMessage());
             model.addAttribute("usuario", actual);
             model.addAttribute("usuarios", usuarioService.listar());
+            model.addAttribute("formHasErrors", true);
             addEnums(model);
             return "admin/usuarios";
         }
@@ -96,6 +102,7 @@ public class AdminUsuarioController {
             form.setId(id);
             model.addAttribute("usuario", actual);
             model.addAttribute("usuarios", usuarioService.listar());
+            model.addAttribute("formHasErrors", true);
             addEnums(model);
             return "admin/usuarios";
         }
@@ -106,6 +113,7 @@ public class AdminUsuarioController {
             binding.reject("usuario.error", ex.getMessage());
             model.addAttribute("usuario", actual);
             model.addAttribute("usuarios", usuarioService.listar());
+            model.addAttribute("formHasErrors", true);
             addEnums(model);
             return "admin/usuarios";
         }
