@@ -28,7 +28,7 @@ public class Reporte {
     @Column(name = "porcentaje_global", nullable = false)
     private double porcentajeGlobal;
 
-    @Column(name = "datos_resumen", columnDefinition = "TEXT")
+    @Column(name = "datos_resumen", columnDefinition = "jsonb")
     private String datosResumen;
 
     @PrePersist

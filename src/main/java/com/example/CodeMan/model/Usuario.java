@@ -20,7 +20,7 @@ public class Usuario {
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "rol", nullable = false)
     private Rol role = Rol.ESTUDIANTE;
 
     @Column(name = "created_at", nullable = false)

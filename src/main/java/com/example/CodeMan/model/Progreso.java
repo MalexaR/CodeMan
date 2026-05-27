@@ -15,16 +15,16 @@ public class Progreso {
     @JoinColumn(name = "usuario_id", nullable = false, unique = true)
     private Usuario usuario;
 
-    @Column(name = "patrones_revisados_cache", nullable = false)
+    @Transient
     private int patronesRevisadosCache = 0;
 
-    @Column(name = "partidas_jugadas_cache", nullable = false)
+    @Transient
     private int partidasJugadasCache = 0;
 
-    @Column(name = "aciertos_cache", nullable = false)
+    @Transient
     private int aciertosCache = 0;
 
-    @Column(name = "errores_cache", nullable = false)
+    @Transient
     private int erroresCache = 0;
 
     @Column(name = "desafio_final_completado", nullable = false)

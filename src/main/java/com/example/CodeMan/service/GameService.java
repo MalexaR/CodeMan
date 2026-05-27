@@ -130,7 +130,13 @@ public class GameService {
         RespuestaPartida respuesta = new RespuestaPartida();
         respuesta.setPartida(partida);
         respuesta.setPregunta(pregunta);
-        respuesta.setOpcionElegida(request.opcionElegida());
+        if (request.opcionElegida() == null) {
+            respuesta.setOpcionElegida(null);
+            respuesta.setTimeout(true);
+        } else {
+            respuesta.setOpcionElegida(request.opcionElegida());
+            respuesta.setTimeout(false);
+        }
         respuesta.setEsCorrecta(request.esCorrecta());
         respuesta.setTiempoRespuestaMs(request.tiempoRespuesta());
         respuestaPartidaRepository.save(respuesta);
@@ -193,7 +199,6 @@ public class GameService {
             p.setUsuario(usuario);
             return p;
         });
-        progreso.setPartidasJugadasCache(progreso.getPartidasJugadasCache() + 1);
         progreso.setUltimoAcceso(LocalDateTime.now());
 
         long total = respuestaPartidaRepository.countByPartida(partida);
