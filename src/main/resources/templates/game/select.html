@@ -22,14 +22,13 @@
     <header class="page-title center">
         <p class="eyebrow">Laberinto de código</p>
         <h1>Selecciona una categoría</h1>
-        <p>Cada mundo contiene preguntas de patrones GoF y fantasmas que aumentan con tus errores.</p>
+        <p>Cada categoría tiene preguntas de patrones GoF. Los errores hacen aparecer fantasmas adicionales.</p>
     </header>
 
     <section aria-label="Categorías de patrones de diseño">
         <ul class="grid cards-grid three" role="list">
             <li>
                 <a class="menu-card blue" th:href="@{/jugar/CREACIONAL}">
-                    <span class="card-icon" aria-hidden="true">🏗️</span>
                     <h2>Creacionales</h2>
                     <p>Singleton, Factory Method, Abstract Factory.</p>
                     <span class="btn primary" aria-hidden="true">Iniciar</span>
@@ -37,7 +36,6 @@
             </li>
             <li>
                 <a class="menu-card purple" th:href="@{/jugar/ESTRUCTURAL}">
-                    <span class="card-icon" aria-hidden="true">🧩</span>
                     <h2>Estructurales</h2>
                     <p>Adapter, Decorator, Facade.</p>
                     <span class="btn primary" aria-hidden="true">Iniciar</span>
@@ -45,7 +43,6 @@
             </li>
             <li>
                 <a class="menu-card amber" th:href="@{/jugar/COMPORTAMIENTO}">
-                    <span class="card-icon" aria-hidden="true">🔁</span>
                     <h2>Comportamiento</h2>
                     <p>Observer, Strategy, Template Method.</p>
                     <span class="btn primary" aria-hidden="true">Iniciar</span>
@@ -56,16 +53,15 @@
 
     <section aria-labelledby="desafio-heading" style="margin-top:2.5rem">
         <header class="page-title center">
-            <h2 id="desafio-heading">¿Listo para el reto definitivo?</h2>
-            <p>El Desafío Final mezcla las tres categorías. Necesitas al menos un 60% de aciertos para completarlo. El cronómetro corre: tienes 30 minutos.</p>
+            <h2 id="desafio-heading">Desafío Final</h2>
+            <p>Mezcla las tres categorías en una sola partida de 30 minutos. Necesitas al menos 60% de aciertos para completarlo.</p>
         </header>
         <ul class="grid cards-grid" style="max-width:420px;margin:0 auto" role="list">
             <li>
                 <a class="menu-card desafio-card" th:href="@{/jugar/desafio-final}">
-                    <span class="card-icon" aria-hidden="true">🏆</span>
                     <h2>Desafío Final</h2>
-                    <p>Todas las categorías · Cronómetro 30 min · ≥60% para completar</p>
-                    <span class="btn desafio-btn" aria-hidden="true">Aceptar el desafío</span>
+                    <p>Todas las categorías. Cronómetro de 30 min. 60% para completar.</p>
+                    <span class="btn desafio-btn" aria-hidden="true">Empezar</span>
                 </a>
             </li>
         </ul>

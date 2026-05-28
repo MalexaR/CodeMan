@@ -80,7 +80,7 @@
            aria-valuemin="80" aria-valuemax="200" aria-valuenow="100">
   </div>
   <div class="a11y-section">
-    <button id="a11y-tts" type="button">&#128266; Leer página en voz alta</button>
+    <button id="a11y-tts" type="button">Leer página en voz alta</button>
   </div>
 </div>
 <button id="a11y-btn" type="button"

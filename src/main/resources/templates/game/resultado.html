@@ -26,7 +26,6 @@
     <div id="resultado-content" class="hidden">
 
         <div class="resultado-hero">
-            <div id="resultado-icon" class="resultado-icon" aria-hidden="true">🏆</div>
             <h1 id="resultado-titulo">Resultado</h1>
             <p id="resultado-subtitulo" class="resultado-subtitulo"></p>
         </div>
@@ -68,6 +67,10 @@
             <div id="errores-list" class="errores-list"></div>
         </section>
 
+        <section id="sin-errores" class="resultado-errores-section hidden" aria-live="polite">
+            <p class="resultado-msg" style="text-align:center">No fallaste ninguna pregunta en esta partida.</p>
+        </section>
+
         <nav class="resultado-acciones" aria-label="Acciones post-partida">
             <a id="btn-teoria" class="btn outline" href="/teoria">Ver teoría</a>
             <a id="btn-reintentar" class="btn ghost" href="/jugar">Reintentar laberinto</a>
@@ -95,8 +98,7 @@
         document.getElementById('resultado-content').classList.remove('hidden');
 
         const victoria = d.victoria;
-        document.getElementById('resultado-icon').textContent = victoria ? '🏆' : '💀';
-        document.getElementById('resultado-titulo').textContent = victoria ? '¡Partida completada!' : 'Partida terminada';
+        document.getElementById('resultado-titulo').textContent = victoria ? 'Partida completada' : 'Partida terminada';
         document.getElementById('resultado-subtitulo').textContent = 'Categoría: ' + d.categoria;
 
         document.getElementById('stat-aciertos').textContent = d.aciertos;
@@ -117,26 +119,39 @@
             ? 'linear-gradient(90deg, #22c55e, #86efac)'
             : 'linear-gradient(90deg, #fb7185, #fca5a5)';
 
-        document.getElementById('resultado-msg').textContent = pct >= 60
-            ? 'Buen trabajo. Superaste el umbral de aprendizaje.'
-            : 'Sigue practicando. Necesitas al menos un 60% para dominar la categoría.';
+        const msg = document.getElementById('resultado-msg');
+        if (d.totalPreguntas === 0) {
+            msg.textContent = 'No respondiste ninguna pregunta en esta partida.';
+        } else if (pct >= 60) {
+            msg.textContent = 'Aprobado: tu desempeño está por encima del 60%.';
+        } else {
+            msg.textContent = 'Por debajo del 60%. Repasa la teoría e inténtalo de nuevo.';
+        }
 
-        if (d.erroresDetalle && d.erroresDetalle.length > 0) {
-            const section = document.getElementById('errores-section');
-            section.classList.remove('hidden');
-            const list = document.getElementById('errores-list');
+        const list = document.getElementById('errores-list');
+        list.innerHTML = '';
+        const tieneErrores = Array.isArray(d.erroresDetalle) && d.erroresDetalle.length > 0;
+
+        if (tieneErrores) {
+            document.getElementById('errores-section').classList.remove('hidden');
             d.erroresDetalle.forEach(function (e) {
                 const card = document.createElement('article');
                 card.className = 'error-card';
+                const numero = e.numero != null ? e.numero : '';
+                const tu = e.timeout
+                    ? '<span class="error-opcion wrong">Sin respuesta: ' + escHtml(e.tuRespuesta) + '</span>'
+                    : '<span class="error-opcion wrong">Tu respuesta: ' + escHtml(e.tuRespuesta) + '</span>';
                 card.innerHTML =
-                    '<p class="error-enunciado">' + escHtml(e.enunciado) + '</p>' +
+                    '<p class="error-enunciado"><strong>Pregunta ' + numero + '.</strong> ' + escHtml(e.enunciado) + '</p>' +
                     '<div class="error-opciones">' +
-                    '<span class="error-opcion wrong">✗ Tu respuesta: ' + escHtml(e.opcionElegida) + '</span>' +
-                    '<span class="error-opcion correct">✓ Correcta: ' + escHtml(e.respuestaCorrecta) + '</span>' +
+                    tu +
+                    '<span class="error-opcion correct">Respuesta correcta: ' + escHtml(e.respuestaCorrecta) + '</span>' +
                     '</div>' +
                     (e.explicacion ? '<p class="error-explicacion">' + escHtml(e.explicacion) + '</p>' : '');
                 list.appendChild(card);
             });
+        } else if (d.totalPreguntas > 0) {
+            document.getElementById('sin-errores').classList.remove('hidden');
         }
 
         document.getElementById('btn-teoria').href = '/teoria?categoria=' + encodeURIComponent(d.categoria || '');

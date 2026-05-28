@@ -28,17 +28,16 @@ public class AdminUsuarioController {
         this.usuarioService = usuarioService;
     }
 
+    @ModelAttribute("form")
+    public UsuarioForm defaultForm() {
+        return new UsuarioForm();
+    }
+
     @GetMapping
     public String listar(Authentication authentication, Model model) {
         Usuario actual = requireAdmin(authentication);
         model.addAttribute("usuario", actual);
         model.addAttribute("usuarios", usuarioService.listar());
-        if (!model.containsAttribute("form")) {
-            model.addAttribute("form", new UsuarioForm());
-        }
-        if (!model.containsAttribute("formHasErrors")) {
-            model.addAttribute("formHasErrors", false);
-        }
         addEnums(model);
         return "admin/usuarios";
     }
@@ -57,7 +56,6 @@ public class AdminUsuarioController {
         model.addAttribute("usuario", actual);
         model.addAttribute("form", form);
         model.addAttribute("usuarios", usuarioService.listar());
-        model.addAttribute("formHasErrors", false);
         addEnums(model);
         return "admin/usuarios";
     }
@@ -69,25 +67,19 @@ public class AdminUsuarioController {
                         Model model,
                         RedirectAttributes flash) {
         Usuario actual = requireAdmin(authentication);
-        if (binding.hasErrors()) {
-            model.addAttribute("usuario", actual);
-            model.addAttribute("usuarios", usuarioService.listar());
-            model.addAttribute("formHasErrors", true);
-            addEnums(model);
-            return "admin/usuarios";
+        if (!binding.hasErrors()) {
+            try {
+                usuarioService.crear(form);
+                flash.addFlashAttribute("exito", "Usuario creado correctamente.");
+                return "redirect:/admin/usuarios";
+            } catch (IllegalArgumentException ex) {
+                model.addAttribute("serviceError", ex.getMessage());
+            }
         }
-        try {
-            usuarioService.crear(form);
-        } catch (IllegalArgumentException ex) {
-            binding.reject("usuario.error", ex.getMessage());
-            model.addAttribute("usuario", actual);
-            model.addAttribute("usuarios", usuarioService.listar());
-            model.addAttribute("formHasErrors", true);
-            addEnums(model);
-            return "admin/usuarios";
-        }
-        flash.addFlashAttribute("exito", "Usuario creado correctamente.");
-        return "redirect:/admin/usuarios";
+        model.addAttribute("usuario", actual);
+        model.addAttribute("usuarios", usuarioService.listar());
+        addEnums(model);
+        return "admin/usuarios";
     }
 
     @PostMapping("/{id}")
@@ -98,27 +90,20 @@ public class AdminUsuarioController {
                              Model model,
                              RedirectAttributes flash) {
         Usuario actual = requireAdmin(authentication);
-        if (binding.hasErrors()) {
-            form.setId(id);
-            model.addAttribute("usuario", actual);
-            model.addAttribute("usuarios", usuarioService.listar());
-            model.addAttribute("formHasErrors", true);
-            addEnums(model);
-            return "admin/usuarios";
+        form.setId(id);
+        if (!binding.hasErrors()) {
+            try {
+                usuarioService.actualizar(id, form);
+                flash.addFlashAttribute("exito", "Usuario actualizado correctamente.");
+                return "redirect:/admin/usuarios";
+            } catch (IllegalArgumentException ex) {
+                model.addAttribute("serviceError", ex.getMessage());
+            }
         }
-        try {
-            usuarioService.actualizar(id, form);
-        } catch (IllegalArgumentException ex) {
-            form.setId(id);
-            binding.reject("usuario.error", ex.getMessage());
-            model.addAttribute("usuario", actual);
-            model.addAttribute("usuarios", usuarioService.listar());
-            model.addAttribute("formHasErrors", true);
-            addEnums(model);
-            return "admin/usuarios";
-        }
-        flash.addFlashAttribute("exito", "Usuario actualizado correctamente.");
-        return "redirect:/admin/usuarios";
+        model.addAttribute("usuario", actual);
+        model.addAttribute("usuarios", usuarioService.listar());
+        addEnums(model);
+        return "admin/usuarios";
     }
 
     @PostMapping("/{id}/eliminar")

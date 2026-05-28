@@ -20,10 +20,10 @@
 <main id="main-content" class="game-container" th:data-categoria="${categoria}">
 
     <section class="hud" aria-label="Estado del juego">
-        <div><span aria-hidden="true">❤️</span> Vidas: <strong id="vidas" aria-live="polite">3</strong></div>
-        <div><span aria-hidden="true">⭐</span> Puntos: <strong id="puntos" aria-live="polite">0</strong></div>
-        <div><span aria-hidden="true">⏱️</span> Tiempo: <strong id="tiempo" aria-live="polite">0</strong>s</div>
-        <div><span aria-hidden="true">👻</span> Errores: <strong id="errores" aria-live="polite">0</strong></div>
+        <div>Vidas: <strong id="vidas" aria-live="polite">3</strong></div>
+        <div>Puntos: <strong id="puntos" aria-live="polite">0</strong></div>
+        <div>Tiempo: <strong id="tiempo" aria-live="polite">0</strong>s</div>
+        <div>Errores: <strong id="errores" aria-live="polite">0</strong></div>
     </section>
 
     <canvas id="mazeCanvas" width="588" height="588"
@@ -39,10 +39,10 @@
         <button class="dpad-btn dpad-down" aria-label="Abajo" type="button">▼</button>
     </div>
     <button class="mobile-pause-btn" id="pauseBtn" type="button" aria-pressed="false">
-        <span aria-hidden="true">⏸</span> Pausa
+        Pausa
     </button>
 
-    <p class="game-help">Flechas / WASD para mover · P para pausar · Responde antes de que acabe el tiempo</p>
+    <p class="game-help">Flechas o WASD para mover. P para pausar. Responde antes de que acabe el tiempo.</p>
 
 </main>
 

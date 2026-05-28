@@ -60,10 +60,12 @@ public class GameDtos {
 
     // HU-08: Retroalimentación al finalizar partida
     public record ErrorDetalle(
+        int numero,
         String enunciado,
-        String opcionElegida,
+        String tuRespuesta,
         String respuestaCorrecta,
-        String explicacion
+        String explicacion,
+        boolean timeout
     ) {}
 
     public record ResultadoPartidaDto(

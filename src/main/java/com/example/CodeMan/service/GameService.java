@@ -15,6 +15,7 @@ import com.example.CodeMan.dto.GameDtos.StartGameResponse;
 import com.example.CodeMan.dto.GameDtos.UpdateLivesRequest;
 import com.example.CodeMan.model.Categoria;
 import com.example.CodeMan.model.ModoJuego;
+import com.example.CodeMan.model.OpcionRespuesta;
 import com.example.CodeMan.model.Partida;
 import com.example.CodeMan.model.Pregunta;
 import com.example.CodeMan.model.Progreso;
@@ -127,22 +128,25 @@ public class GameService {
         Pregunta pregunta = preguntaRepository.findById(request.preguntaId())
                 .orElseThrow(() -> new IllegalArgumentException("Pregunta no encontrada"));
 
+        OpcionRespuesta opcion = request.opcionElegida();
+        boolean esTimeout = (opcion == null || opcion == OpcionRespuesta.TIMEOUT);
+        boolean esCorrecta = !esTimeout
+                && pregunta.getRespuestaCorrecta() != null
+                && opcion == pregunta.getRespuestaCorrecta();
+
         RespuestaPartida respuesta = new RespuestaPartida();
         respuesta.setPartida(partida);
         respuesta.setPregunta(pregunta);
-        if (request.opcionElegida() == null) {
-            respuesta.setOpcionElegida(null);
-            respuesta.setTimeout(true);
-        } else {
-            respuesta.setOpcionElegida(request.opcionElegida());
-            respuesta.setTimeout(false);
-        }
-        respuesta.setEsCorrecta(request.esCorrecta());
+        respuesta.setOpcionElegida(esTimeout ? null : opcion);
+        respuesta.setTimeout(esTimeout);
+        respuesta.setEsCorrecta(esCorrecta);
         respuesta.setTiempoRespuestaMs(request.tiempoRespuesta());
+        int orden = (int) respuestaPartidaRepository.countByPartida(partida) + 1;
+        respuesta.setOrdenEnPartida(orden);
         respuestaPartidaRepository.save(respuesta);
 
-        int nuevosErrores = partida.getErroresAcumulados() + (request.esCorrecta() ? 0 : 1);
-        int nuevaPuntuacion = partida.getPuntuacion() + (request.esCorrecta() ? 100 : 0);
+        int nuevosErrores = partida.getErroresAcumulados() + (esCorrecta ? 0 : 1);
+        int nuevaPuntuacion = partida.getPuntuacion() + (esCorrecta ? 100 : 0);
         partida.setErroresAcumulados(nuevosErrores);
         partida.setFantasmaExtraActivo(nuevosErrores >= 3);
         partida.setPuntuacion(nuevaPuntuacion);
@@ -223,8 +227,15 @@ public class GameService {
         if (!partida.getUsuario().getId().equals(usuario.getId()))
             throw new IllegalArgumentException("Partida no pertenece al usuario actual");
 
-        List<RespuestaPartida> respuestas = respuestaPartidaRepository.findByPartida(partida);
-        List<RespuestaPartida> incorrectas = respuestaPartidaRepository.findByPartidaAndEsCorrecta(partida, false);
+        List<RespuestaPartida> respuestas = new ArrayList<>(respuestaPartidaRepository.findByPartida(partida));
+        respuestas.sort((a, b) -> {
+            Integer oa = a.getOrdenEnPartida();
+            Integer ob = b.getOrdenEnPartida();
+            if (oa != null && ob != null) return oa.compareTo(ob);
+            if (oa != null) return -1;
+            if (ob != null) return 1;
+            return Long.compare(a.getId(), b.getId());
+        });
 
         int total = respuestas.size();
         int aciertos = (int) respuestas.stream().filter(RespuestaPartida::isEsCorrecta).count();
@@ -240,16 +251,37 @@ public class GameService {
         boolean victoria = partida.getVidasRestantes() > 0;
         String categoria = partida.getCategoria() != null ? partida.getCategoria().name() : "DESAFIO";
 
-        List<ErrorDetalle> erroresDetalle = incorrectas.stream()
-                .map(r -> new ErrorDetalle(
-                        r.getPregunta().getEnunciado(),
-                        r.getOpcionElegida() != null ? r.getOpcionElegida().name() : "—",
-                        r.getPregunta().getRespuestaCorrecta() != null ? r.getPregunta().getRespuestaCorrecta().name() : "—",
-                        r.getPregunta().getExplicacion()))
-                .collect(Collectors.toList());
+        List<ErrorDetalle> erroresDetalle = new ArrayList<>();
+        int numero = 0;
+        for (RespuestaPartida r : respuestas) {
+            numero++;
+            if (r.isEsCorrecta()) continue;
+            Pregunta p = r.getPregunta();
+            boolean timeout = r.isTimeout() || r.getOpcionElegida() == null;
+            String tuRespuesta = timeout ? "No respondiste a tiempo" : textoOpcion(p, r.getOpcionElegida());
+            String correcta = textoOpcion(p, p.getRespuestaCorrecta());
+            erroresDetalle.add(new ErrorDetalle(
+                    numero,
+                    p.getEnunciado(),
+                    tuRespuesta,
+                    correcta,
+                    p.getExplicacion(),
+                    timeout));
+        }
 
         return new ResultadoPartidaDto(partida.getId(), total, aciertos, errores,
                 porcentaje, tiempoTotal, categoria, victoria, erroresDetalle);
+    }
+
+    private String textoOpcion(Pregunta p, OpcionRespuesta o) {
+        if (o == null) return "—";
+        return switch (o) {
+            case A -> "A. " + p.getOpcionA();
+            case B -> "B. " + p.getOpcionB();
+            case C -> "C. " + p.getOpcionC();
+            case D -> "D. " + p.getOpcionD();
+            case TIMEOUT -> "No respondiste a tiempo";
+        };
     }
 
     @Transactional

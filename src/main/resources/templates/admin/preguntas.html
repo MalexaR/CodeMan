@@ -41,8 +41,8 @@
         </div>
 
         <div th:if="${warnDuplicado}" class="alert warn" role="alert" style="margin-bottom:16px">
-            <strong>⚠ Posible duplicado detectado.</strong>
-            Ya existe una pregunta con un enunciado idéntico. Si desea guardarla de todas formas, haga clic en "Confirmar y guardar".
+            <strong>Posible duplicado detectado.</strong>
+            Ya existe una pregunta con un enunciado idéntico. Para guardarla de todas formas, haz clic en "Confirmar y guardar".
         </div>
 
         <form id="form-pregunta"
@@ -196,7 +196,7 @@
             <h2 id="preview-titulo" style="margin:0;font-size:1.15rem">Vista previa de la pregunta</h2>
             <button class="btn ghost btn-sm" type="button"
                     onclick="document.getElementById('modal-preview').classList.add('hidden')"
-                    aria-label="Cerrar vista previa">✕</button>
+                    aria-label="Cerrar vista previa">Cerrar</button>
         </div>
         <div id="preview-content" style="margin-top:18px"></div>
     </div>
@@ -221,7 +221,7 @@ function mostrarVistaPrevia() {
     const opcionesHTML = ops.map(([letra, texto]) => {
         const es = correcta === letra;
         return `<button class="answer-btn${es ? ' correct-preview' : ''}" type="button">
-            <strong>${letra}.</strong> ${esc(texto)}${es ? ' <span style="float:right">✓</span>' : ''}
+            <strong>${letra}.</strong> ${esc(texto)}${es ? ' <span style="float:right">Correcta</span>' : ''}
         </button>`;
     }).join('');
 

@@ -32,14 +32,13 @@
     <header class="page-title">
         <p class="eyebrow">Rol administrador</p>
         <h1>Panel de administración</h1>
-        <p>Gestión académica: usuarios, patrones de diseño y banco de preguntas.</p>
+        <p>Gestiona usuarios, patrones y el banco de preguntas.</p>
     </header>
 
     <nav aria-label="Secciones de administración">
         <ul class="grid cards-grid three admin-cards" role="list">
             <li>
                 <a class="menu-card blue" th:href="@{/admin/usuarios}">
-                    <span class="card-icon" aria-hidden="true">👥</span>
                     <h2>Usuarios</h2>
                     <strong class="stat-num" th:text="${totalUsuarios}">0</strong>
                     <p class="stat-label">registrados</p>
@@ -48,7 +47,6 @@
             </li>
             <li>
                 <a class="menu-card green" th:href="@{/admin/patrones}">
-                    <span class="card-icon" aria-hidden="true">📚</span>
                     <h2>Patrones</h2>
                     <strong class="stat-num" th:text="${totalPatrones}">0</strong>
                     <p class="stat-label">registrados</p>
@@ -57,7 +55,6 @@
             </li>
             <li>
                 <a class="menu-card amber" th:href="@{/admin/preguntas}">
-                    <span class="card-icon" aria-hidden="true">❔</span>
                     <h2>Preguntas</h2>
                     <strong class="stat-num" th:text="${totalPreguntas}">0</strong>
                     <p class="stat-label">registradas</p>

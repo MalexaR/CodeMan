@@ -26,7 +26,7 @@
             <span class="patron-badge" th:text="${patron.categoria}"></span>
             <h1 th:text="${patron.nombre}"></h1>
             <p class="patron-lead" th:text="${patron.descripcion}"></p>
-            <div th:if="${revisado}" class="revisado-pill">✓ Patrón revisado</div>
+            <div th:if="${revisado}" class="revisado-pill">Patrón revisado</div>
         </div>
     </div>
 
@@ -45,7 +45,6 @@
             <section class="info-block" th:if="${patron.problemaResuelto != null and !#strings.isEmpty(patron.problemaResuelto)}"
                      aria-labelledby="sec-problema">
                 <div class="info-block-head">
-                    <span class="info-icon" aria-hidden="true">🔍</span>
                     <h2 id="sec-problema">Problema que resuelve</h2>
                 </div>
                 <p th:text="${patron.problemaResuelto}"></p>
@@ -108,11 +107,11 @@
         <div class="review-bar">
             <div class="review-bar-text">
                 <span th:if="${revisado}">Ya revisaste este patrón.</span>
-                <span th:unless="${revisado}">¿Entendiste el patrón? Márcalo como revisado para llevar tu progreso.</span>
+                <span th:unless="${revisado}">Marca el patrón como revisado para registrar tu avance.</span>
             </div>
             <form th:action="@{/teoria/{id}/revisar(id=${patron.id})}" method="post">
                 <button class="btn primary btn-lg"
-                        th:text="${revisado ? '✓ Revisado' : 'Marcar como revisado'}"
+                        th:text="${revisado ? 'Revisado' : 'Marcar como revisado'}"
                         th:disabled="${revisado}">
                 </button>
             </form>

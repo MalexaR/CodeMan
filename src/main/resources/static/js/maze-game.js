@@ -385,7 +385,7 @@
       else                     activatePacBoost();
     } else {
       stats.errores += 1;
-      if (Math.random() < 0.5 && ghosts.length < 4) { spawnExtraGhost(); showFeedback('¡+1 Fantasma!', false); }
+      if (Math.random() < 0.5 && ghosts.length < 4) { spawnExtraGhost(); showFeedback('Aparece un fantasma extra', false); }
       else                                            activatePacSlow();
     }
     try {
@@ -399,19 +399,19 @@
 
   function activateFrightMode() {
     frightTimer = 6;
-    showFeedback('¡POWER-UP! Come fantasmas · 6s', true);
+    showFeedback('Power-up: come fantasmas (6s)', true);
   }
 
   function activatePacBoost() {
     pac.speed = PAC_SPEED * 1.8;
     pacBoostTimer = 5;
-    showFeedback('¡POWER-UP! Turbo · 5s', true);
+    showFeedback('Power-up: velocidad (5s)', true);
   }
 
   function activatePacSlow() {
     pac.speed = PAC_SPEED * 0.45;
     pacSlowTimer = 3;
-    showFeedback('¡PENALIZACIÓN! Pac-Man lento · 3s', false);
+    showFeedback('Penalización: velocidad reducida (3s)', false);
   }
 
   function showFeedback(msg, good) {
@@ -424,7 +424,7 @@
     state = 'question';
     currentEvento = eventos.shift();
     eventosActivados++;
-    if (modalTitle()) modalTitle().textContent = '⚡ Decisión Crítica';
+    if (modalTitle()) modalTitle().textContent = 'Decisión crítica';
     qTimer = 30;
     $id('questionTimer').textContent = qTimer;
     $id('questionText').textContent = currentEvento.escenario;
@@ -570,8 +570,8 @@
   const pauseBtn = $id('pauseBtn');
   if (pauseBtn) {
     pauseBtn.addEventListener('click', () => {
-      if      (state === 'playing') { state = 'paused';  draw(); pauseBtn.textContent = '▶ Continuar'; }
-      else if (state === 'paused')  { state = 'playing';         pauseBtn.textContent = '⏸ Pausa'; }
+      if      (state === 'playing') { state = 'paused';  draw(); pauseBtn.textContent = 'Continuar'; }
+      else if (state === 'paused')  { state = 'playing';         pauseBtn.textContent = 'Pausa'; }
     });
   }
 

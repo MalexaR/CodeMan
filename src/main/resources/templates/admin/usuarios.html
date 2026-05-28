@@ -54,15 +54,11 @@
               class="form-grid"
               novalidate>
 
-            <div th:if="${formHasErrors}"
+            <div th:if="${serviceError}"
                  class="alert error"
                  role="alert"
-                 style="grid-column:1/-1">
-                <ul style="margin:0;padding-left:18px">
-                    <li th:each="err : ${#fields.globalErrors()}"
-                        th:text="${err}">
-                    </li>
-                </ul>
+                 style="grid-column:1/-1"
+                 th:text="${serviceError}">
             </div>
 
             <div>
