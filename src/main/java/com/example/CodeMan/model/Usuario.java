@@ -1,8 +1,8 @@
 package com.example.CodeMan.model;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.JdbcType;
-import org.hibernate.dialect.PostgreSQLEnumJdbcType;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,8 +22,8 @@ public class Usuario {
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @JdbcType(PostgreSQLEnumJdbcType.class)
-    @Column(name = "rol", nullable = false)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "rol", nullable = false, columnDefinition = "rol_enum")
     private Rol role = Rol.ESTUDIANTE;
 
     @Column(name = "created_at", nullable = false)
