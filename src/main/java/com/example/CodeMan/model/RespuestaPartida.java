@@ -1,6 +1,8 @@
 package com.example.CodeMan.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 @Entity
 @Table(name = "respuestas_partida")
@@ -19,7 +21,8 @@ public class RespuestaPartida {
     private Pregunta pregunta;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "opcion_elegida", length = 10)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(name = "opcion_elegida")
     private OpcionRespuesta opcionElegida;
 
     @Column(name = "es_correcta", nullable = false)

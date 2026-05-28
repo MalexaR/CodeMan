@@ -1,6 +1,8 @@
 package com.example.CodeMan.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,6 +22,7 @@ public class Usuario {
     private String name;
 
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     @Column(name = "rol", nullable = false)
     private Rol role = Rol.ESTUDIANTE;
 
