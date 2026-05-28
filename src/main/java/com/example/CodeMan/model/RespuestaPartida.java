@@ -31,7 +31,7 @@ public class RespuestaPartida {
     @Column(nullable = false)
     private boolean timeout = false;
 
-    @Column(name = "orden_en_partida")
+    @Column(name = "orden_en_partida", nullable = false)
     private Integer ordenEnPartida;
 
     public Long getId() {

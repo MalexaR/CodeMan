@@ -16,6 +16,8 @@ import com.example.CodeMan.model.Categoria;
 import com.example.CodeMan.model.Usuario;
 import com.example.CodeMan.service.GameService;
 import com.example.CodeMan.service.UsuarioService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +32,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/game")
 public class GameApiController {
+
+    private static final Logger log = LoggerFactory.getLogger(GameApiController.class);
 
     private final GameService gameService;
     private final UsuarioService usuarioService;
@@ -56,12 +60,23 @@ public class GameApiController {
 
     @PostMapping("/answer")
     public AnswerResponse responder(@RequestBody AnswerRequest request, Authentication authentication) {
-        return gameService.responder(usuarioService.actual(authentication), request);
+        try {
+            return gameService.responder(usuarioService.actual(authentication), request);
+        } catch (RuntimeException ex) {
+            log.error("Error guardando respuesta partida={} pregunta={} opcion={}: {}",
+                    request.partidaId(), request.preguntaId(), request.opcionElegida(), ex.getMessage(), ex);
+            throw ex;
+        }
     }
 
     @PostMapping("/finish")
     public SimpleResponse finalizar(@RequestBody FinishGameRequest request, Authentication authentication) {
-        return gameService.finalizar(usuarioService.actual(authentication), request);
+        try {
+            return gameService.finalizar(usuarioService.actual(authentication), request);
+        } catch (RuntimeException ex) {
+            log.error("Error finalizando partida={}: {}", request.partidaId(), ex.getMessage(), ex);
+            throw ex;
+        }
     }
 
     @PostMapping("/lives")
