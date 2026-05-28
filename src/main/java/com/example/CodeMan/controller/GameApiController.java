@@ -71,10 +71,18 @@ public class GameApiController {
 
     @PostMapping("/finish")
     public SimpleResponse finalizar(@RequestBody FinishGameRequest request, Authentication authentication) {
+        Usuario usuario = usuarioService.actual(authentication);
         try {
-            return gameService.finalizar(usuarioService.actual(authentication), request);
+            com.example.CodeMan.model.Partida partida = gameService.cerrarPartida(usuario, request);
+            try {
+                gameService.actualizarProgresoFinPartida(usuario, partida.getId());
+            } catch (RuntimeException ex) {
+                log.warn("Partida {} cerrada pero el progreso no se actualizo: {}",
+                        partida.getId(), ex.getMessage(), ex);
+            }
+            return new SimpleResponse(true);
         } catch (RuntimeException ex) {
-            log.error("Error finalizando partida={}: {}", request.partidaId(), ex.getMessage(), ex);
+            log.error("Error cerrando partida={}: {}", request.partidaId(), ex.getMessage(), ex);
             throw ex;
         }
     }

@@ -27,7 +27,10 @@ import com.example.CodeMan.repository.PartidaRepository;
 import com.example.CodeMan.repository.PreguntaRepository;
 import com.example.CodeMan.repository.ProgresoRepository;
 import com.example.CodeMan.repository.RespuestaPartidaRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
@@ -39,6 +42,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class GameService {
+
+    private static final Logger log = LoggerFactory.getLogger(GameService.class);
+
     private final PreguntaRepository preguntaRepository;
     private final PartidaRepository partidaRepository;
     private final RespuestaPartidaRepository respuestaPartidaRepository;
@@ -186,7 +192,7 @@ public class GameService {
     }
 
     @Transactional
-    public SimpleResponse finalizar(Usuario usuario, FinishGameRequest request) {
+    public Partida cerrarPartida(Usuario usuario, FinishGameRequest request) {
         Partida partida = partidaRepository.findById(request.partidaId())
                 .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
         if (!partida.getUsuario().getId().equals(usuario.getId()))
@@ -196,7 +202,13 @@ public class GameService {
         partida.setCompletada(true);
         partida.setPuntuacion(request.puntuacion());
         partida.setVidasRestantes(request.vidas());
-        partidaRepository.save(partida);
+        return partidaRepository.save(partida);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void actualizarProgresoFinPartida(Usuario usuario, Long partidaId) {
+        Partida partida = partidaRepository.findById(partidaId)
+                .orElseThrow(() -> new IllegalArgumentException("Partida no encontrada"));
 
         Progreso progreso = progresoRepository.findByUsuario(usuario).orElseGet(() -> {
             Progreso p = new Progreso();
@@ -217,8 +229,6 @@ public class GameService {
 
         int porcentaje = total == 0 ? 0 : (int) Math.round((correctas * 100.0) / total);
         scormReporter.registrar(partida.getId(), porcentaje);
-
-        return new SimpleResponse(true);
     }
 
     public ResultadoPartidaDto resultado(Usuario usuario, Long partidaId) {
