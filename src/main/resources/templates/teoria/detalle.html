@@ -101,7 +101,13 @@
             <div class="info-block-head">
                 <h2 id="sec-referencia">Referencia bibliográfica</h2>
             </div>
-            <p class="muted" style="font-style:italic" th:text="${patron.referencia}"></p>
+            <p class="muted" style="font-style:italic" th:if="${referenciaTexto != null}"
+               th:text="${referenciaTexto}"></p>
+            <p th:if="${referenciaUrl != null}" style="margin-top:10px">
+                <a class="btn outline" th:href="${referenciaUrl}" target="_blank" rel="noopener noreferrer">
+                    📄 Ver PDF de la fuente
+                </a>
+            </p>
         </section>
 
         <div class="review-bar">

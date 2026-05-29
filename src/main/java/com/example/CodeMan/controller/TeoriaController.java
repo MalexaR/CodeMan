@@ -43,6 +43,10 @@ public class TeoriaController {
         Usuario usuario = usuarioService.actual(authentication);
         Patron patron = patronService.buscar(id);
         model.addAttribute("patron", patron);
+        // Si la referencia bibliografica trae una URL (p.ej. el PDF del libro fuente),
+        // la separamos: el texto de la cita va por un lado y el enlace por otro, para
+        // pintar un boton "Ver PDF" sin inyectar HTML crudo en la plantilla.
+        partirReferencia(patron.getReferencia(), model);
         model.addAttribute("revisado", patronService.estaRevisado(usuario, patron));
         model.addAttribute("patronAnterior", patronService.anterior(patron).orElse(null));
         model.addAttribute("patronSiguiente", patronService.siguiente(patron).orElse(null));
@@ -54,6 +58,25 @@ public class TeoriaController {
         if (esAdmin(authentication)) return "redirect:/admin";
         patronService.marcarRevisado(usuarioService.actual(authentication), id);
         return "redirect:/teoria/" + id;
+    }
+
+    private static final java.util.regex.Pattern URL_REF =
+            java.util.regex.Pattern.compile("https?://\\S+");
+
+    /** Separa el texto de la cita de la URL del PDF (si la hay) y los deja en el modelo. */
+    private void partirReferencia(String referencia, Model model) {
+        if (referencia == null || referencia.isBlank()) return;
+        java.util.regex.Matcher m = URL_REF.matcher(referencia);
+        if (m.find()) {
+            String url = m.group();
+            model.addAttribute("referenciaUrl", url);
+            // quitamos la URL del texto y limpiamos separadores colgantes al final
+            String texto = referencia.replace(url, "").replaceAll("\\s+", " ").trim();
+            texto = texto.replaceAll("[\\-–—:;,]+$", "").trim();
+            model.addAttribute("referenciaTexto", texto.isBlank() ? null : texto);
+        } else {
+            model.addAttribute("referenciaTexto", referencia);
+        }
     }
 
     private boolean esAdmin(Authentication authentication) {
