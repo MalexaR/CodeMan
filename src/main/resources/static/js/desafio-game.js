@@ -1,18 +1,8 @@
-/**
- * CodeMan – Motor del Desafío Final
- * Variante de maze-game.js para el modo DESAFIO.
- * Diferencias clave:
- *  - Canvas id: "desafio-canvas", contenedor clase "desafio-container"
- *  - Preguntas de /api/game/questions/desafio (todas las categorías mezcladas)
- *  - Temporizador descendente 30:00 → naranja a 5min → rojo+parpadeo a 1min → derrota a 0
- *  - Paleta dorada/ámbar en lugar de azul
- *  - ESC muestra diálogo de confirmación antes de abandonar
- *  - Al terminar redirige a /resultado/{partidaId} en lugar de mostrar modal
- */
+// Variante del maze para el modo DESAFIO: timer que va para abajo (30 min),
+// paleta dorada y ESC pide confirmacion antes de salir.
 (() => {
   'use strict';
 
-  // ── Constantes ───────────────────────────────────────────────────────────────
   const TILE = 28;
   const COLS = 21, ROWS = 21;
   const WALL = 1, DOT = 2, QUESTION = 3, EMPTY = 0;
@@ -20,9 +10,9 @@
   const PAC_SPEED   = 150;
   const GHOST_SPEED = 115;
 
-  const TIEMPO_INICIAL = 1800; // 30 minutos en segundos
+  const TIEMPO_INICIAL = 1800; // 30 min
 
-  // ── Mapa ─────────────────────────────────────────────────────────────────────
+  // 1 = pared, 2 = punto, 3 = pregunta
   const BASE_MAP = [
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
     [1,2,2,2,2,2,2,2,2,1,1,1,2,2,2,2,2,2,2,2,1],
@@ -47,7 +37,6 @@
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
   ];
 
-  // ── DOM ───────────────────────────────────────────────────────────────────────
   const canvas = document.getElementById('desafio-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
@@ -55,7 +44,6 @@
   if (!gameContainer) return;
   const $id = id => document.getElementById(id);
 
-  // ── Utilidades de grid ────────────────────────────────────────────────────────
   const tcx = col => col * TILE + TILE / 2;
   const tcy = row => row * TILE + TILE / 2;
   const nearCol = px => Math.round((px - TILE / 2) / TILE);
@@ -63,11 +51,9 @@
   const walkable = (col, row) =>
     col >= 0 && col < COLS && row >= 0 && row < ROWS && map[row][col] !== WALL;
 
-  // ── Estado del mapa ───────────────────────────────────────────────────────────
   let map = BASE_MAP.map(r => [...r]);
   const collected = new Set();
 
-  // ── Pac-Man ───────────────────────────────────────────────────────────────────
   let pac = {
     px:  tcx(1), py:  tcy(1),
     dx:  1,      dy:  0,
@@ -78,7 +64,6 @@
     mouth: 0, mouthDir: 1
   };
 
-  // ── Fantasmas ────────────────────────────────────────────────────────────────
   const ALL_DIRS = [
     { dx: 1, dy: 0 }, { dx: -1, dy: 0 },
     { dx: 0, dy: 1 }, { dx: 0, dy: -1 }
@@ -98,7 +83,6 @@
     makeGhost(11, 9,  1, 0, '#92400e', GHOST_SPEED)
   ];
 
-  // ── Estado general ────────────────────────────────────────────────────────────
   let stats      = { vidas: 3, puntos: 0, tiempo: TIEMPO_INICIAL, errores: 0 };
   let state      = 'playing';
   let partidaId  = null;
@@ -111,7 +95,6 @@
   let protection = 0;
   let confirmandoAbandon = false;
 
-  // ── API ───────────────────────────────────────────────────────────────────────
   const api = async (url, method = 'GET', body = null) => {
     const opts = { method, headers: { 'Content-Type': 'application/json' } };
     if (body) opts.body = JSON.stringify(body);
@@ -128,7 +111,6 @@
     rafId = requestAnimationFrame(loop);
   }
 
-  // ── Lógica de Pac-Man ─────────────────────────────────────────────────────────
   function pacArrive(col, row) {
     pac.px = tcx(col);
     pac.py = tcy(row);
@@ -156,7 +138,11 @@
 
   function updatePac(dt) {
     pac.mouth += dt * 8 * pac.mouthDir;
-    if (pac.mouth >= 1 || pac.mouth <= 0) pac.mouthDir *= -1;
+    // acotamos a [0,1]: si se pasa, ademas de invertir la direccion fijamos el
+    // valor al limite. Sin esto, con un dt grande la boca se pasaba por debajo de 0
+    // y openAngle quedaba negativo -> el arco se cerraba y la boca "desaparecia".
+    if (pac.mouth >= 1)      { pac.mouth = 1; pac.mouthDir = -1; }
+    else if (pac.mouth <= 0) { pac.mouth = 0; pac.mouthDir =  1; }
 
     if (pac.stopped) {
       const col = pac.targetCol, row = pac.targetRow;
@@ -190,7 +176,6 @@
     collectItem();
   }
 
-  // ── Lógica de fantasmas ───────────────────────────────────────────────────────
   function ghostArrive(g, col, row) {
     g.px = tcx(col);
     g.py = tcy(row);
@@ -236,7 +221,6 @@
     }
   }
 
-  // ── Recolección de ítems ──────────────────────────────────────────────────────
   function collectItem() {
     const col = nearCol(pac.px), row = nearRow(pac.py);
     if (col < 0 || col >= COLS || row < 0 || row >= ROWS) return;
@@ -253,7 +237,6 @@
     }
   }
 
-  // ── Colisiones & victoria ─────────────────────────────────────────────────────
   function checkCollisions() {
     if (protection > 0) return;
     for (const g of ghosts) {
@@ -280,7 +263,6 @@
     if (!map.some(r => r.some(t => t === DOT || t === QUESTION))) endGame(true);
   }
 
-  // ── Renderizado ───────────────────────────────────────────────────────────────
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#1a0f00';
@@ -381,7 +363,6 @@
     ctx.beginPath(); ctx.arc(cx + 6, cy - 3, 1.5, 0, Math.PI * 2); ctx.fill();
   }
 
-  // ── HUD ───────────────────────────────────────────────────────────────────────
   function renderHud(now) {
     $id('vidas').textContent   = stats.vidas;
     $id('puntos').textContent  = stats.puntos;
@@ -405,7 +386,6 @@
     }
   }
 
-  // ── Preguntas ─────────────────────────────────────────────────────────────────
   function activateQuestion() {
     if (!preguntas.length) return;
     state = 'question';
@@ -466,7 +446,6 @@
     ghosts.push(makeGhost(10, 10, 0, -1, '#7c2d12', GHOST_SPEED * 0.9));
   }
 
-  // ── Fin de partida ────────────────────────────────────────────────────────────
   async function endGame(won) {
     if (state === 'won' || state === 'gameover') return;
     state = won ? 'won' : 'gameover';
@@ -485,7 +464,7 @@
       window.scormBridge.setScore(pct);
       if (won && pct >= 60) window.scormBridge.setCompletion();
       window.scormBridge.finishScorm();
-    } catch (e) { /* modo standalone sin SCORM */ }
+    } catch (e) { /* sin LMS, no pasa nada */ }
 
     window.location.href = `/resultado/${partidaId}`;
   }
@@ -502,12 +481,11 @@
       console.error('Error al abandonar partida:', e);
     }
 
-    try { window.scormBridge.finishScorm(); } catch (e) { /* standalone */ }
+    try { window.scormBridge.finishScorm(); } catch (e) { /* sin LMS */ }
 
     window.location.href = '/jugar';
   }
 
-  // ── Game loop ─────────────────────────────────────────────────────────────────
   function loop(now) {
     if (state === 'won' || state === 'gameover') return;
 
@@ -537,7 +515,6 @@
     rafId = requestAnimationFrame(loop);
   }
 
-  // ── Teclado ───────────────────────────────────────────────────────────────────
   window.addEventListener('keydown', e => {
     const k = e.key.toLowerCase();
 
@@ -574,7 +551,6 @@
     if (['arrowup','arrowdown','arrowleft','arrowright'].includes(k)) e.preventDefault();
   });
 
-  // ── Controles táctiles ────────────────────────────────────────────────────────
   let touchStart = null;
   canvas.addEventListener('touchstart', e => { touchStart = e.touches[0]; }, { passive: true });
   canvas.addEventListener('touchend', e => {
@@ -586,7 +562,6 @@
     touchStart = null;
   }, { passive: true });
 
-  // ── Arranque ──────────────────────────────────────────────────────────────────
   init().catch(err => {
     console.error('Error al iniciar el desafío:', err);
     alert('No se pudo iniciar el desafío. Revisa la consola del navegador.');

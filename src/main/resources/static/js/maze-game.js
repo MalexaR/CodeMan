@@ -1,21 +1,16 @@
-/**
- * CodeMan – Motor del laberinto
- * Movimiento continuo centro-a-centro: cada personaje viaja de un tile center
- * al siguiente. Las decisiones de dirección ocurren exactamente al llegar.
- * El teclado solo cambia la dirección deseada; nunca mueve directamente.
- */
+// Movimiento centro-a-centro: el bicho viaja de tile a tile completos.
+// El teclado solo guarda la direccion que se quiere; el cambio real ocurre cuando llega al siguiente tile.
 (() => {
   'use strict';
 
-  // ── Constantes ───────────────────────────────────────────────────────────────
-  const TILE = 28;                  // píxeles por tile
+  const TILE = 28;
   const COLS = 21, ROWS = 21;
   const WALL = 1, DOT = 2, QUESTION = 3, EMPTY = 0;
 
-  const PAC_SPEED   = 150;          // px / segundo
-  const GHOST_SPEED = 115;          // px / segundo (base)
+  const PAC_SPEED   = 150; // px/s
+  const GHOST_SPEED = 115;
 
-  // ── Mapa ─────────────────────────────────────────────────────────────────────
+  // 1 = pared, 2 = punto, 3 = pregunta
   const BASE_MAP = [
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
     [1,2,2,2,2,2,2,2,2,1,1,1,2,2,2,2,2,2,2,2,1],
@@ -40,7 +35,6 @@
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
   ];
 
-  // ── DOM ───────────────────────────────────────────────────────────────────────
   const canvas = document.getElementById('mazeCanvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
@@ -49,7 +43,6 @@
   const categoria = gameContainer.dataset.categoria;
   const $id = id => document.getElementById(id);
 
-  // ── Utilidades de grid ────────────────────────────────────────────────────────
   const tcx = col => col * TILE + TILE / 2;
   const tcy = row => row * TILE + TILE / 2;
   const nearCol = px => Math.round((px - TILE / 2) / TILE);
@@ -57,11 +50,10 @@
   const walkable = (col, row) =>
     col >= 0 && col < COLS && row >= 0 && row < ROWS && map[row][col] !== WALL;
 
-  // ── Estado del mapa ───────────────────────────────────────────────────────────
+  // copia del mapa base para no mutar el original cuando se comen los puntos
   let map = BASE_MAP.map(r => [...r]);
   const collected = new Set();
 
-  // ── Pac-Man ───────────────────────────────────────────────────────────────────
   let pac = {
     px:  tcx(1), py:  tcy(1),
     dx:  1,      dy:  0,
@@ -72,7 +64,6 @@
     mouth: 0, mouthDir: 1
   };
 
-  // ── Fantasmas ────────────────────────────────────────────────────────────────
   const ALL_DIRS = [
     { dx: 1, dy: 0 }, { dx: -1, dy: 0 },
     { dx: 0, dy: 1 }, { dx: 0, dy: -1 }
@@ -88,7 +79,6 @@
     makeGhost(11, 9,  1, 0, '#f97316', GHOST_SPEED)
   ];
 
-  // ── Estado general ────────────────────────────────────────────────────────────
   let stats      = { vidas: 3, puntos: 0, tiempo: 0, errores: 0 };
   let state      = 'playing';
   let partidaId  = null;
@@ -104,14 +94,13 @@
   let protection = 0;
   let slowModeTimer = 0;
   let savedGhostSpeeds = null;
-  let frightTimer   = 0;   // fantasmas vulnerables (azul)
-  let pacBoostTimer = 0;   // pac-man acelerado
-  let pacSlowTimer  = 0;   // pac-man ralentizado
+  let frightTimer   = 0;   // fantasmas comestibles (azules)
+  let pacBoostTimer = 0;   // pac acelerado
+  let pacSlowTimer  = 0;   // pac lento
   let feedbackMsg   = '';
   let feedbackTimer = 0;
   let feedbackGood  = true;
 
-  // ── API ───────────────────────────────────────────────────────────────────────
   const api = async (url, method = 'GET', body = null) => {
     const opts = { method, headers: { 'Content-Type': 'application/json' } };
     if (body) opts.body = JSON.stringify(body);
@@ -129,7 +118,6 @@
     rafId = requestAnimationFrame(loop);
   }
 
-  // ── Lógica de Pac-Man ─────────────────────────────────────────────────────────
   function pacArrive(col, row) {
     pac.px = tcx(col);
     pac.py = tcy(row);
@@ -147,7 +135,11 @@
 
   function updatePac(dt) {
     pac.mouth += dt * 8 * pac.mouthDir;
-    if (pac.mouth >= 1 || pac.mouth <= 0) pac.mouthDir *= -1;
+    // acotamos a [0,1]: si se pasa, ademas de invertir la direccion fijamos el
+    // valor al limite. Sin esto, con un dt grande la boca se pasaba por debajo de 0
+    // y openAngle quedaba negativo -> el arco se cerraba y la boca "desaparecia".
+    if (pac.mouth >= 1)      { pac.mouth = 1; pac.mouthDir = -1; }
+    else if (pac.mouth <= 0) { pac.mouth = 0; pac.mouthDir =  1; }
     if (pac.stopped) {
       const col = pac.targetCol, row = pac.targetRow;
       if (walkable(col + pac.ndx, row + pac.ndy)) {
@@ -167,7 +159,6 @@
     collectItem();
   }
 
-  // ── Lógica de fantasmas ───────────────────────────────────────────────────────
   function ghostArrive(g, col, row) {
     g.px = tcx(col); g.py = tcy(row);
     const valid = ALL_DIRS.filter(d =>
@@ -196,7 +187,6 @@
     } else { g.px += g.dx * step; g.py += g.dy * step; }
   }
 
-  // ── Recolección de ítems ──────────────────────────────────────────────────────
   function collectItem() {
     const col = nearCol(pac.px), row = nearRow(pac.py);
     if (col < 0 || col >= COLS || row < 0 || row >= ROWS) return;
@@ -214,7 +204,6 @@
     }
   }
 
-  // ── Colisiones & victoria ─────────────────────────────────────────────────────
   function checkCollisions() {
     if (protection > 0) return;
     for (let i = ghosts.length - 1; i >= 0; i--) {
@@ -244,7 +233,6 @@
     if (!map.some(r => r.some(t => t === DOT || t === QUESTION))) endGame(true);
   }
 
-  // ── Renderizado ───────────────────────────────────────────────────────────────
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#020617';
@@ -327,7 +315,7 @@
       ctx.beginPath(); ctx.arc(cx - 4, cy - 3, 1.5, 0, Math.PI*2); ctx.fill();
       ctx.beginPath(); ctx.arc(cx + 6, cy - 3, 1.5, 0, Math.PI*2); ctx.fill();
     } else {
-      // cara asustada: ojos pequeños y boca en zigzag
+      // modo asustado: ojitos chicos y boca zigzag
       ctx.fillStyle = '#1e3a8a';
       ctx.beginPath(); ctx.arc(cx - 4, cy - 3, 2, 0, Math.PI*2); ctx.fill();
       ctx.beginPath(); ctx.arc(cx + 4, cy - 3, 2, 0, Math.PI*2); ctx.fill();
@@ -340,7 +328,6 @@
     }
   }
 
-  // ── HUD ───────────────────────────────────────────────────────────────────────
   function renderHud() {
     $id('vidas').textContent   = stats.vidas;
     $id('puntos').textContent  = stats.puntos;
@@ -348,7 +335,6 @@
     $id('errores').textContent = stats.errores;
   }
 
-  // ── Preguntas ─────────────────────────────────────────────────────────────────
   const modalTitle = () => document.querySelector('#questionModal .modal-head h2');
 
   function activateQuestion() {
@@ -418,7 +404,6 @@
     feedbackMsg = msg; feedbackGood = good; feedbackTimer = 2.5;
   }
 
-  // ── Eventos de decisión crítica ───────────────────────────────────────────────
   function activateEvento() {
     if (!eventos.length) { activateQuestion(); return; }
     state = 'question';
@@ -474,7 +459,6 @@
     ghosts.push(makeGhost(10, 10, 0, -1, '#ec4899', GHOST_SPEED * 0.9));
   }
 
-  // ── Fin de partida ────────────────────────────────────────────────────────────
   async function endGame(won) {
     if (state === 'won' || state === 'gameover') return;
     state = won ? 'won' : 'gameover';
@@ -489,11 +473,10 @@
       window.scormBridge.setScore(pct);
       if (won) window.scormBridge.setCompletion();
       window.scormBridge.finishScorm();
-    } catch(e) { /* modo standalone sin SCORM */ }
+    } catch(e) { /* corriendo sin LMS, no pasa nada */ }
     window.location.href = `/resultado/${partidaId}`;
   }
 
-  // ── Game loop ─────────────────────────────────────────────────────────────────
   function loop(now) {
     if (state === 'won' || state === 'gameover') return;
     const dt = Math.min((now - lastTime) / 1000, 0.05);
@@ -523,7 +506,6 @@
     draw(); rafId = requestAnimationFrame(loop);
   }
 
-  // ── Teclado ───────────────────────────────────────────────────────────────────
   window.addEventListener('keydown', e => {
     const k = e.key.toLowerCase();
     if      (k === 'arrowup'    || k === 'w') { pac.ndx =  0; pac.ndy = -1; }
@@ -537,7 +519,7 @@
     if (['arrowup','arrowdown','arrowleft','arrowright'].includes(k)) e.preventDefault();
   });
 
-  // ── Controles táctiles (swipe sobre canvas) ───────────────────────────────────
+  // swipe sobre el canvas para movil
   let touchStart = null;
   canvas.addEventListener('touchstart', e => { touchStart = e.touches[0]; }, { passive: true });
   canvas.addEventListener('touchmove',  e => e.preventDefault(), { passive: false });
@@ -551,7 +533,7 @@
     touchStart = null;
   }, { passive: true });
 
-  // ── D-pad (botones de dirección móvil) ────────────────────────────────────────
+  // botones de direccion en pantalla
   const DPAD = {
     'dpad-up':    { ndx:  0, ndy: -1 },
     'dpad-down':  { ndx:  0, ndy:  1 },
@@ -566,7 +548,6 @@
     btn.addEventListener('mousedown',  move);
   });
 
-  // ── Botón pausa móvil ─────────────────────────────────────────────────────────
   const pauseBtn = $id('pauseBtn');
   if (pauseBtn) {
     pauseBtn.addEventListener('click', () => {
@@ -575,7 +556,6 @@
     });
   }
 
-  // ── Arranque ──────────────────────────────────────────────────────────────────
   init().catch(err => {
     console.error('Error al iniciar el juego:', err);
     alert('No se pudo iniciar el juego. Revisa la consola del navegador.');
